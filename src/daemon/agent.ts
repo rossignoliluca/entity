@@ -32,6 +32,12 @@ import {
   type PredictedState,
   DEFAULT_ACTIVE_INFERENCE_CONFIG,
 } from './active-inference.js';
+import {
+  CycleMemory,
+  type CycleMemoryConfig,
+  type CycleRecord,
+  DEFAULT_CYCLE_MEMORY_CONFIG,
+} from './cycle-memory.js';
 
 // =============================================================================
 // Types
@@ -63,6 +69,10 @@ export interface AgentConfig {
   // Phase 8c: Active Inference (Friston)
   activeInferenceEnabled: boolean;
   activeInferenceConfig: Partial<ActiveInferenceConfig>;
+
+  // Phase 8d: Cycle Memory
+  cycleMemoryEnabled: boolean;
+  cycleMemoryConfig: Partial<CycleMemoryConfig>;
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -88,6 +98,10 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   // Phase 8c: Active Inference defaults
   activeInferenceEnabled: true,
   activeInferenceConfig: {},
+
+  // Phase 8d: Cycle Memory defaults
+  cycleMemoryEnabled: true,
+  cycleMemoryConfig: {},
 };
 
 /**
@@ -247,6 +261,11 @@ export class InternalAgent extends EventEmitter {
   private lastFeeling: Feeling | null = null;
   private lastPrediction: PredictedState | null = null;
 
+  // Phase 8d: Cycle Memory
+  private cycleMemory: CycleMemory;
+  private lastAction: string | null = null;
+  private lastActionBlocked: boolean = false;
+
   constructor(
     baseDir: string,
     config: Partial<AgentConfig> = {},
@@ -301,6 +320,9 @@ export class InternalAgent extends EventEmitter {
 
     // Phase 8c: Initialize Active Inference
     this.activeInference = new ActiveInferenceEngine(this.config.activeInferenceConfig);
+
+    // Phase 8d: Initialize Cycle Memory
+    this.cycleMemory = new CycleMemory(this.config.cycleMemoryConfig);
   }
 
   // ===========================================================================
@@ -398,12 +420,26 @@ export class InternalAgent extends EventEmitter {
       // Phase 8c: Record previous cycle's outcome for learning
       if (this.config.activeInferenceEnabled && this.lastFeeling && this.lastPrediction) {
         this.activeInference.recordObservation(
-          null, // Last action (simplified - we track feeling changes)
+          this.lastAction,
           this.lastFeeling,
           feeling,
           this.lastPrediction
         );
       }
+
+      // Phase 8d: Record previous cycle to cycle memory
+      if (this.config.cycleMemoryEnabled && this.lastFeeling) {
+        // Determine what priority was used last cycle
+        const lastPriority = this.determinePriorityFromFeeling(this.lastFeeling);
+        this.cycleMemory.recordCycle(
+          this.lastFeeling,
+          lastPriority,
+          this.lastAction,
+          this.lastActionBlocked,
+          feeling
+        );
+      }
+
       this.lastFeeling = feeling;
 
       // 2. CHECK COUPLING - defer to human if present
@@ -422,6 +458,10 @@ export class InternalAgent extends EventEmitter {
 
       // 3. RESPOND - let response emerge from feeling
       const response = await this.respond(feeling);
+
+      // Phase 8d: Track action for next cycle's memory
+      this.lastAction = response.action;
+      this.lastActionBlocked = response.constitutionalCheck === 'blocked';
 
       // 4. REMEMBER - communicate with future self
       if (response.action) {
@@ -599,6 +639,17 @@ export class InternalAgent extends EventEmitter {
     if (satisfied === total) return 'whole';
     if (satisfied >= total - 1) return 'stressed';
     return 'violated';
+  }
+
+  /**
+   * Determine priority from feeling (for cycle memory tracking)
+   */
+  private determinePriorityFromFeeling(feeling: Feeling): Priority {
+    if (feeling.threatsExistence) return 'survival';
+    if (feeling.integrityFeeling === 'violated') return 'integrity';
+    if (feeling.stabilityFeeling === 'unstable' || feeling.stabilityFeeling === 'drifting') return 'stability';
+    if (feeling.needsGrowth && feeling.energyFeeling === 'vital') return 'growth';
+    return 'rest';
   }
 
   // ===========================================================================
@@ -793,9 +844,9 @@ export class InternalAgent extends EventEmitter {
   }
 
   /**
-   * Select action using Active Inference (Phase 8c)
+   * Select action using Active Inference (Phase 8c) and Cycle Memory (Phase 8d)
    */
-  private selectActionViaActiveInference(feeling: Feeling, priority: Priority): ActionEvaluation {
+  private selectActionViaActiveInference(feeling: Feeling, priority: Priority): ActionEvaluation & { cycleMemoryHint?: string } {
     // Available actions for the agent
     const availableActions: (string | null)[] = [
       null,              // Rest
@@ -804,12 +855,27 @@ export class InternalAgent extends EventEmitter {
       'energy.status',   // Check energy
     ];
 
+    // Phase 8d: Check cycle memory for suggestions
+    let cycleMemoryHint: string | undefined;
+    if (this.config.cycleMemoryEnabled) {
+      const suggestion = this.cycleMemory.suggestAction(feeling, priority, availableActions);
+      if (suggestion && suggestion.confidence > 0.5) {
+        cycleMemoryHint = suggestion.reason;
+        // Boost the suggested action by moving it to front (Active Inference will still evaluate)
+        const idx = availableActions.indexOf(suggestion.action);
+        if (idx > 0) {
+          availableActions.splice(idx, 1);
+          availableActions.unshift(suggestion.action);
+        }
+      }
+    }
+
     const evaluation = this.activeInference.selectAction(feeling, availableActions, priority);
 
     // Store prediction for learning in next cycle
     this.lastPrediction = evaluation.predictedState;
 
-    return evaluation;
+    return { ...evaluation, cycleMemoryHint };
   }
 
   // ===========================================================================
@@ -1373,6 +1439,36 @@ export class InternalAgent extends EventEmitter {
       }
       console.log('');
     }
+
+    // Phase 8d: Cycle Memory info
+    if (this.config.cycleMemoryEnabled) {
+      const summary = this.cycleMemory.getSummary();
+      console.log('--- Cycle Memory (Phase 8d) ---');
+      console.log(`Cycles Stored: ${summary.totalCycles}`);
+      console.log(`Total Recorded: ${this.cycleMemory.getTotalCyclesRecorded()}`);
+      console.log(`Avg Effectiveness: ${(summary.avgEffectiveness * 100).toFixed(2)}%`);
+      console.log(`Avg Energy Cost: ${(summary.avgEnergyCost * 100).toFixed(2)}%`);
+      if (summary.totalCycles > 0) {
+        console.log('');
+        console.log('--- Effectiveness by Priority ---');
+        for (const [priority, stats] of Object.entries(summary.byPriority)) {
+          if (stats.count > 0) {
+            console.log(`  ${priority}: ${stats.count} cycles, ${(stats.avgEffectiveness * 100).toFixed(1)}% effective`);
+          }
+        }
+      }
+      // Show top actions from history
+      const topActions = this.cycleMemory.getAllActionStats();
+      if (topActions.length > 0) {
+        console.log('');
+        console.log('--- Top Actions (Historical) ---');
+        for (const stat of topActions.slice(0, 3)) {
+          const actionName = stat.action ?? 'rest';
+          console.log(`  ${actionName}: ${(stat.avgEffectiveness * 100).toFixed(1)}% effective, ${(stat.successRate * 100).toFixed(0)}% success rate (${stat.totalCycles} uses)`);
+        }
+      }
+      console.log('');
+    }
   }
 
   /**
@@ -1380,6 +1476,13 @@ export class InternalAgent extends EventEmitter {
    */
   getActiveInference(): ActiveInferenceEngine {
     return this.activeInference;
+  }
+
+  /**
+   * Get cycle memory (for inspection)
+   */
+  getCycleMemory(): CycleMemory {
+    return this.cycleMemory;
   }
 }
 

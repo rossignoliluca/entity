@@ -170,17 +170,27 @@ Full Free Energy Principle implementation.
 
 **Status:** Active inference implemented. 353 tests
 
-## Phase 8d: Cycle Memory
+## Phase 8d: Cycle Memory - COMPLETED
 
 Learn from past sense-making cycles.
 
-- [ ] `cycleHistory: CycleRecord[]` - recent cycle outcomes
-- [ ] Pattern recognition: which actions helped which feelings
-- [ ] Correlation tracking: action → outcome
-- [ ] Adaptive response selection based on history
-- [ ] Forgetting old/irrelevant cycles
+- [x] `CycleRecord` type with effectiveness scoring
+- [x] `CycleMemory` class (src/daemon/cycle-memory.ts):
+  - `recordCycle()`: Record cycle with before/after feeling
+  - `computeEffectiveness()`: Priority-weighted improvement score
+  - `findSimilarCycles()`: Find cycles with similar feelings
+  - `getActionStats()`: Per-action effectiveness statistics
+  - `suggestAction()`: Suggest best action based on history
+  - `detectPatterns()`: Find (priority, feeling_range) → best actions
+- [x] Priority-based effectiveness weights:
+  - survival: 80% energy, 10% stability, 5% integrity, 5% surprise
+  - stability: 10% energy, 60% stability, 10% integrity, 20% surprise
+  - growth: 20% energy, 20% stability, 20% integrity, 40% surprise
+- [x] Forgetting: maxCycles=200, decay rate for old cycles
+- [x] Integration with agent: suggestions boost Active Inference selection
+- [x] Export/import for persistence
 
-**Goal:** Agent that learns what works.
+**Status:** Cycle memory implemented. 386 tests
 
 ## Phase 8e: Self-Producing Agent
 
