@@ -1,0 +1,13 @@
+{
+  "seq": 33,
+  "type": "SNAPSHOT",
+  "timestamp": "2026-01-04T13:37:17.623Z",
+  "data": {
+    "snapshot_id": "snap-2026-01-04T13-37-17",
+    "event_seq": 32,
+    "state_hash": "ada182d4b07653367d10e2e6a61657745826f7de2df8035108b7b65399c6709c",
+    "description": "Test cleanup 2"
+  },
+  "prev_hash": "6fc89faf7a7f024aa6b8448b0ee110339603574ddf09e2591766671e17a8ddf5",
+  "hash": "bfd31a77d6da506a500296d4a3593b8f5c12cea31fab7b4485923cd6c317f9c3"
+}

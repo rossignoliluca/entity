@@ -2,14 +2,6 @@
   "version": "1.0.0",
   "snapshots": [
     {
-      "id": "snap-2026-01-04T12-50-14",
-      "timestamp": "2026-01-04T12:50:14.479Z",
-      "event_seq": 16,
-      "event_hash": "4960bcba7553a6832f7af9d200f357afc3c153ef94a6ba3ba245b62d067eeddd",
-      "state_hash": "a71371097ecc067a281812ad29ac23f5b7ac2d6dece08ea2bc9fe38f7120b58a",
-      "description": "Backup before testing"
-    },
-    {
       "id": "snap-2026-01-04T13-02-32",
       "timestamp": "2026-01-04T13:02:32.684Z",
       "event_seq": 20,
@@ -32,7 +24,63 @@
       "event_hash": "40187ba4a81bdcf897c7f19db378d0d1365215de50e5354201d36e04c680d711",
       "state_hash": "6ece29ec4499d8b2ecc11d2c25585010b90ac1137880648b0a62b17c6aa3f09a",
       "description": "Auto-snapshot: Session 7 end"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-16",
+      "timestamp": "2026-01-04T13:37:16.553Z",
+      "event_seq": 31,
+      "event_hash": "d1b410c2e6fb41c729d336115837faf7fe248fa07f0a4ee85ab0e9edd1665b07",
+      "state_hash": "3b38739908932b2639dd7ea15e7f28350ac48e009b0eb07247faae10281029d4",
+      "description": "Test cleanup 1"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-17",
+      "timestamp": "2026-01-04T13:37:17.617Z",
+      "event_seq": 32,
+      "event_hash": "6fc89faf7a7f024aa6b8448b0ee110339603574ddf09e2591766671e17a8ddf5",
+      "state_hash": "ada182d4b07653367d10e2e6a61657745826f7de2df8035108b7b65399c6709c",
+      "description": "Test cleanup 2"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-18",
+      "timestamp": "2026-01-04T13:37:18.680Z",
+      "event_seq": 33,
+      "event_hash": "bfd31a77d6da506a500296d4a3593b8f5c12cea31fab7b4485923cd6c317f9c3",
+      "state_hash": "13163e6ebdd371bc14b28015f72f85660f3b497ca7e7609bb7d0098cf1a505c1",
+      "description": "Test cleanup 3"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-19",
+      "timestamp": "2026-01-04T13:37:19.741Z",
+      "event_seq": 34,
+      "event_hash": "43eafa5f07c9f0fbfceff3d02c07388f32ea414bd2427e7f29aa9c60de57d60f",
+      "state_hash": "c1c15a3514a7e8f50fa82abdba63cfaf75145f72509abf7ee663e74b9ac0757b",
+      "description": "Test cleanup 4"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-20",
+      "timestamp": "2026-01-04T13:37:20.800Z",
+      "event_seq": 35,
+      "event_hash": "60743cff11e57ba3902fe597f4e3ec366412b80afa8066caeb364bbff8f16535",
+      "state_hash": "7303c9c0507427c78066ebc2cf79daa62ffa1e062dc08e878235d3879fde8d51",
+      "description": "Test cleanup 5"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-21",
+      "timestamp": "2026-01-04T13:37:21.862Z",
+      "event_seq": 36,
+      "event_hash": "e5ecd85ff37df1c556fe4f5446c1135e468c4d02f97b0903120cc1bc3e2b1987",
+      "state_hash": "85d9c86325bb01420bdd19484a8fc00320d7aa0da2b143fefd470e98a6e2d111",
+      "description": "Test cleanup 6"
+    },
+    {
+      "id": "snap-2026-01-04T13-37-22",
+      "timestamp": "2026-01-04T13:37:22.924Z",
+      "event_seq": 37,
+      "event_hash": "99be261c9054629bd1f99faff5f68ed341cb6ec1d0e3b04e2e0e126abf35420d",
+      "state_hash": "9782af0b6d04d5016084cc3c3094b32465f3b0330377962c141ea48169e206cd",
+      "description": "Test cleanup 7"
     }
   ],
-  "latest": "snap-2026-01-04T13-28-56"
+  "latest": "snap-2026-01-04T13-37-22"
 }
