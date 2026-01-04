@@ -23,6 +23,14 @@ import {
 } from './snapshot.js';
 import type { State, Config, VerificationResult } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
+import {
+  OPERATIONS_CATALOG,
+  getOperation,
+  listOperations,
+  executeOperation,
+  printCatalog,
+  isAllowedOperation,
+} from './operations.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -270,6 +278,61 @@ export async function showHuman(): Promise<void> {
 }
 
 /**
+ * Run operation from catalog (AES-SPEC-001 Phase 3)
+ */
+export async function runOperation(
+  operationId: string,
+  params: Record<string, unknown> = {}
+): Promise<void> {
+  const state = await loadState();
+
+  // Check if operation exists in catalog
+  if (!isAllowedOperation(operationId)) {
+    console.log(`Unknown operation: ${operationId}`);
+    console.log('Use "op list" to see available operations');
+    return;
+  }
+
+  const opDef = getOperation(operationId)!;
+
+  // Execute operation
+  const result = executeOperation(operationId, state, params);
+
+  if (!result.success) {
+    console.log(`Operation failed: ${result.message}`);
+    return;
+  }
+
+  // Apply state changes if any
+  if (result.stateChanges) {
+    Object.assign(state, result.stateChanges);
+  }
+
+  // Deduct energy cost
+  state.energy.current = Math.max(0, state.energy.current - opDef.energyCost);
+
+  // Log operation event
+  await appendEvent(BASE_DIR, 'OPERATION', {
+    operation: operationId,
+    params,
+    result: result.message,
+    energy_cost: opDef.energyCost,
+  });
+
+  // Update event tracking
+  const events = await loadEvents(BASE_DIR);
+  state.memory.event_count = events.length;
+  state.memory.last_event_hash = events[events.length - 1].hash;
+
+  await saveState(state);
+
+  console.log(`[${operationId}] ${result.message}`);
+  if (result.effects) {
+    console.log('Effects:', JSON.stringify(result.effects, null, 2));
+  }
+}
+
+/**
  * Execute operation with guard
  */
 export async function execute(
@@ -510,6 +573,63 @@ Memory commands:
         }
         break;
 
+      case 'op':
+        const opAction = process.argv[3];
+        if (opAction === 'list') {
+          printCatalog();
+        } else if (opAction === 'run') {
+          const opId = process.argv[4];
+          if (!opId) {
+            console.log('Usage: op run <operation-id> [params...]');
+            break;
+          }
+          // Parse params from remaining args (key=value format)
+          const params: Record<string, unknown> = {};
+          for (let i = 5; i < process.argv.length; i++) {
+            const arg = process.argv[i];
+            const eqIndex = arg.indexOf('=');
+            if (eqIndex > 0) {
+              const key = arg.substring(0, eqIndex);
+              let value: unknown = arg.substring(eqIndex + 1);
+              // Try to parse as JSON for complex values
+              try {
+                value = JSON.parse(value as string);
+              } catch {
+                // Keep as string
+              }
+              params[key] = value;
+            }
+          }
+          await runOperation(opId, params);
+        } else if (opAction === 'info') {
+          const opId = process.argv[4];
+          if (!opId) {
+            console.log('Usage: op info <operation-id>');
+            break;
+          }
+          const op = getOperation(opId);
+          if (!op) {
+            console.log(`Unknown operation: ${opId}`);
+          } else {
+            console.log(`\n=== ${op.id} ===`);
+            console.log(`Name: ${op.name}`);
+            console.log(`Description: ${op.description}`);
+            console.log(`Category: ${op.category}`);
+            console.log(`Complexity: ${op.complexity}`);
+            console.log(`Energy cost: ${op.energyCost}`);
+            console.log(`Requires coupling: ${op.requiresCoupling}`);
+            console.log('');
+          }
+        } else {
+          console.log(`
+Operation commands:
+  op list              List all available operations
+  op run <id> [params] Execute operation (params: key=value)
+  op info <id>         Show operation details
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -523,6 +643,7 @@ Commands:
   recharge  Restore energy (+${ENERGY_RECHARGE_AMOUNT})
   human     Manage human context
   memory    Manage important memories
+  op        Execute operations from catalog
   replay    Replay events and show state
   events    List recent events
   recover   Attempt recovery from violations

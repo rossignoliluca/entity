@@ -1,0 +1,13 @@
+{
+  "seq": 120,
+  "type": "OPERATION",
+  "timestamp": "2026-01-04T14:26:06.338Z",
+  "data": {
+    "operation": "energy.status",
+    "params": {},
+    "result": "Energy: 0.39",
+    "energy_cost": 0
+  },
+  "prev_hash": "c3029b7a279ba2d46d09dfad13fd1db30089cf5b65ebaddf0316b2c8d16add7d",
+  "hash": "452d224099467fb225df897ec4e11e52b01d809d3eae5ac5708f421f70af96ec"
+}

@@ -1,0 +1,13 @@
+{
+  "seq": 119,
+  "type": "OPERATION",
+  "timestamp": "2026-01-04T14:26:00.435Z",
+  "data": {
+    "operation": "system.health",
+    "params": {},
+    "result": "System healthy",
+    "energy_cost": 0.005
+  },
+  "prev_hash": "568273c835c55779f26877af7bf6f7ebd5ac2b785df30d462331704838bcede6",
+  "hash": "c3029b7a279ba2d46d09dfad13fd1db30089cf5b65ebaddf0316b2c8d16add7d"
+}
