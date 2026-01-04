@@ -10,7 +10,7 @@
 
 import { readFile, writeFile, unlink, mkdir, access } from 'fs/promises';
 import { join } from 'path';
-import type { State, Event, EventType, Hash, Timestamp } from './types.js';
+import type { State, Event, EventType, EventCategory, Hash, Timestamp } from './types.js';
 import { hashEvent } from './hash.js';
 import { loadEvents } from './events.js';
 
@@ -167,11 +167,17 @@ export class StateManager {
 
   /**
    * Append event with lock (atomic with state update)
+   *
+   * @param type - Event type
+   * @param data - Event payload
+   * @param stateUpdater - Optional function to update state atomically
+   * @param category - Optional category for filtering (defaults to 'operational')
    */
   async appendEventAtomic(
     type: EventType,
     data: Record<string, unknown>,
-    stateUpdater?: (state: State, event: Event) => State
+    stateUpdater?: (state: State, event: Event) => State,
+    category?: EventCategory
   ): Promise<Event> {
     return this.withLock('appendEvent', async () => {
       // Load events to get sequence and prev_hash
@@ -186,6 +192,7 @@ export class StateManager {
         timestamp,
         data,
         prev_hash,
+        ...(category && { category }), // Only include if specified
       };
 
       const hash = hashEvent(eventWithoutHash);

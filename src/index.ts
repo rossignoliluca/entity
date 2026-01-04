@@ -569,8 +569,14 @@ async function main(): Promise<void> {
   try {
     switch (command) {
       case 'verify':
-        const result = await verify();
+        // Default: read-only (no event logged)
+        // --record: logs VERIFICATION event to chain
+        const recordFlag = process.argv[3] === '--record';
+        const result = recordFlag ? await verify() : await verifyReadOnly();
         printVerificationReport(result);
+        if (recordFlag) {
+          console.log('(Recorded to event chain)');
+        }
         process.exit(result.all_satisfied ? 0 : 1);
         break;
 

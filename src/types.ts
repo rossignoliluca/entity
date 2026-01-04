@@ -160,6 +160,9 @@ export type EventType =
   // Phase 8b: Ultrastability events
   | 'AGENT_ULTRASTABILITY'; // Ultrastability parameter adjustment
 
+// Event categories for filtering (Annex G)
+export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance';
+
 export interface Event {
   seq: number;
   type: EventType;
@@ -167,6 +170,7 @@ export interface Event {
   data: Record<string, unknown>;
   prev_hash: Hash | null;
   hash: Hash;
+  category?: EventCategory; // Optional: defaults to 'operational'
 }
 
 // =============================================================================
