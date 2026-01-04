@@ -45,7 +45,18 @@ import {
   listGeneratedOperations,
   getAutopoiesisStats,
   getCombinedCatalog,
+  // Sigillo 1: Quarantine lifecycle
+  canTransitionToTrial,
+  canTransitionToActive,
+  shouldDeprecate,
+  transitionOperationStatus,
+  recordTrialUse,
+  getActiveGeneratedOperations,
+  getTrialableOperations,
+  DEFAULT_QUARANTINE_CONFIG,
   type GeneratedOperationDef,
+  type QuarantineConfig,
+  type OperationStatus,
 } from '../meta-operations.js';
 
 // =============================================================================
@@ -87,6 +98,9 @@ export interface AgentConfig {
   selfProductionEnabled: boolean;
   selfProductionThreshold: number;    // min action count to trigger pattern
   selfProductionCooldown: number;     // cycles between productions
+
+  // Sigillo 1: Quarantine config
+  quarantineConfig: QuarantineConfig;
 }
 
 /**
@@ -129,6 +143,9 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   selfProductionEnabled: true,
   selfProductionThreshold: 10,       // 10 uses of same action triggers pattern
   selfProductionCooldown: 50,        // wait 50 cycles between productions
+
+  // Sigillo 1: Quarantine config
+  quarantineConfig: DEFAULT_QUARANTINE_CONFIG,
 };
 
 /**
@@ -560,6 +577,11 @@ export class InternalAgent extends EventEmitter {
       // 6. SELF-PRODUCTION - check for patterns in growth mode
       if (this.config.selfProductionEnabled && response.priority === 'growth') {
         await this.checkSelfProduction(feeling);
+      }
+
+      // 7. QUARANTINE LIFECYCLE - manage operation transitions (Sigillo 1)
+      if (this.config.selfProductionEnabled) {
+        await this.manageQuarantineLifecycles();
       }
 
       // 5. ULTRASTABILITY - record violations and adapt
@@ -1084,12 +1106,14 @@ export class InternalAgent extends EventEmitter {
 
     try {
       // Use specializeOperation to create an optimized version
+      // Pass currentCycle for Sigillo 1: Quarantine lifecycle
       const result = specializeOperation(state, {
         id: newId,
         name: `Self-produced: ${baseAction}`,
         description: `Optimized ${baseAction} created by agent after ${usageCount} uses`,
         sourceOperation: baseAction,
         presetParams: {},
+        currentCycle: this.stats.cycleCount,
       });
 
       if (result.success) {
@@ -1119,6 +1143,90 @@ export class InternalAgent extends EventEmitter {
     if (baseAction.startsWith('self.')) return false;
 
     return true;
+  }
+
+  // ===========================================================================
+  // SIGILLO 1: QUARANTINE LIFECYCLE MANAGEMENT
+  // ===========================================================================
+
+  /**
+   * Manage quarantine lifecycle transitions for all generated operations
+   * Called each sense-making cycle to:
+   * 1. Transition QUARANTINED → TRIAL after quarantineCycles
+   * 2. Transition TRIAL → ACTIVE if metrics pass
+   * 3. Transition TRIAL → DEPRECATED if metrics fail
+   */
+  private async manageQuarantineLifecycles(): Promise<void> {
+    const sp = this.stats.selfProduction;
+    if (!sp.enabled) return;
+
+    // Sigillo 2: Only manage in production context
+    if (this.currentContext !== 'production') return;
+
+    const state = await this.loadState();
+    const autopoiesis = (state as State & { autopoiesis?: { generatedOperations: GeneratedOperationDef[] } }).autopoiesis;
+    if (!autopoiesis?.generatedOperations.length) return;
+
+    const config = this.config.quarantineConfig;
+    const currentCycle = this.stats.cycleCount;
+    let stateModified = false;
+
+    for (const op of autopoiesis.generatedOperations) {
+      // Skip already ACTIVE or DEPRECATED operations
+      if (op.status === 'ACTIVE' || op.status === 'DEPRECATED') continue;
+
+      // Transition QUARANTINED → TRIAL
+      if (op.status === 'QUARANTINED') {
+        if (canTransitionToTrial(op, currentCycle, config)) {
+          transitionOperationStatus(op, 'TRIAL', 'Quarantine period complete');
+          stateModified = true;
+          this.emit('quarantineTransition', { operationId: op.id, from: 'QUARANTINED', to: 'TRIAL' });
+        }
+        continue;
+      }
+
+      // Transition TRIAL → ACTIVE or DEPRECATED
+      if (op.status === 'TRIAL') {
+        // Check for deprecation first
+        const deprecateCheck = shouldDeprecate(op, config);
+        if (deprecateCheck.shouldDeprecate) {
+          transitionOperationStatus(op, 'DEPRECATED', deprecateCheck.reason);
+          stateModified = true;
+          this.emit('quarantineTransition', { operationId: op.id, from: 'TRIAL', to: 'DEPRECATED', reason: deprecateCheck.reason });
+          continue;
+        }
+
+        // Check for activation
+        const activateCheck = canTransitionToActive(op, config);
+        if (activateCheck.canActivate) {
+          transitionOperationStatus(op, 'ACTIVE', activateCheck.reason);
+          stateModified = true;
+          this.emit('quarantineTransition', { operationId: op.id, from: 'TRIAL', to: 'ACTIVE', reason: activateCheck.reason });
+        }
+      }
+    }
+
+    // Save state if modified
+    if (stateModified) {
+      const stateManager = getStateManager(this.baseDir);
+      await stateManager.writeState(state);
+    }
+  }
+
+  /**
+   * Record trial use metrics when an operation is executed
+   * Called during operation execution to track effectiveness
+   */
+  recordOperationTrialUse(
+    operationId: string,
+    vDelta: number,
+    surpriseDelta: number,
+    energyCost: number,
+    blocked: boolean
+  ): void {
+    // Will be called from operations when executing trial operations
+    // The actual recording is done in meta-operations.ts
+    // This method is a placeholder for future integration
   }
 
   // ===========================================================================

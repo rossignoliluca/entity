@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:44:43.328Z",
+  "updated": "2026-01-04T21:38:18.580Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,26 +15,26 @@
     "since": null
   },
   "energy": {
-    "current": 0.414,
+    "current": 0.45,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": 0
+    "V_previous": null
   },
   "memory": {
-    "event_count": 318,
-    "last_event_hash": "d3a6497f5b81aea6acdc09fb6efa2c71621e84a12cb5d4522e9ab48a69c213cd",
-    "last_snapshot_at": "2026-01-04T18:41:05.657Z"
+    "event_count": 502,
+    "last_event_hash": "b7090b163683d89be7f345cb2527e9117e4e326ccc9f59797043c278e0c8bcd3",
+    "last_snapshot_at": "2026-01-04T21:35:48.682Z"
   },
   "session": {
-    "total_count": 42,
+    "total_count": 46,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:42:09.594Z",
+    "last_verification": "2026-01-04T20:55:39.626Z",
     "status": "nominal"
   },
   "human": {
@@ -42,7 +42,8 @@
     "context": ""
   },
   "important": [
-    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations"
+    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
+    "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8..."
   ],
   "learning": {
     "enabled": true,
@@ -95,15 +96,15 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T18:42:05.675Z",
-    "cycleCount": 3,
+    "lastCycle": "2026-01-04T20:48:22.682Z",
+    "cycleCount": 4,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 28,
-      "growth": 40,
+      "stability": 76,
+      "growth": 101,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.009000000000000001
+    "totalEnergyConsumed": 0.012
   }
 }
