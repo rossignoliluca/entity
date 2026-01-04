@@ -1,0 +1,370 @@
+{
+  "seq": 411,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-04T19:26:51.568Z",
+  "data": {
+    "stats": {
+      "cycleCount": 18,
+      "responsesTotal": 18,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 14,
+        "growth": 4,
+        "rest": 0
+      },
+      "actionsExecuted": 18,
+      "actionsBlocked": 0,
+      "restCycles": 0,
+      "totalEnergyConsumed": 0.060000000000000005,
+      "startedAt": "2026-01-04T19:04:02.163Z",
+      "lastCycle": "2026-01-04T19:26:44.744Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 1,
+        "lastAdaptation": "2026-01-04T19:13:02.257Z",
+        "violations": [
+          {
+            "timestamp": "2026-01-04T19:05:02.260Z",
+            "cycle": 2,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.479,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:05:02.260Z",
+            "cycle": 2,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.479,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:06:02.266Z",
+            "cycle": 3,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:06:02.266Z",
+            "cycle": 3,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:07:02.266Z",
+            "cycle": 4,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:07:02.266Z",
+            "cycle": 4,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:08:02.268Z",
+            "cycle": 5,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:08:02.268Z",
+            "cycle": 5,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:09:02.262Z",
+            "cycle": 6,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:09:02.262Z",
+            "cycle": 6,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:10:02.271Z",
+            "cycle": 7,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:10:02.271Z",
+            "cycle": 7,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:11:02.273Z",
+            "cycle": 8,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:11:02.273Z",
+            "cycle": 8,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:12:02.262Z",
+            "cycle": 9,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:12:02.262Z",
+            "cycle": 9,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:13:02.257Z",
+            "cycle": 10,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:13:02.257Z",
+            "cycle": 10,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:13:56.323Z",
+            "cycle": 11,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:13:56.323Z",
+            "cycle": 11,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:14:50.347Z",
+            "cycle": 12,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.482,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:14:50.347Z",
+            "cycle": 12,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.482,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:15:44.344Z",
+            "cycle": 13,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.47,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:15:44.344Z",
+            "cycle": 13,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.47,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:16:38.336Z",
+            "cycle": 14,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.45799999999999996,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:16:38.336Z",
+            "cycle": 14,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.45799999999999996,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:24:56.842Z",
+            "cycle": 16,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:24:56.842Z",
+            "cycle": 16,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          }
+        ],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-04T19:04:02.161Z",
+            "cycle": 0,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.001,
+            "decisionInterval": 60000,
+            "reason": "Initial parameters"
+          },
+          {
+            "timestamp": "2026-01-04T19:13:02.257Z",
+            "cycle": 10,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.0009000000000000001,
+            "decisionInterval": 54000,
+            "reason": "Stability issues (10/10)"
+          }
+        ],
+        "violationRate": 1.75,
+        "stabilityScore": 0,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.05,
+          "urgencyThreshold": 0.15,
+          "restThreshold": 0.0009000000000000001,
+          "decisionInterval": 54000
+        }
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "61205fc563dd9588ad1e756785c6c51e6110d15ccdee2e10850dd0adea97a727",
+  "hash": "896d0002027c39925163f41f8df6691e1cf7c22e28cf7150d548bd48119fa1da"
+}
