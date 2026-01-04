@@ -362,6 +362,14 @@ function applyEvent(state: State, event: Event): State {
       }
       break;
 
+    case 'AGENT_ULTRASTABILITY':
+      // Ultrastability adjustment - logged for audit/explainability
+      // No permanent state change needed (parameters are in-memory)
+      if (newState.agent) {
+        newState.agent.lastCycle = event.timestamp;
+      }
+      break;
+
     default:
       // Unknown event type - no state change
       break;

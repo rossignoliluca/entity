@@ -153,10 +153,12 @@ export type EventType =
   | 'LEARNING'
   | 'META_OPERATION'
   // Phase 8: Internal Agency events
-  | 'AGENT_WAKE'      // Agent sense-making loop started
-  | 'AGENT_SLEEP'     // Agent sense-making loop paused
-  | 'AGENT_RESPONSE'  // Agent responded to feeling
-  | 'AGENT_REST';     // Agent resting (Wu Wei)
+  | 'AGENT_WAKE'           // Agent sense-making loop started
+  | 'AGENT_SLEEP'          // Agent sense-making loop paused
+  | 'AGENT_RESPONSE'       // Agent responded to feeling
+  | 'AGENT_REST'           // Agent resting (Wu Wei)
+  // Phase 8b: Ultrastability events
+  | 'AGENT_ULTRASTABILITY'; // Ultrastability parameter adjustment
 
 export interface Event {
   seq: number;

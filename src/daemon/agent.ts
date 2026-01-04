@@ -49,6 +49,9 @@ export interface AgentConfig {
   adaptationRate: number;        // adjustment factor (0.1 = 10%)
   minDecisionInterval: number;   // minimum ms between cycles
   maxDecisionInterval: number;   // maximum ms between cycles
+  // Caps to prevent hyper-reactivity (ultrastability ≠ nervousness)
+  minRestThreshold: number;      // minimum sensitivity (can't be too nervous)
+  maxAdaptationsPerWindow: number; // limit adaptation frequency
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -67,6 +70,9 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   adaptationRate: 0.1,           // 10% adjustment
   minDecisionInterval: 10000,    // min 10 seconds
   maxDecisionInterval: 300000,   // max 5 minutes
+  // Caps to prevent hyper-reactivity
+  minRestThreshold: 0.0001,      // can't go below this (avoid noise sensitivity)
+  maxAdaptationsPerWindow: 5,    // max 5 adaptations per violation window
 };
 
 /**
@@ -436,7 +442,7 @@ export class InternalAgent extends EventEmitter {
       }
 
       // Check if parameters need adaptation
-      this.checkAndAdaptParameters();
+      await this.checkAndAdaptParameters();
 
       this.emit('cycle', { feeling, response });
 
@@ -831,14 +837,35 @@ export class InternalAgent extends EventEmitter {
   /**
    * Check if adaptation is needed and perform it
    * Called periodically based on adaptationInterval
+   * Respects maxAdaptationsPerWindow to prevent thrashing
    */
-  private checkAndAdaptParameters(): void {
+  private async checkAndAdaptParameters(): Promise<void> {
     if (!this.stats.ultrastability.enabled) return;
     if (this.stats.cycleCount % this.config.adaptationInterval !== 0) return;
     if (this.stats.cycleCount === 0) return;
 
     const us = this.stats.ultrastability;
     const rate = this.config.adaptationRate;
+
+    // Rate limiting: Check if we've adapted too many times recently
+    // Prevents hyper-reactivity / thrashing
+    const recentAdaptations = us.parameterHistory.filter(p =>
+      this.stats.cycleCount - p.cycle < this.config.violationWindowSize
+    ).length - 1; // -1 for initial snapshot
+
+    if (recentAdaptations >= this.config.maxAdaptationsPerWindow) {
+      // Already adapted enough - skip to avoid thrashing
+      return;
+    }
+
+    // Capture state before adaptation for logging
+    const beforeState = {
+      interval: us.adaptiveParameters.decisionInterval,
+      criticalThreshold: us.adaptiveParameters.criticalThreshold,
+      urgencyThreshold: us.adaptiveParameters.urgencyThreshold,
+      restThreshold: us.adaptiveParameters.restThreshold,
+    };
+    const energyBefore = await this.getEnergyLevel();
 
     // Analyze violation patterns
     const recentViolations = us.violations.slice(-this.config.adaptationInterval);
@@ -850,15 +877,15 @@ export class InternalAgent extends EventEmitter {
 
     // Count violation types
     const energyViolations = recentViolations.filter(v =>
-      v.invariant === 'INV-005' || v.feeling.energy < this.config.urgencyThreshold
+      v.invariant === 'INV-005' || v.invariant === 'energy' || v.feeling.energy < this.config.urgencyThreshold
     ).length;
 
     const stabilityViolations = recentViolations.filter(v =>
-      v.invariant === 'INV-002' || v.invariant === 'INV-004' || v.feeling.lyapunovV > 0.1
+      v.invariant === 'INV-002' || v.invariant === 'INV-004' || v.invariant === 'stability' || v.feeling.lyapunovV > 0.1
     ).length;
 
     const integrityViolations = recentViolations.filter(v =>
-      v.invariant === 'INV-001' || v.invariant === 'INV-003'
+      v.invariant === 'INV-001' || v.invariant === 'INV-003' || v.invariant === 'INV-*'
     ).length;
 
     // Adapt based on patterns
@@ -881,9 +908,32 @@ export class InternalAgent extends EventEmitter {
       reasons.push(`Integrity issues (${integrityViolations}) - requires attention`);
     }
 
-    // Record adaptation if any changes made
+    // Record adaptation and log to Merkle chain if any changes made
     if (reasons.length > 0) {
       this.recordParameterChange(reasons.join('; '));
+
+      // Log to Merkle chain for audit/explainability
+      const energyAfter = await this.getEnergyLevel();
+      await this.remember('AGENT_ULTRASTABILITY', {
+        cycle: this.stats.cycleCount,
+        before: beforeState,
+        after: {
+          interval: us.adaptiveParameters.decisionInterval,
+          criticalThreshold: us.adaptiveParameters.criticalThreshold,
+          urgencyThreshold: us.adaptiveParameters.urgencyThreshold,
+          restThreshold: us.adaptiveParameters.restThreshold,
+        },
+        reason: reasons.join('; '),
+        violationCounts: {
+          energy: energyViolations,
+          stability: stabilityViolations,
+          integrity: integrityViolations,
+          total: recentViolations.length,
+        },
+        energyBefore,
+        energyAfter,
+        adaptationCount: us.adaptationCount,
+      });
     }
   }
 
@@ -909,12 +959,17 @@ export class InternalAgent extends EventEmitter {
 
   /**
    * Tighten stability parameters - more sensitive, faster response
+   * Respects caps to prevent hyper-reactivity (ultrastability ≠ nervousness)
    */
   private tightenStabilityParameters(rate: number): void {
     const ap = this.stats.ultrastability.adaptiveParameters;
 
     // Lower rest threshold (more sensitive to drift)
-    ap.restThreshold = Math.max(0.0001, ap.restThreshold * (1 - rate));
+    // BUT respect minRestThreshold to avoid noise sensitivity
+    ap.restThreshold = Math.max(
+      this.config.minRestThreshold,
+      ap.restThreshold * (1 - rate)
+    );
 
     // Speed up decision interval (but not below minimum)
     ap.decisionInterval = Math.max(
@@ -1042,7 +1097,7 @@ export class InternalAgent extends EventEmitter {
    * Uses StateManager for atomic event + state update.
    */
   private async remember(
-    type: 'AGENT_WAKE' | 'AGENT_SLEEP' | 'AGENT_RESPONSE' | 'AGENT_REST',
+    type: 'AGENT_WAKE' | 'AGENT_SLEEP' | 'AGENT_RESPONSE' | 'AGENT_REST' | 'AGENT_ULTRASTABILITY',
     data: Record<string, unknown>
   ): Promise<void> {
     const manager = getStateManager(this.baseDir);
@@ -1095,6 +1150,12 @@ export class InternalAgent extends EventEmitter {
           newState.agent.lastCycle = event.timestamp;
           newState.agent.responsesByPriority.rest++;
           break;
+
+        case 'AGENT_ULTRASTABILITY':
+          // Ultrastability adjustment - no state change needed
+          // Event is logged for audit/explainability only
+          newState.agent.lastCycle = event.timestamp;
+          break;
       }
 
       return newState;
@@ -1131,6 +1192,11 @@ export class InternalAgent extends EventEmitter {
         current: Math.max(state.energy.min, state.energy.current - amount),
       },
     }));
+  }
+
+  private async getEnergyLevel(): Promise<number> {
+    const state = await this.loadState();
+    return state.energy.current;
   }
 
   // ===========================================================================
