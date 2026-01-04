@@ -1,0 +1,163 @@
+{
+  "seq": 424,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-04T20:02:36.408Z",
+  "data": {
+    "stats": {
+      "cycleCount": 5,
+      "responsesTotal": 5,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 2,
+        "stability": 3,
+        "growth": 0,
+        "rest": 0
+      },
+      "actionsExecuted": 1,
+      "actionsBlocked": 0,
+      "restCycles": 4,
+      "totalEnergyConsumed": 0.010000000000000002,
+      "startedAt": "2026-01-04T19:58:35.318Z",
+      "lastCycle": "2026-01-04T20:02:35.342Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 0,
+        "lastAdaptation": null,
+        "violations": [
+          {
+            "timestamp": "2026-01-04T19:58:35.406Z",
+            "cycle": 1,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.488,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:58:35.406Z",
+            "cycle": 1,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.488,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:59:35.404Z",
+            "cycle": 2,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.476,
+              "lyapunovV": 0.32000000000000006,
+              "surprise": 0.20800000000000005
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T19:59:35.404Z",
+            "cycle": 2,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.476,
+              "lyapunovV": 0.32000000000000006,
+              "surprise": 0.20800000000000005
+            },
+            "recovered": false
+          },
+          {
+            "timestamp": "2026-01-04T20:00:35.416Z",
+            "cycle": 3,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.32000000000000006,
+              "surprise": 0.20800000000000005
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:00:35.416Z",
+            "cycle": 3,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.32000000000000006,
+              "surprise": 0.20800000000000005
+            },
+            "recovered": false
+          },
+          {
+            "timestamp": "2026-01-04T20:01:35.398Z",
+            "cycle": 4,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.46699999999999997,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:01:35.398Z",
+            "cycle": 4,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.46699999999999997,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:02:35.405Z",
+            "cycle": 5,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:02:35.405Z",
+            "cycle": 5,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          }
+        ],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-04T19:58:35.315Z",
+            "cycle": 0,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.001,
+            "decisionInterval": 60000,
+            "reason": "Initial parameters"
+          }
+        ],
+        "violationRate": 2,
+        "stabilityScore": 0,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.05,
+          "urgencyThreshold": 0.15,
+          "restThreshold": 0.001,
+          "decisionInterval": 60000
+        }
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "4fca9e2f4aea1d66ab56a3e9ca5a2c35a758dc03850c53958c2cdbdd28881e20",
+  "hash": "be81065d6ea3ec50b0d6fd7bb61a120a09e3422237b9c09c2d6da8814f56c523"
+}
