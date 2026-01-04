@@ -24,7 +24,15 @@
       "event_hash": "3383f936ff3ff870bc0f7e2e685b9cb9f38d330cd760a9a880c5d412ca0d68b6",
       "state_hash": "16f2bd29be0f74e11f31fc37e62060ea61a7e877dfb5eae9c1b853216852ae28",
       "description": "Auto-snapshot: Session 6 end"
+    },
+    {
+      "id": "snap-2026-01-04T13-28-56",
+      "timestamp": "2026-01-04T13:28:56.326Z",
+      "event_seq": 30,
+      "event_hash": "40187ba4a81bdcf897c7f19db378d0d1365215de50e5354201d36e04c680d711",
+      "state_hash": "6ece29ec4499d8b2ecc11d2c25585010b90ac1137880648b0a62b17c6aa3f09a",
+      "description": "Auto-snapshot: Session 7 end"
     }
   ],
-  "latest": "snap-2026-01-04T13-19-20"
+  "latest": "snap-2026-01-04T13-28-56"
 }
