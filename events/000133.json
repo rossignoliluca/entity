@@ -1,0 +1,14 @@
+{
+  "seq": 133,
+  "type": "LEARNING",
+  "timestamp": "2026-01-04T14:39:02.984Z",
+  "data": {
+    "reason": "Pattern analysis",
+    "patterns_hash": "6ef33e5a499e1b7111c0c9b92c89b46e093ee41aec6a060872b85d9b328fd6c7",
+    "sessions_analyzed": 27,
+    "operations_tracked": 5,
+    "insights_count": 8
+  },
+  "prev_hash": "10d6a332bd2cbd0c4fc691eb465734e9369b24219efb3243cec69cc3a916478b",
+  "hash": "ae177d0bddcc97572da23ea90fa89360303d3a7bf421710e1d7c306e8de9c726"
+}

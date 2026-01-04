@@ -31,6 +31,13 @@ import {
   printCatalog,
   isAllowedOperation,
 } from './operations.js';
+import {
+  analyzePatterns,
+  printLearningReport,
+  getAdaptiveSuggestion,
+  type LearningState,
+} from './learning.js';
+import { hashObject } from './hash.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -333,6 +340,60 @@ export async function runOperation(
 }
 
 /**
+ * Run pattern analysis (AES-SPEC-001 Phase 4)
+ */
+export async function runLearningAnalysis(): Promise<LearningState> {
+  const state = await loadState();
+  const events = await loadEvents(BASE_DIR);
+
+  // Analyze patterns
+  const learning = analyzePatterns(events);
+
+  // Compute patterns hash for tracking changes
+  const patternsHash = hashObject(learning.patterns);
+
+  // Log learning event
+  await appendEvent(BASE_DIR, 'LEARNING', {
+    reason: 'Pattern analysis',
+    patterns_hash: patternsHash,
+    sessions_analyzed: learning.patterns.sessions.totalSessions,
+    operations_tracked: learning.patterns.operations.length,
+    insights_count: learning.insights.length,
+  });
+
+  // Update state
+  state.learning.lastAnalysis = learning.lastAnalysis;
+  state.learning.patternsHash = patternsHash;
+
+  const updatedEvents = await loadEvents(BASE_DIR);
+  state.memory.event_count = updatedEvents.length;
+  state.memory.last_event_hash = updatedEvents[updatedEvents.length - 1].hash;
+
+  await saveState(state);
+
+  return learning;
+}
+
+/**
+ * Show learning report (AES-SPEC-001 Phase 4)
+ */
+export async function showLearningReport(): Promise<void> {
+  const events = await loadEvents(BASE_DIR);
+  const learning = analyzePatterns(events);
+  printLearningReport(learning);
+}
+
+/**
+ * Get adaptive suggestion (AES-SPEC-001 Phase 4)
+ */
+export async function getLearningsuggestion(): Promise<string | null> {
+  const state = await loadState();
+  const events = await loadEvents(BASE_DIR);
+  const learning = analyzePatterns(events);
+  return getAdaptiveSuggestion(state, learning);
+}
+
+/**
  * Execute operation with guard
  */
 export async function execute(
@@ -630,6 +691,32 @@ Operation commands:
         }
         break;
 
+      case 'learn':
+        const learnAction = process.argv[3];
+        if (learnAction === 'analyze') {
+          console.log('Running pattern analysis...');
+          const learning = await runLearningAnalysis();
+          printLearningReport(learning);
+          console.log('\nAnalysis logged to event chain');
+        } else if (learnAction === 'report') {
+          await showLearningReport();
+        } else if (learnAction === 'suggest') {
+          const suggestion = await getLearningsuggestion();
+          if (suggestion) {
+            console.log(`\n💡 Suggestion: ${suggestion}\n`);
+          } else {
+            console.log('\nNo suggestions at this time\n');
+          }
+        } else {
+          console.log(`
+Learning commands:
+  learn analyze   Run pattern analysis and log results
+  learn report    Show current learning report (no logging)
+  learn suggest   Get adaptive suggestion based on patterns
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -644,6 +731,7 @@ Commands:
   human     Manage human context
   memory    Manage important memories
   op        Execute operations from catalog
+  learn     Pattern analysis and learning (Phase 4)
   replay    Replay events and show state
   events    List recent events
   recover   Attempt recovery from violations

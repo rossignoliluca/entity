@@ -25,6 +25,7 @@ const createState = (coupled: boolean = true, energy: number = 1.0): State => ({
   integrity: { invariant_violations: 0, last_verification: '2025-01-04T00:00:00.000Z', status: 'nominal' },
   human: { name: 'Test', context: '' },
   important: [],
+  learning: { enabled: true, lastAnalysis: null, patternsHash: null },
 });
 
 describe('validate', () => {

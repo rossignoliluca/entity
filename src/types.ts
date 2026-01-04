@@ -89,6 +89,12 @@ export interface State {
   };
 
   important: string[];
+
+  learning: {
+    enabled: boolean;
+    lastAnalysis: Timestamp | null;
+    patternsHash: Hash | null;
+  };
 }
 
 // =============================================================================
@@ -105,7 +111,8 @@ export type EventType =
   | 'OPERATION'
   | 'BLOCK'
   | 'SNAPSHOT'
-  | 'VERIFICATION';
+  | 'VERIFICATION'
+  | 'LEARNING';
 
 export interface Event {
   seq: number;

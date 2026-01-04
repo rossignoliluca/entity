@@ -96,6 +96,7 @@ describe('computeV', () => {
     integrity: { invariant_violations: 0, last_verification: '2025-01-04T00:00:00.000Z', status: 'nominal' },
     human: { name: 'Test', context: '' },
     important: [],
+    learning: { enabled: true, lastAnalysis: null, patternsHash: null },
   });
 
   it('should return 0 at attractor (all good)', () => {

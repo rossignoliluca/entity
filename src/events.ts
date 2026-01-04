@@ -165,6 +165,11 @@ export async function replayEvents(baseDir: string): Promise<State | null> {
       context: '',
     },
     important: [],
+    learning: {
+      enabled: true,
+      lastAnalysis: null,
+      patternsHash: null,
+    },
   };
 
   // Apply subsequent events
@@ -229,6 +234,13 @@ function applyEvent(state: State, event: Event): State {
 
     case 'SNAPSHOT':
       newState.memory.last_snapshot_at = event.timestamp;
+      break;
+
+    case 'LEARNING':
+      newState.learning.lastAnalysis = event.timestamp;
+      if (event.data.patterns_hash) {
+        newState.learning.patternsHash = event.data.patterns_hash as Hash;
+      }
       break;
 
     default:
