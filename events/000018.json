@@ -1,0 +1,11 @@
+{
+  "seq": 18,
+  "type": "SESSION_START",
+  "timestamp": "2026-01-04T12:52:34.153Z",
+  "data": {
+    "session_id": "1ccb07f5-9449-4975-91b1-3799293c4016",
+    "partner": "test-restore"
+  },
+  "prev_hash": "adfdb888461856d0eaaed7446a79d8f4ad798e92fa387c601c69725776fd6671",
+  "hash": "099e4f1d366aef3b48e930c579ee05aa4daaffcf4bbee2ca32cd397743630501"
+}

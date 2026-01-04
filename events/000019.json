@@ -1,0 +1,12 @@
+{
+  "seq": 19,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T12:52:49.643Z",
+  "data": {
+    "reason": "Restored from snapshot",
+    "snapshot_id": "snap-2026-01-04T12-50-14",
+    "snapshot_event_seq": 16
+  },
+  "prev_hash": "099e4f1d366aef3b48e930c579ee05aa4daaffcf4bbee2ca32cd397743630501",
+  "hash": "967740c02183479c3b62b22a8d5f454d6dada47a24caa99cf5bdfefdcbaf0519"
+}
