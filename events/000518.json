@@ -1,0 +1,12 @@
+{
+  "seq": 518,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T22:41:57.435Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0",
+    "total_memories": 4
+  },
+  "prev_hash": "d9c2bac6cba285248696886827c372696793586422f58f7d7e8a597427ace554",
+  "hash": "3037ce318e591fec21c47f5c60e9ee05c6b764e43e2724e3842913007685765d"
+}

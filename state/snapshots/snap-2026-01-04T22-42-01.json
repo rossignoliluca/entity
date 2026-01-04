@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T19:05:02.335Z",
+  "updated": "2026-01-04T22:42:01.347Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.5,
+    "current": 0.449,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,17 +24,17 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 368,
-    "last_event_hash": "7fd412f91f7f5726de84a5c2aa5c25e089124693732a6ee83a135235975f61e5",
-    "last_snapshot_at": "2026-01-04T18:59:03.674Z"
+    "event_count": 519,
+    "last_event_hash": "7fe1d44c814580d174efc6fd3e740bd32b88e3ff2339007380e923c1ce46ca2a",
+    "last_snapshot_at": "2026-01-04T22:19:09.307Z"
   },
   "session": {
-    "total_count": 43,
+    "total_count": 49,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:42:09.627Z",
+    "last_verification": "2026-01-04T20:55:39.626Z",
     "status": "nominal"
   },
   "human": {
@@ -42,8 +42,10 @@
     "context": ""
   },
   "important": [
-    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations",
-    "[2026-01-04] Phase 8b Ultrastability (Ashby) completed - agent now learns optimal operating parameters through violation history. Adaptive thresholds for energy/stability. Release v1.4.0. 323 tests."
+    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
+    "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8...",
+    "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state",
+    "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0"
   ],
   "learning": {
     "enabled": true,
@@ -87,24 +89,43 @@
         "generatedBy": "meta.define",
         "generatedAt": "2026-01-04T15:31:26.690Z",
         "generation": 1
+      },
+      {
+        "id": "test.quarantine",
+        "name": "Test Quarantine",
+        "description": "Generated operation: Test Quarantine",
+        "category": "generated",
+        "complexity": 5,
+        "energyCost": 0.01,
+        "requiresCoupling": true,
+        "template": "echo",
+        "templateParams": {
+          "message": "Testing quarantine lifecycle"
+        },
+        "generatedBy": "meta.define",
+        "generatedAt": "2026-01-04T22:16:42.662Z",
+        "generation": 1,
+        "status": "QUARANTINED",
+        "statusChangedAt": "2026-01-04T22:16:42.662Z",
+        "quarantineStartCycle": 0
       }
     ],
-    "generationCount": 2,
-    "lastGeneration": "2026-01-04T15:31:26.690Z",
-    "selfProductionHash": "38dfc67321d91481aee8cacb73f9c74916111651ae6452080474aee12ce4494f"
+    "generationCount": 3,
+    "lastGeneration": "2026-01-04T22:16:42.662Z",
+    "selfProductionHash": "0c3798fb43371009b24acff363d488b8cd777d27e8f62b4be290fe7dff7a800a"
   },
   "agent": {
     "enabled": true,
-    "awake": true,
-    "lastCycle": "2026-01-04T19:05:02.260Z",
-    "cycleCount": 6,
+    "awake": false,
+    "lastCycle": "2026-01-04T22:14:29.750Z",
+    "cycleCount": 1,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 44,
-      "growth": 64,
+      "stability": 76,
+      "growth": 102,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.018
+    "totalEnergyConsumed": 0.003
   }
 }

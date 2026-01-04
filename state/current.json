@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T22:21:30.108Z",
+  "updated": "2026-01-04T22:42:01.447Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.499,
+    "current": 0.449,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 516,
-    "last_event_hash": "8a49c455d71f7c9ff93fc35ec883ea47466130726e48a744ff1cd20cd8149fee",
-    "last_snapshot_at": "2026-01-04T22:19:09.307Z"
+    "event_count": 520,
+    "last_event_hash": "db3ff8b5846ee63ad7965234b83865931b1dfce4ba39047ebe5b90876f93872e",
+    "last_snapshot_at": "2026-01-04T22:42:01.372Z"
   },
   "session": {
-    "total_count": 48,
+    "total_count": 49,
     "current_id": null
   },
   "integrity": {
@@ -44,7 +44,8 @@
   "important": [
     "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
     "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8...",
-    "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state"
+    "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state",
+    "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0"
   ],
   "learning": {
     "enabled": true,
