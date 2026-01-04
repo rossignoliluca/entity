@@ -133,8 +133,13 @@ Adaptive parameter adjustment based on history of violations.
 - [x] Decision interval bounds (min/max configurable)
 - [x] `printStatus()` shows ultrastability info
 - [x] 26 new tests for ultrastability
+- [x] Stabilization: caps to prevent hyper-reactivity
+  - minRestThreshold: can't be too sensitive to noise
+  - maxAdaptationsPerWindow: limit adaptation frequency (prevent thrashing)
+- [x] AGENT_ULTRASTABILITY event for audit/explainability
+  - Logs to Merkle chain with before/after, reason, violation counts, energy
 
-**Status:** Ultrastability implemented. 323 tests, v1.4.0
+**Status:** Ultrastability implemented + stabilized. 323 tests, v1.4.0
 
 ## Phase 8c: Active Inference (Friston)
 
