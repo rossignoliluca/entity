@@ -192,17 +192,23 @@ Learn from past sense-making cycles.
 
 **Status:** Cycle memory implemented. 386 tests
 
-## Phase 8e: Self-Producing Agent
+## Phase 8e: Self-Producing Agent - COMPLETED
 
-Agent uses meta-operations to create new responses.
+Agent uses meta-operations to create new responses autonomously.
 
-- [ ] Agent access to P set (meta-operations)
-- [ ] Pattern detection: "I keep doing X, could compose Y"
-- [ ] Auto-generation of specialized operations
-- [ ] Operation lineage tracking in agent stats
-- [ ] Constitutional check on generated operations
+- [x] Agent access to P set (meta-operations: defineOperation, specializeOperation)
+- [x] Pattern detection: trackActionUsage() monitors frequently used actions
+- [x] Auto-generation of specialized operations: checkSelfProduction() triggered in growth mode
+- [x] Operation lineage tracking in agent stats (SelfProductionState)
+- [x] Constitutional check on generated operations:
+  - Only specialize existing catalog operations
+  - Block already-specialized ops (prevent recursion)
+  - Limit total productions (max 10)
+- [x] Self-production config: threshold, cooldown
+- [x] printStatus() shows self-production stats
+- [x] 13 new tests
 
-**Goal:** Agent that produces its own operations (full autopoiesis).
+**Status:** Self-producing agent implemented. 399 tests
 
 ## Phase 8f: Structural Coupling Protocol
 

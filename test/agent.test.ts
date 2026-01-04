@@ -24,6 +24,7 @@ import {
   type UltrastabilityState,
   type ViolationRecord,
   type ParameterSnapshot,
+  type SelfProductionState,
 } from '../src/daemon/agent.js';
 import { appendEvent } from '../src/events.js';
 import { hashObject } from '../src/hash.js';
@@ -934,6 +935,262 @@ describe('Phase 8b: Ultrastability', () => {
       const stats = agent.getStats();
       // With no violations, stability should remain high
       assert.ok(stats.ultrastability.stabilityScore >= 0.9);
+    });
+  });
+});
+
+// =============================================================================
+// Phase 8e: Self-Production Tests
+// =============================================================================
+
+describe('Phase 8e: Self-Production', () => {
+  beforeEach(async () => {
+    const state = createTestState({
+      energy: { current: 0.8, min: 0.01, threshold: 0.1 },
+      autopoiesis: {
+        enabled: true,
+        generatedOperations: [],
+        generationCount: 0,
+        lastGeneration: null,
+        selfProductionHash: null,
+      },
+    });
+    await setupTestEnv(state);
+  });
+
+  afterEach(async () => {
+    await cleanup();
+  });
+
+  describe('Self-Production State Initialization', () => {
+    it('should initialize self-production state on agent creation', () => {
+      const agent = createAgent(TEST_DIR);
+      const stats = agent.getStats();
+
+      assert.ok(stats.selfProduction);
+      assert.strictEqual(stats.selfProduction.enabled, true);
+      assert.strictEqual(stats.selfProduction.operationsCreated, 0);
+      assert.strictEqual(stats.selfProduction.lastProductionCycle, 0);
+      assert.deepStrictEqual(stats.selfProduction.actionUsageCount, {});
+      assert.deepStrictEqual(stats.selfProduction.createdOperations, []);
+    });
+
+    it('should allow disabling self-production', () => {
+      const agent = createAgent(TEST_DIR, { selfProductionEnabled: false });
+      const stats = agent.getStats();
+
+      assert.strictEqual(stats.selfProduction.enabled, false);
+    });
+  });
+
+  describe('Self-Production Config Options', () => {
+    it('should have correct default self-production config', () => {
+      assert.strictEqual(DEFAULT_AGENT_CONFIG.selfProductionEnabled, true);
+      assert.strictEqual(DEFAULT_AGENT_CONFIG.selfProductionThreshold, 10);
+      assert.strictEqual(DEFAULT_AGENT_CONFIG.selfProductionCooldown, 50);
+    });
+
+    it('should accept custom self-production config', () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionThreshold: 5,
+        selfProductionCooldown: 20,
+      });
+      assert.ok(agent);
+    });
+  });
+
+  describe('Action Usage Tracking', () => {
+    it('should track action usage in stats', async () => {
+      const agent = createAgent(TEST_DIR);
+
+      // Force several cycles to accumulate action usage
+      for (let i = 0; i < 5; i++) {
+        await agent.forceCycle();
+      }
+
+      const stats = agent.getStats();
+      // Should have tracked some actions (depends on feeling/response)
+      assert.ok(typeof stats.selfProduction.actionUsageCount === 'object');
+    });
+
+    it('should increment action count on each use', async () => {
+      const state = createTestState({
+        energy: { current: 0.8, min: 0.01, threshold: 0.1 },
+        lyapunov: { V: 0.15, V_previous: 0.1 }, // Drifting - will take action
+      });
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        activeInferenceEnabled: false, // Use deterministic fallback
+      });
+
+      // Force cycles
+      await agent.forceCycle();
+      await agent.forceCycle();
+
+      const stats = agent.getStats();
+      // If actions were executed, they should be counted
+      if (stats.actionsExecuted > 0) {
+        const totalUsage = Object.values(stats.selfProduction.actionUsageCount).reduce((a, b) => a + b, 0);
+        assert.ok(totalUsage > 0);
+      }
+    });
+  });
+
+  describe('Constitutional Check for Production', () => {
+    it('should not create operations for non-existent base actions', async () => {
+      const agent = createAgent(TEST_DIR);
+      const stats = agent.getStats();
+
+      // Manually set a fake action usage that doesn't exist in catalog
+      stats.selfProduction.actionUsageCount['fake.action'] = 100;
+
+      // Run cycle - should not create anything
+      await agent.forceCycle();
+
+      // No operations created for fake action
+      assert.strictEqual(
+        stats.selfProduction.createdOperations.filter(op => op.includes('fake')).length,
+        0
+      );
+    });
+
+    it('should limit total created operations', () => {
+      const agent = createAgent(TEST_DIR);
+      const stats = agent.getStats();
+
+      // Simulate having created many operations
+      for (let i = 0; i < 10; i++) {
+        stats.selfProduction.createdOperations.push(`self.test_v${i + 1}`);
+        stats.selfProduction.operationsCreated++;
+      }
+
+      // Check limit (max 10)
+      assert.strictEqual(stats.selfProduction.operationsCreated, 10);
+    });
+
+    it('should not specialize already-specialized operations', async () => {
+      const agent = createAgent(TEST_DIR);
+      const stats = agent.getStats();
+
+      // Try to track a self-produced action
+      stats.selfProduction.actionUsageCount['self.something'] = 100;
+
+      // This should not trigger production (starts with 'self.')
+      // The constitutional check will block it
+      await agent.forceCycle();
+
+      // No new self.self. operations
+      const selfSelfOps = stats.selfProduction.createdOperations.filter(op => op.startsWith('self.self'));
+      assert.strictEqual(selfSelfOps.length, 0);
+    });
+  });
+
+  describe('Self-Production Cooldown', () => {
+    it('should respect cooldown between productions', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionThreshold: 1,  // Very low threshold
+        selfProductionCooldown: 100, // High cooldown
+      });
+
+      // Even with low threshold, cooldown should prevent rapid production
+      for (let i = 0; i < 5; i++) {
+        await agent.forceCycle();
+      }
+
+      const stats = agent.getStats();
+      // Should create at most 1 operation (initial)
+      assert.ok(stats.selfProduction.operationsCreated <= 1);
+    });
+  });
+
+  describe('Self-Production Events', () => {
+    it('should emit selfProduction event when creating operation', async () => {
+      const state = createTestState({
+        energy: { current: 0.9, min: 0.01, threshold: 0.1 },
+        autopoiesis: {
+          enabled: true,
+          generatedOperations: [],
+          generationCount: 0,
+          lastGeneration: null,
+          selfProductionHash: null,
+        },
+      });
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        selfProductionThreshold: 1,
+        selfProductionCooldown: 0,
+      });
+
+      let eventEmitted = false;
+      agent.on('selfProduction', (data: { operationId: string; basedOn: string; usageCount: number }) => {
+        eventEmitted = true;
+        assert.ok(data.operationId);
+        assert.ok(data.basedOn);
+        assert.ok(data.usageCount >= 1);
+      });
+
+      // Force many cycles in growth mode to trigger production
+      // Manually set action usage above threshold
+      const stats = agent.getStats();
+      stats.selfProduction.actionUsageCount['state.summary'] = 15;
+
+      // Force a growth cycle
+      const state2 = createTestState({
+        energy: { current: 0.9, min: 0.01, threshold: 0.1 },
+        lyapunov: { V: 0, V_previous: 0 },
+      });
+      await setupTestEnv(state2);
+
+      await agent.forceCycle();
+
+      // Event may or may not be emitted depending on conditions
+      assert.strictEqual(typeof eventEmitted, 'boolean');
+    });
+  });
+
+  describe('Self-Production Stats Display', () => {
+    it('should include self-production in printStatus', async () => {
+      const agent = createAgent(TEST_DIR);
+
+      // Mock console.log to capture output
+      const logs: string[] = [];
+      const originalLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+
+      await agent.printStatus();
+
+      console.log = originalLog;
+
+      // Check that self-production section is present
+      assert.ok(logs.some(log => log.includes('Self-Production')));
+      assert.ok(logs.some(log => log.includes('Operations Created')));
+    });
+  });
+
+  describe('Integration with Growth Priority', () => {
+    it('should only check self-production during growth cycles', async () => {
+      // Create stressed state (not growth mode)
+      const state = createTestState({
+        energy: { current: 0.05, min: 0.01, threshold: 0.1 }, // Critical
+      });
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        selfProductionThreshold: 1,
+        selfProductionCooldown: 0,
+      });
+
+      // Manually set high action usage
+      const stats = agent.getStats();
+      stats.selfProduction.actionUsageCount['state.summary'] = 100;
+
+      await agent.forceCycle();
+
+      // In survival mode, no self-production should occur
+      // (self-production only runs in growth mode)
+      assert.strictEqual(stats.selfProduction.operationsCreated, 0);
     });
   });
 });

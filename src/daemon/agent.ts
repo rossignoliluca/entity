@@ -38,6 +38,15 @@ import {
   type CycleRecord,
   DEFAULT_CYCLE_MEMORY_CONFIG,
 } from './cycle-memory.js';
+import {
+  defineOperation,
+  composeOperations,
+  specializeOperation,
+  listGeneratedOperations,
+  getAutopoiesisStats,
+  getCombinedCatalog,
+  type GeneratedOperationDef,
+} from '../meta-operations.js';
 
 // =============================================================================
 // Types
@@ -73,6 +82,11 @@ export interface AgentConfig {
   // Phase 8d: Cycle Memory
   cycleMemoryEnabled: boolean;
   cycleMemoryConfig: Partial<CycleMemoryConfig>;
+
+  // Phase 8e: Self-Production (Autopoiesis)
+  selfProductionEnabled: boolean;
+  selfProductionThreshold: number;    // min action count to trigger pattern
+  selfProductionCooldown: number;     // cycles between productions
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -102,6 +116,11 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   // Phase 8d: Cycle Memory defaults
   cycleMemoryEnabled: true,
   cycleMemoryConfig: {},
+
+  // Phase 8e: Self-Production defaults
+  selfProductionEnabled: true,
+  selfProductionThreshold: 10,       // 10 uses of same action triggers pattern
+  selfProductionCooldown: 50,        // wait 50 cycles between productions
 };
 
 /**
@@ -231,6 +250,19 @@ export interface AgentStats {
   lastCycle: string | null;
   // Phase 8b: Ultrastability stats
   ultrastability: UltrastabilityState;
+  // Phase 8e: Self-Production stats
+  selfProduction: SelfProductionState;
+}
+
+/**
+ * Phase 8e: Self-Production state
+ */
+export interface SelfProductionState {
+  enabled: boolean;
+  operationsCreated: number;
+  lastProductionCycle: number;
+  actionUsageCount: Record<string, number>;  // track action frequency
+  createdOperations: string[];               // IDs of ops we created
 }
 
 // =============================================================================
@@ -315,6 +347,14 @@ export class InternalAgent extends EventEmitter {
           restThreshold: this.config.restThreshold,
           decisionInterval: this.config.decisionInterval,
         },
+      },
+      // Phase 8e: Initialize Self-Production
+      selfProduction: {
+        enabled: this.config.selfProductionEnabled,
+        operationsCreated: 0,
+        lastProductionCycle: 0,
+        actionUsageCount: {},
+        createdOperations: [],
       },
     };
 
@@ -496,6 +536,8 @@ export class InternalAgent extends EventEmitter {
       if (response.action) {
         if (response.executed) {
           this.stats.actionsExecuted++;
+          // Phase 8e: Track action usage for self-production
+          this.trackActionUsage(response.action);
         } else {
           this.stats.actionsBlocked++;
         }
@@ -503,6 +545,11 @@ export class InternalAgent extends EventEmitter {
         this.stats.restCycles++;
       }
       this.stats.totalEnergyConsumed += response.energyCost;
+
+      // 6. SELF-PRODUCTION - check for patterns in growth mode
+      if (this.config.selfProductionEnabled && response.priority === 'growth') {
+        await this.checkSelfProduction(feeling);
+      }
 
       // 5. ULTRASTABILITY - record violations and adapt
       if (feeling.integrityFeeling !== 'whole') {
@@ -925,6 +972,118 @@ export class InternalAgent extends EventEmitter {
 
     // All checks passed
     return { blocked: false };
+  }
+
+  // ===========================================================================
+  // SELF-PRODUCTION - Phase 8e: Agent creates its own operations
+  // ===========================================================================
+
+  /**
+   * Track action usage for pattern detection
+   */
+  private trackActionUsage(action: string): void {
+    const sp = this.stats.selfProduction;
+    sp.actionUsageCount[action] = (sp.actionUsageCount[action] || 0) + 1;
+  }
+
+  /**
+   * Check if we should create a new operation based on patterns
+   */
+  private async checkSelfProduction(feeling: Feeling): Promise<void> {
+    const sp = this.stats.selfProduction;
+    if (!sp.enabled) return;
+
+    // Cooldown check
+    const cyclesSinceLastProduction = this.stats.cycleCount - sp.lastProductionCycle;
+    if (cyclesSinceLastProduction < this.config.selfProductionCooldown) return;
+
+    // Find most used action that exceeds threshold
+    const candidates = Object.entries(sp.actionUsageCount)
+      .filter(([action, count]) => count >= this.config.selfProductionThreshold)
+      .filter(([action]) => !sp.createdOperations.some(op => op.includes(action)))
+      .sort((a, b) => b[1] - a[1]);
+
+    if (candidates.length === 0) return;
+
+    const [topAction, usageCount] = candidates[0];
+
+    // Determine what kind of operation to create based on the pattern
+    const state = await this.loadState();
+    const newOpId = await this.createSpecializedOperation(state, topAction, usageCount);
+
+    if (newOpId) {
+      sp.operationsCreated++;
+      sp.lastProductionCycle = this.stats.cycleCount;
+      sp.createdOperations.push(newOpId);
+
+      // Log the self-production event
+      await this.remember('AGENT_RESPONSE', {
+        priority: 'growth',
+        action: 'meta.define',
+        reason: `Self-production: created ${newOpId} (${topAction} used ${usageCount}x)`,
+        constitutionalCheck: 'passed',
+        energyBefore: feeling.energy,
+        energyAfter: feeling.energy - 0.005,
+        executed: true,
+        result: { success: true, operationId: newOpId },
+      });
+
+      this.emit('selfProduction', { operationId: newOpId, basedOn: topAction, usageCount });
+    }
+  }
+
+  /**
+   * Create a specialized operation based on observed pattern
+   */
+  private async createSpecializedOperation(
+    state: State,
+    baseAction: string,
+    usageCount: number
+  ): Promise<string | null> {
+    // Constitutional check: would this operation reduce possibility space?
+    if (!this.constitutionalCheckForProduction(baseAction)) {
+      return null;
+    }
+
+    const newId = `self.${baseAction.replace('.', '_')}_v${this.stats.selfProduction.operationsCreated + 1}`;
+
+    try {
+      // Use specializeOperation to create an optimized version
+      const result = specializeOperation(state, {
+        id: newId,
+        name: `Self-produced: ${baseAction}`,
+        description: `Optimized ${baseAction} created by agent after ${usageCount} uses`,
+        sourceOperation: baseAction,
+        presetParams: {},
+      });
+
+      if (result.success) {
+        return newId;
+      }
+    } catch (error) {
+      // If specialization fails, that's OK - we tried
+      this.emit('error', { context: 'selfProduction', error });
+    }
+
+    return null;
+  }
+
+  /**
+   * Constitutional check for self-production
+   * Ensures created operations don't reduce possibility space
+   */
+  private constitutionalCheckForProduction(baseAction: string): boolean {
+    // Only allow specializing existing catalog operations
+    const existingOp = getOperation(baseAction);
+    if (!existingOp) return false;
+
+    // Don't create too many operations (prevent runaway self-production)
+    if (this.stats.selfProduction.operationsCreated >= 10) return false;
+
+    // Don't specialize already-specialized operations (prevent infinite recursion)
+    if (baseAction.startsWith('self.')) return false;
+
+    return true;
   }
 
   // ===========================================================================
@@ -1469,6 +1628,24 @@ export class InternalAgent extends EventEmitter {
       }
       console.log('');
     }
+
+    // Phase 8e: Self-Production info
+    const sp = this.stats.selfProduction;
+    console.log('--- Self-Production (Phase 8e) ---');
+    console.log(`Enabled: ${sp.enabled}`);
+    console.log(`Operations Created: ${sp.operationsCreated}`);
+    console.log(`Created IDs: ${sp.createdOperations.length > 0 ? sp.createdOperations.join(', ') : 'none'}`);
+    if (Object.keys(sp.actionUsageCount).length > 0) {
+      console.log('');
+      console.log('--- Action Usage (Pattern Detection) ---');
+      const sorted = Object.entries(sp.actionUsageCount).sort((a, b) => b[1] - a[1]);
+      for (const [action, count] of sorted.slice(0, 5)) {
+        const threshold = this.config.selfProductionThreshold;
+        const marker = count >= threshold ? ' [PATTERN]' : '';
+        console.log(`  ${action}: ${count} uses${marker}`);
+      }
+    }
+    console.log('');
   }
 
   /**

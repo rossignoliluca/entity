@@ -164,7 +164,7 @@ entity/
 
 ```bash
 npm run test
-# 386 tests passing
+# 399 tests passing
 ```
 
 ## Statistics
@@ -173,8 +173,8 @@ npm run test
 |--------|-------|
 | Events | 493+ |
 | Sessions | 44 |
-| Tests | 386 |
-| Version | v1.6.1 |
+| Tests | 399 |
+| Version | v1.7.0 |
 
 ## License
 
