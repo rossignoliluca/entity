@@ -58,6 +58,19 @@ import {
   type QuarantineConfig,
   type OperationStatus,
 } from '../meta-operations.js';
+import {
+  checkCouplingTriggers,
+  createCouplingRequest,
+  enqueueRequest,
+  expireRequests,
+  DEFAULT_COUPLING_CONFIG,
+  DEFAULT_COUPLING_QUEUE_STATE,
+  type CouplingConfig,
+  type CouplingQueueState,
+  type CouplingRequest,
+  type CouplingRequestContext,
+  type TriggerContext,
+} from '../coupling-protocol.js';
 
 // =============================================================================
 // Types
@@ -101,6 +114,10 @@ export interface AgentConfig {
 
   // Sigillo 1: Quarantine config
   quarantineConfig: QuarantineConfig;
+
+  // Phase 8f: Structural Coupling Protocol
+  couplingEnabled: boolean;
+  couplingConfig: CouplingConfig;
 }
 
 /**
@@ -146,6 +163,10 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
 
   // Sigillo 1: Quarantine config
   quarantineConfig: DEFAULT_QUARANTINE_CONFIG,
+
+  // Phase 8f: Structural Coupling Protocol
+  couplingEnabled: true,
+  couplingConfig: DEFAULT_COUPLING_CONFIG,
 };
 
 /**
@@ -277,6 +298,19 @@ export interface AgentStats {
   ultrastability: UltrastabilityState;
   // Phase 8e: Self-Production stats
   selfProduction: SelfProductionState;
+  // Phase 8f: Coupling Protocol stats
+  coupling: CouplingStats;
+}
+
+/**
+ * Phase 8f: Coupling Protocol stats for trigger detection
+ */
+export interface CouplingStats {
+  blocksInWindow: number[];          // Last N cycle block counts
+  deprecationsInWindow: number;      // Deprecations since last reset
+  ambiguityHighCycles: number;       // Consecutive high-ambiguity cycles
+  lastAmbiguity: number;             // Last EFE ambiguity value
+  requestsCreated: number;           // Total requests created by agent
 }
 
 /**
@@ -385,6 +419,14 @@ export class InternalAgent extends EventEmitter {
         lastProductionCycle: 0,
         actionUsageCount: {},
         createdOperations: [],
+      },
+      // Phase 8f: Initialize Coupling Protocol
+      coupling: {
+        blocksInWindow: [],
+        deprecationsInWindow: 0,
+        ambiguityHighCycles: 0,
+        lastAmbiguity: 0,
+        requestsCreated: 0,
       },
     };
 
@@ -585,6 +627,11 @@ export class InternalAgent extends EventEmitter {
       // 7. QUARANTINE LIFECYCLE - manage operation transitions (Sigillo 1)
       if (this.config.selfProductionEnabled) {
         await this.manageQuarantineLifecycles();
+      }
+
+      // 8. COUPLING PROTOCOL - check if coupling request should be triggered
+      if (this.config.couplingEnabled) {
+        await this.checkCouplingTriggers(feeling, response);
       }
 
       // 5. ULTRASTABILITY - record violations and adapt
@@ -1226,6 +1273,8 @@ export class InternalAgent extends EventEmitter {
         if (deprecateCheck.shouldDeprecate) {
           transitionOperationStatus(op, 'DEPRECATED', deprecateCheck.reason);
           stateModified = true;
+          // Track deprecation for coupling protocol trigger
+          this.recordDeprecation();
           this.emit('quarantineTransition', { operationId: op.id, from: 'TRIAL', to: 'DEPRECATED', reason: deprecateCheck.reason });
           continue;
         }
@@ -1261,6 +1310,181 @@ export class InternalAgent extends EventEmitter {
     // Will be called from operations when executing trial operations
     // The actual recording is done in meta-operations.ts
     // This method is a placeholder for future integration
+  }
+
+  // ===========================================================================
+  // COUPLING PROTOCOL - Phase 8f: Non-coercive signaling
+  // ===========================================================================
+
+  /**
+   * Check if coupling request should be triggered and handle it
+   * Called each sense-making cycle after quarantine management
+   */
+  private async checkCouplingTriggers(feeling: Feeling, response: Response): Promise<void> {
+    const couplingStats = this.stats.coupling;
+
+    // Update block tracking
+    this.updateBlockTracking(response);
+
+    // Update EFE ambiguity tracking
+    this.updateAmbiguityTracking();
+
+    // Get current state for context
+    const state = await this.loadState();
+
+    // Build trigger context
+    const triggerCtx: TriggerContext = {
+      energy: feeling.energy,
+      criticalThreshold: this.getAdaptiveThreshold('critical'),
+      urgencyThreshold: this.getAdaptiveThreshold('urgency'),
+      invariantViolations: feeling.invariantsTotal - feeling.invariantsSatisfied,
+      blocksInWindow: couplingStats.blocksInWindow.reduce((a, b) => a + b, 0),
+      blockWindowSize: couplingStats.blocksInWindow.length,
+      deprecationsInWindow: couplingStats.deprecationsInWindow,
+      efeAmbiguity: couplingStats.lastAmbiguity,
+      ambiguityHighCycles: couplingStats.ambiguityHighCycles,
+      stateHash: state.organization_hash,
+      lyapunovV: feeling.lyapunovV,
+    };
+
+    // Check triggers
+    const result = checkCouplingTriggers(triggerCtx);
+
+    if (!result.shouldRequest || !result.priority || !result.reason) {
+      return;
+    }
+
+    // Build request context from state (Sigillo 3: derived context)
+    const requestContext: CouplingRequestContext = {
+      feeling: {
+        energy: feeling.energy,
+        lyapunovV: feeling.lyapunovV,
+        invariantsSatisfied: feeling.invariantsSatisfied,
+        invariantsTotal: feeling.invariantsTotal,
+      },
+      state_hash: state.organization_hash,
+      V: feeling.lyapunovV,
+      energy: feeling.energy,
+    };
+
+    // Create request
+    const request = createCouplingRequest(
+      result.priority,
+      result.reason,
+      requestContext,
+      this.config.couplingConfig
+    );
+
+    // Get or initialize queue from state
+    const queue = state.couplingQueue ?? { ...DEFAULT_COUPLING_QUEUE_STATE };
+
+    // Expire old requests first
+    const expiredIds = expireRequests(queue, this.config.couplingConfig);
+
+    // Try to enqueue
+    const enqueueResult = enqueueRequest(queue, request, this.config.couplingConfig);
+
+    if (enqueueResult.success) {
+      couplingStats.requestsCreated++;
+
+      // Log the request to Merkle chain
+      await this.rememberCoupling('COUPLING_REQUESTED', {
+        requestId: request.id,
+        priority: request.priority,
+        reason: request.reason,
+        context: request.context,
+        expiresAt: request.expiresAt,
+        updated: enqueueResult.updated ?? false,
+      });
+
+      // Update state with new queue
+      const stateManager = getStateManager(this.baseDir);
+      await stateManager.updateState((s) => ({
+        ...s,
+        couplingQueue: queue,
+      }));
+
+      this.emit('couplingRequested', { request, updated: enqueueResult.updated });
+    }
+
+    // Log expired requests
+    for (const expiredId of expiredIds) {
+      await this.rememberCoupling('COUPLING_EXPIRED', {
+        requestId: expiredId,
+      });
+      this.emit('couplingExpired', { requestId: expiredId });
+    }
+  }
+
+  /**
+   * Track action blocks per cycle for trigger detection
+   */
+  private updateBlockTracking(response: Response): void {
+    const couplingStats = this.stats.coupling;
+
+    // Slide window and add current cycle's block count
+    if (couplingStats.blocksInWindow.length >= 10) {
+      couplingStats.blocksInWindow.shift();
+    }
+    couplingStats.blocksInWindow.push(response.constitutionalCheck === 'blocked' ? 1 : 0);
+  }
+
+  /**
+   * Track EFE ambiguity for epistemic uncertainty trigger
+   */
+  private updateAmbiguityTracking(): void {
+    const couplingStats = this.stats.coupling;
+
+    // Get ambiguity from active inference if available
+    if (this.config.activeInferenceEnabled && this.lastPrediction) {
+      // Ambiguity = 1 - confidence (confidence is how sure we are about prediction)
+      // Low confidence = high ambiguity = epistemic uncertainty
+      const ambiguity = 1 - (this.lastPrediction.confidence || 0);
+      couplingStats.lastAmbiguity = ambiguity;
+
+      if (ambiguity > 0.5) {
+        couplingStats.ambiguityHighCycles++;
+      } else {
+        couplingStats.ambiguityHighCycles = 0; // Reset on low ambiguity
+      }
+    }
+  }
+
+  /**
+   * Record deprecation for trigger detection (called from manageQuarantineLifecycles)
+   */
+  recordDeprecation(): void {
+    this.stats.coupling.deprecationsInWindow++;
+  }
+
+  /**
+   * Reset deprecation counter (called periodically)
+   */
+  resetDeprecationCounter(): void {
+    this.stats.coupling.deprecationsInWindow = 0;
+  }
+
+  /**
+   * Remember coupling event - specialized for coupling protocol events
+   */
+  private async rememberCoupling(
+    type: 'COUPLING_REQUESTED' | 'COUPLING_EXPIRED' | 'COUPLING_GRANTED' | 'COUPLING_COMPLETED' | 'COUPLING_CANCELED',
+    data: Record<string, unknown>
+  ): Promise<void> {
+    const manager = getStateManager(this.baseDir);
+    await manager.appendEventAtomic(type, data, (state, event) => {
+      const newState = { ...state };
+
+      // Initialize coupling queue if needed
+      if (!newState.couplingQueue) {
+        newState.couplingQueue = { ...DEFAULT_COUPLING_QUEUE_STATE };
+      }
+
+      // Coupling events don't modify state directly - queue is managed separately
+      // The event is just logged for audit/replay
+
+      return newState;
+    });
   }
 
   // ===========================================================================

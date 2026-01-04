@@ -150,6 +150,70 @@ export interface State {
     };
     totalEnergyConsumed: number;
   };
+
+  // Phase 8f: Structural Coupling Protocol
+  // NOTE: This must match CouplingQueueState in coupling-protocol.ts
+  couplingQueue?: {
+    pending: Array<{
+      id: string;
+      priority: 'urgent' | 'normal' | 'low';
+      reason: string;
+      context: {
+        feeling: {
+          energy: number;
+          lyapunovV: number;
+          invariantsSatisfied: number;
+          invariantsTotal: number;
+        };
+        action?: string;
+        state_hash: string;
+        V: number;
+        energy: number;
+      };
+      requestedAt: string;
+      expiresAt: string;
+      status: 'pending' | 'granted' | 'expired' | 'completed' | 'canceled';
+      grantedAt?: string;
+      completedAt?: string;
+      outcome?: 'resolved' | 'ignored' | 'expired';
+      note?: string;
+    }>;
+    // History stores complete CouplingRequest objects for metrics/audit
+    history: Array<{
+      id: string;
+      priority: 'urgent' | 'normal' | 'low';
+      reason: string;
+      context: {
+        feeling: {
+          energy: number;
+          lyapunovV: number;
+          invariantsSatisfied: number;
+          invariantsTotal: number;
+        };
+        action?: string;
+        state_hash: string;
+        V: number;
+        energy: number;
+      };
+      requestedAt: string;
+      expiresAt: string;
+      status: 'pending' | 'granted' | 'expired' | 'completed' | 'canceled';
+      grantedAt?: string;
+      completedAt?: string;
+      outcome?: 'resolved' | 'ignored' | 'expired';
+      note?: string;
+    }>;
+    lastGrantedAt?: string;
+    cooldownUntil?: string;
+    metrics: {
+      totalRequests: number;
+      totalGranted: number;
+      totalExpired: number;
+      totalCompleted: number;
+      avgTimeToGrant?: number;
+      avgTimeToComplete?: number;
+    };
+  };
 }
 
 // =============================================================================
@@ -175,10 +239,16 @@ export type EventType =
   | 'AGENT_RESPONSE'       // Agent responded to feeling
   | 'AGENT_REST'           // Agent resting (Wu Wei)
   // Phase 8b: Ultrastability events
-  | 'AGENT_ULTRASTABILITY'; // Ultrastability parameter adjustment
+  | 'AGENT_ULTRASTABILITY' // Ultrastability parameter adjustment
+  // Phase 8f: Structural Coupling Protocol events
+  | 'COUPLING_REQUESTED'   // Agent requested coupling (internal signal)
+  | 'COUPLING_EXPIRED'     // Request expired (TTL)
+  | 'COUPLING_GRANTED'     // Human granted request
+  | 'COUPLING_COMPLETED'   // Human completed request
+  | 'COUPLING_CANCELED';   // Human canceled request
 
 // Event categories for filtering (Annex G)
-export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance';
+export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance' | 'coupling';
 
 export interface Event {
   seq: number;

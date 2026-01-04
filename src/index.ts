@@ -1461,6 +1461,164 @@ Priority Hierarchy (constitutional):
         }
         break;
 
+      case 'coupling':
+        // Phase 8f: Structural Coupling Protocol CLI
+        const couplingAction = process.argv[3];
+        const {
+          grantRequest,
+          completeRequest,
+          cancelRequest,
+          expireRequests: expireCouplingRequests,
+          formatRequest: formatCouplingRequest,
+          formatQueueSummary,
+          DEFAULT_COUPLING_CONFIG: couplingDefaultConfig,
+          DEFAULT_COUPLING_QUEUE_STATE: defaultQueueState,
+        } = await import('./coupling-protocol.js');
+        const couplingState = await loadState();
+
+        // Get or initialize queue from state
+        const couplingQueue = couplingState.couplingQueue ?? { ...defaultQueueState };
+
+        if (couplingAction === 'list' || couplingAction === 'status') {
+          // First expire old requests
+          const expiredIds = expireCouplingRequests(couplingQueue, couplingDefaultConfig);
+          if (expiredIds.length > 0) {
+            // Save expired updates
+            couplingState.couplingQueue = couplingQueue;
+            await saveState(couplingState);
+          }
+
+          console.log('\n' + formatQueueSummary(couplingQueue) + '\n');
+
+        } else if (couplingAction === 'grant') {
+          const requestId = process.argv[4];
+          if (!requestId) {
+            console.log('Usage: coupling grant <request-id>');
+            break;
+          }
+
+          // First expire old requests
+          expireCouplingRequests(couplingQueue, couplingDefaultConfig);
+
+          const grantResult = grantRequest(couplingQueue, requestId, couplingDefaultConfig);
+
+          if (grantResult.success && grantResult.request) {
+            // Log event
+            await appendEvent(BASE_DIR, 'COUPLING_GRANTED', {
+              requestId: grantResult.request.id,
+              priority: grantResult.request.priority,
+              reason: grantResult.request.reason,
+              grantedAt: grantResult.request.grantedAt,
+            });
+
+            // Save state
+            couplingState.couplingQueue = couplingQueue;
+            const couplingEvents = await loadEvents(BASE_DIR);
+            couplingState.memory.event_count = couplingEvents.length;
+            couplingState.memory.last_event_hash = couplingEvents[couplingEvents.length - 1].hash;
+            await saveState(couplingState);
+
+            console.log(`\n✓ Request ${requestId} granted`);
+            console.log(`  Priority: ${grantResult.request.priority}`);
+            console.log(`  Reason: ${grantResult.request.reason}`);
+            console.log(`\nUse "coupling complete ${requestId}" when done\n`);
+          } else {
+            console.log(`\n✗ ${grantResult.reason}\n`);
+          }
+
+        } else if (couplingAction === 'complete') {
+          const requestId = process.argv[4];
+          const outcome = (process.argv[5] as 'resolved' | 'ignored') || 'resolved';
+          const note = process.argv.slice(6).join(' ') || undefined;
+
+          if (!requestId) {
+            console.log('Usage: coupling complete <request-id> [resolved|ignored] [note]');
+            break;
+          }
+
+          const completeResult = completeRequest(couplingQueue, requestId, outcome, note, couplingDefaultConfig);
+
+          if (completeResult.success && completeResult.request) {
+            // Log event
+            await appendEvent(BASE_DIR, 'COUPLING_COMPLETED', {
+              requestId: completeResult.request.id,
+              outcome: completeResult.request.outcome,
+              note: completeResult.request.note,
+              completedAt: completeResult.request.completedAt,
+            });
+
+            // Save state
+            couplingState.couplingQueue = couplingQueue;
+            const couplingEvents = await loadEvents(BASE_DIR);
+            couplingState.memory.event_count = couplingEvents.length;
+            couplingState.memory.last_event_hash = couplingEvents[couplingEvents.length - 1].hash;
+            await saveState(couplingState);
+
+            console.log(`\n✓ Request ${requestId} completed`);
+            console.log(`  Outcome: ${completeResult.request.outcome}`);
+            if (note) console.log(`  Note: ${note}`);
+            console.log('');
+          } else {
+            console.log(`\n✗ ${completeResult.reason}\n`);
+          }
+
+        } else if (couplingAction === 'cancel') {
+          const requestId = process.argv[4];
+          const reason = process.argv.slice(5).join(' ') || 'Canceled by human';
+
+          if (!requestId) {
+            console.log('Usage: coupling cancel <request-id> [reason]');
+            break;
+          }
+
+          const cancelResult = cancelRequest(couplingQueue, requestId, reason, couplingDefaultConfig);
+
+          if (cancelResult.success && cancelResult.request) {
+            // Log event
+            await appendEvent(BASE_DIR, 'COUPLING_CANCELED', {
+              requestId: cancelResult.request.id,
+              reason: cancelResult.request.note,
+            });
+
+            // Save state
+            couplingState.couplingQueue = couplingQueue;
+            const couplingEvents = await loadEvents(BASE_DIR);
+            couplingState.memory.event_count = couplingEvents.length;
+            couplingState.memory.last_event_hash = couplingEvents[couplingEvents.length - 1].hash;
+            await saveState(couplingState);
+
+            console.log(`\n✓ Request ${requestId} canceled`);
+            console.log(`  Reason: ${reason}\n`);
+          } else {
+            console.log(`\n✗ ${cancelResult.reason}\n`);
+          }
+
+        } else {
+          console.log(`
+Coupling Protocol (Phase 8f: Structural Coupling)
+
+The agent can request coupling when it detects:
+- URGENT: Invariant violations, critical energy, repeated blocks
+- NORMAL: Self-production blocked (3+ deprecations)
+- LOW:    Persistent epistemic uncertainty
+
+Human controls coupling (AXM-007):
+- Agent can request, but CANNOT grant
+- Requests expire via TTL (urgent: 1h, normal: 4h, low: 24h)
+- Queue capped at 5 requests (higher priority replaces lower)
+
+Commands:
+  coupling list                         Show pending requests
+  coupling status                       Show queue summary
+  coupling grant <id>                   Grant a request
+  coupling complete <id> [outcome] [note]  Complete a granted request
+  coupling cancel <id> [reason]         Cancel a pending request
+
+Outcomes: resolved (default), ignored
+          `);
+        }
+        break;
+
       case 'log':
         const logAction = process.argv[3];
         if (logAction === 'level') {
@@ -1524,6 +1682,8 @@ Commands:
   continuity  Multi-instance export/import (Phase 6)
   meta        Self-production meta-operations (Phase 7a)
   daemon      Autonomous daemon mode (Phase 7b)
+  agent       Internal agent (Phase 8)
+  coupling    Coupling protocol (Phase 8f)
   log         Configure logging levels
   replay      Replay events and show state
   events      List recent events

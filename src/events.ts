@@ -370,6 +370,17 @@ function applyEvent(state: State, event: Event): State {
       }
       break;
 
+    // Phase 8f: Structural Coupling Protocol events
+    case 'COUPLING_REQUESTED':
+    case 'COUPLING_EXPIRED':
+    case 'COUPLING_GRANTED':
+    case 'COUPLING_COMPLETED':
+    case 'COUPLING_CANCELED':
+      // Coupling protocol events are logged for audit
+      // Queue state is managed via separate state updates
+      // No direct state derivation needed (queue is persisted directly)
+      break;
+
     default:
       // Unknown event type - no state change
       break;
