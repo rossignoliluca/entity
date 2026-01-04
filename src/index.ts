@@ -1163,6 +1163,12 @@ Templates: read_field, set_field, compose, conditional, transform, aggregate, ec
               if (level === 'error') console.error(`[DAEMON] ${message}`);
             });
 
+            // Exit when daemon stops (via IPC command)
+            daemon.on('stopped', () => {
+              console.log('\nDaemon stopped via IPC command');
+              process.exit(0);
+            });
+
             // Handle shutdown signals
             process.on('SIGINT', async () => {
               console.log('\nStopping daemon...');
@@ -1176,7 +1182,12 @@ Templates: read_field, set_field, compose, conditional, transform, aggregate, ec
             });
 
             // Keep alive
-            setInterval(() => {}, 1000);
+            const keepAlive = setInterval(() => {
+              if (!daemon.isRunning()) {
+                clearInterval(keepAlive);
+                process.exit(0);
+              }
+            }, 1000);
           } else {
             console.log(`\n${result.message}\n`);
             process.exit(1);

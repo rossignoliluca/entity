@@ -206,6 +206,7 @@ export class Daemon extends EventEmitter {
       this.startedAt = null;
 
       this.log('Daemon stopped');
+      this.emit('stopped');
       return { success: true, message: 'Daemon stopped' };
     } catch (error) {
       return { success: false, message: `Failed to stop daemon: ${error}` };
@@ -262,7 +263,9 @@ export class Daemon extends EventEmitter {
         return this.getStatus();
 
       case 'stop':
-        return this.stop();
+        // Schedule stop after response is sent
+        setImmediate(() => this.stop());
+        return { success: true, message: 'Daemon stopping...' };
 
       case 'tasks':
         return this.scheduler.listTasks();
