@@ -5,10 +5,64 @@
  * INV-003: events[n].prev_hash = hash(events[n-1])
  */
 
-import { readFile, writeFile, readdir } from 'fs/promises';
+import { readFile, writeFile, readdir, access, unlink } from 'fs/promises';
 import { join } from 'path';
 import { hashEvent, verifyChain } from './hash.js';
 import type { Event, EventType, Hash, State, Timestamp } from './types.js';
+
+// Simple file lock for event appending
+const LOCK_FILE = 'events/.lock';
+const LOCK_TIMEOUT = 5000;
+const LOCK_RETRY = 50;
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function acquireEventLock(baseDir: string): Promise<boolean> {
+  const lockPath = join(baseDir, LOCK_FILE);
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < LOCK_TIMEOUT) {
+    try {
+      // Check for stale lock
+      try {
+        const content = await readFile(lockPath, 'utf-8');
+        const lock = JSON.parse(content);
+        if (Date.now() - lock.timestamp > LOCK_TIMEOUT) {
+          await unlink(lockPath);
+        } else {
+          await sleep(LOCK_RETRY);
+          continue;
+        }
+      } catch {
+        // No lock file
+      }
+
+      // Try to create lock
+      await writeFile(lockPath, JSON.stringify({ pid: process.pid, timestamp: Date.now() }), { flag: 'wx' });
+      return true;
+    } catch (err: unknown) {
+      if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
+        await sleep(LOCK_RETRY);
+        continue;
+      }
+      throw err;
+    }
+  }
+  return false;
+}
+
+async function releaseEventLock(baseDir: string): Promise<void> {
+  try {
+    await unlink(join(baseDir, LOCK_FILE));
+  } catch {
+    // Ignore
+  }
+}
+
+// Export lock functions for use in verification
+export { acquireEventLock, releaseEventLock };
 
 const EVENTS_DIR = 'events';
 
@@ -65,37 +119,48 @@ export async function getLastEventHash(
 
 /**
  * Append new event (Merkle chain)
+ * Uses file locking to prevent race conditions in concurrent access
  */
 export async function appendEvent(
   baseDir: string,
   type: EventType,
   data: Record<string, unknown>
 ): Promise<Event> {
-  const seq = await getNextSeq(baseDir);
-  const prev_hash = await getLastEventHash(baseDir);
-  const timestamp = new Date().toISOString() as Timestamp;
+  // Acquire lock to prevent concurrent event writing
+  const acquired = await acquireEventLock(baseDir);
+  if (!acquired) {
+    throw new Error('Failed to acquire event lock (timeout)');
+  }
 
-  const eventWithoutHash = {
-    seq,
-    type,
-    timestamp,
-    data,
-    prev_hash,
-  };
+  try {
+    const seq = await getNextSeq(baseDir);
+    const prev_hash = await getLastEventHash(baseDir);
+    const timestamp = new Date().toISOString() as Timestamp;
 
-  const hash = hashEvent(eventWithoutHash);
+    const eventWithoutHash = {
+      seq,
+      type,
+      timestamp,
+      data,
+      prev_hash,
+    };
 
-  const event: Event = {
-    ...eventWithoutHash,
-    hash,
-  };
+    const hash = hashEvent(eventWithoutHash);
 
-  // Write event file
-  const filename = seq.toString().padStart(6, '0') + '.json';
-  const filepath = join(baseDir, EVENTS_DIR, filename);
-  await writeFile(filepath, JSON.stringify(event, null, 2));
+    const event: Event = {
+      ...eventWithoutHash,
+      hash,
+    };
 
-  return event;
+    // Write event file
+    const filename = seq.toString().padStart(6, '0') + '.json';
+    const filepath = join(baseDir, EVENTS_DIR, filename);
+    await writeFile(filepath, JSON.stringify(event, null, 2));
+
+    return event;
+  } finally {
+    await releaseEventLock(baseDir);
+  }
 }
 
 /**
@@ -307,23 +372,35 @@ function applyEvent(state: State, event: Event): State {
 
 /**
  * Compare replayed state with stored state
+ * Uses file locking to ensure consistent comparison during concurrent access
  */
 export async function verifyStateConsistency(
   baseDir: string
 ): Promise<boolean> {
-  const replayed = await replayEvents(baseDir);
-  if (!replayed) return false;
+  // Acquire lock to prevent concurrent event writes during verification
+  const acquired = await acquireEventLock(baseDir);
+  if (!acquired) {
+    // Can't acquire lock, assume inconsistent (will trigger recovery)
+    return false;
+  }
 
-  const storedContent = await readFile(
-    join(baseDir, 'state', 'current.json'),
-    'utf-8'
-  );
-  const stored = JSON.parse(storedContent) as State;
+  try {
+    const replayed = await replayEvents(baseDir);
+    if (!replayed) return false;
 
-  // Compare key fields
-  return (
-    replayed.organization_hash === stored.organization_hash &&
-    replayed.memory.event_count === stored.memory.event_count &&
-    replayed.memory.last_event_hash === stored.memory.last_event_hash
-  );
+    const storedContent = await readFile(
+      join(baseDir, 'state', 'current.json'),
+      'utf-8'
+    );
+    const stored = JSON.parse(storedContent) as State;
+
+    // Compare key fields
+    return (
+      replayed.organization_hash === stored.organization_hash &&
+      replayed.memory.event_count === stored.memory.event_count &&
+      replayed.memory.last_event_hash === stored.memory.last_event_hash
+    );
+  } finally {
+    await releaseEventLock(baseDir);
+  }
 }

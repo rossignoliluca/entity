@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 
 import { verifyAllInvariants, printVerificationReport, quickHealthCheck } from './verify.js';
 import { appendEvent, loadEvents, replayEvents } from './events.js';
+import { getStateManager } from './state-manager.js';
 import { computeV } from './lyapunov.js';
 import { guard, type Operation } from './guard.js';
 import { autoRecover, printRecoveryReport } from './recovery.js';
@@ -104,14 +105,11 @@ export async function loadState(): Promise<State> {
 }
 
 /**
- * Save current state
+ * Save current state (uses StateManager for thread-safety)
  */
 export async function saveState(state: State): Promise<void> {
-  state.updated = new Date().toISOString();
-  await writeFile(
-    join(BASE_DIR, 'state', 'current.json'),
-    JSON.stringify(state, null, 2)
-  );
+  const manager = getStateManager(BASE_DIR);
+  await manager.writeState(state);
 }
 
 /**

@@ -1,0 +1,13 @@
+{
+  "seq": 294,
+  "type": "VERIFICATION",
+  "timestamp": "2026-01-04T18:36:31.608Z",
+  "data": {
+    "all_satisfied": false,
+    "violations": 1,
+    "status": "degraded",
+    "lyapunov_V": 0.16
+  },
+  "prev_hash": "d18d0cb7b6d202ada3011733f30ca0752918f1d6d2d164b79c6c151d5016cf41",
+  "hash": "9cd576750552cf0acac735e27e1cddb70f2f04b992d7d3af4354694e285a6e8a"
+}

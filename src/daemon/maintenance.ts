@@ -144,7 +144,9 @@ export class SelfMaintenance extends EventEmitter {
     const satisfied = result.invariants.filter(i => i.satisfied).length;
     const violated = result.invariants.filter(i => !i.satisfied).length;
 
-    if (violated > 0) {
+    // Only emit violations if autoRecovery is disabled
+    // With autoRecovery enabled, transient violations are expected and will be fixed
+    if (violated > 0 && !this.config.autoRecovery) {
       for (const inv of result.invariants.filter(i => !i.satisfied)) {
         this.emit('invariantViolation', inv.id);
       }

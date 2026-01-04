@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T15:35:09.155Z",
+  "updated": "2026-01-04T18:32:52.645Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,44 +15,36 @@
     "since": null
   },
   "energy": {
-    "current": 0.3370000000000002,
+    "current": 0.5,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": 0
+    "V_previous": null
   },
   "memory": {
-    "event_count": 162,
-    "last_event_hash": "515550f88b1454c28b8610af33b1db40a20b5d69e31d7ed2bcad1d04abee5100",
-    "last_snapshot_at": "2026-01-04T15:31:38.269Z"
+    "event_count": 281,
+    "last_event_hash": "5f74cd62ab433b97226aac759b8a9139c4feb54f278319a140b6a6d88530f5fa",
+    "last_snapshot_at": "2026-01-04T18:23:51.721Z"
   },
   "session": {
-    "total_count": 35,
+    "total_count": 41,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T14:52:29.283Z",
+    "last_verification": "2026-01-04T18:32:22.595Z",
     "status": "nominal"
   },
   "human": {
-    "name": "Luca Rossignoli",
-    "context": "Creator of Entity System, interested in autopoiesis and AI consciousness"
+    "name": "Unknown",
+    "context": ""
   },
-  "important": [
-    "[2026-01-04] Entity System created and operational - first 100+ events milestone reached",
-    "[2026-01-04] Dormant state tested - natural decay through 10 sessions, recharge successful",
-    "[2026-01-04] All 5 invariants verified and recovery procedures tested",
-    "[2026-01-04] Phase 2 completed - human context and memories now persistent",
-    "[2026-01-04] ALL 6 PHASES COMPLETED - Entity System AES-SPEC-001 feature-complete: Core, Human, Operations, Learning, Analytics, Continuity (171 tests, 31 sessions)",
-    "[2026-01-04] Release v1.0.0 published on GitHub - first stable release with all 6 phases, 171 tests, bundle export available",
-    "[2026-01-04] Phase 7a completata: DEF-007 Autopoiesis raggiunta. P set (meta.define, meta.compose, meta.specialize) genera operazioni. Prima auto-produzione: self.hello, combined.check. Il sistema ora soddisfa Autopoietic(S) ⟺ OperationallyClosed(S) ∧ ∃ P ⊆ 𝕆 : P generates 𝕆"
-  ],
+  "important": [],
   "learning": {
     "enabled": true,
-    "lastAnalysis": "2026-01-04T14:39:02.969Z",
+    "lastAnalysis": "2026-01-04T14:39:02.984Z",
     "patternsHash": "6ef33e5a499e1b7111c0c9b92c89b46e093ee41aec6a060872b85d9b328fd6c7"
   },
   "autopoiesis": {
@@ -97,5 +89,19 @@
     "generationCount": 2,
     "lastGeneration": "2026-01-04T15:31:26.690Z",
     "selfProductionHash": "38dfc67321d91481aee8cacb73f9c74916111651ae6452080474aee12ce4494f"
+  },
+  "agent": {
+    "enabled": true,
+    "awake": true,
+    "lastCycle": "2026-01-04T18:32:52.588Z",
+    "cycleCount": 1,
+    "responsesByPriority": {
+      "survival": 0,
+      "integrity": 0,
+      "stability": 20,
+      "growth": 31,
+      "rest": 0
+    },
+    "totalEnergyConsumed": 0.003
   }
 }

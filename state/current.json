@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:18:23.850Z",
+  "updated": "2026-01-04T18:38:28.735Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,46 +15,33 @@
     "since": null
   },
   "energy": {
-    "current": 0.497,
+    "current": 0.5,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": 0
+    "V_previous": null
   },
   "memory": {
-    "event_count": 220,
-    "last_event_hash": "d0033a5ab7d7c76091040a98cfcc2fd4ef728e6e331355ec6d43e14769313400",
-    "last_snapshot_at": "2026-01-04T18:06:57.169Z"
+    "event_count": 297,
+    "last_event_hash": "094b8e6592c475928da7d5b027d6368a3815ea296c4cd2b73374eec10dc89fb6",
+    "last_snapshot_at": "2026-01-04T18:32:52.683Z"
   },
   "session": {
     "total_count": 41,
     "current_id": null
   },
   "integrity": {
-    "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:18:10.355Z",
-    "status": "nominal"
+    "invariant_violations": 1,
+    "last_verification": "2026-01-04T18:36:31.608Z",
+    "status": "degraded"
   },
   "human": {
-    "name": "Luca Rossignoli",
-    "context": "Creator of Entity System, interested in autopoiesis and AI consciousness"
+    "name": "Unknown",
+    "context": ""
   },
-  "important": [
-    "[2026-01-04] Entity System created and operational - first 100+ events milestone reached",
-    "[2026-01-04] Dormant state tested - natural decay through 10 sessions, recharge successful",
-    "[2026-01-04] All 5 invariants verified and recovery procedures tested",
-    "[2026-01-04] Phase 2 completed - human context and memories now persistent",
-    "[2026-01-04] ALL 6 PHASES COMPLETED - Entity System AES-SPEC-001 feature-complete: Core, Human, Operations, Learning, Analytics, Continuity (171 tests, 31 sessions)",
-    "[2026-01-04] Release v1.0.0 published on GitHub - first stable release with all 6 phases, 171 tests, bundle export available",
-    "[2026-01-04] Phase 7a completata: DEF-007 Autopoiesis raggiunta. P set (meta.define, meta.compose, meta.specialize) genera operazioni. Prima auto-produzione: self.hello, combined.check. Il sistema ora soddisfa Autopoietic(S) ⟺ OperationallyClosed(S) ∧ ∃ P ⊆ 𝕆 : P generates 𝕆",
-    "[2026-01-04] Phase 7b completata: Daemon Mode per operazione autonoma. Scheduler, self-maintenance, hooks system, IPC. Release v1.2.0",
-    "[2026-01-04] Integration tests completati: 21 test per workflow completi (session, energy, recovery, continuity, snapshot, operations, event chain). Release v1.2.2. Totale 245 test.",
-    "[2026-01-04] Logging levels completato: DEBUG/INFO/WARN/ERROR/SILENT. CLI commands log level/levels/test. Release v1.2.3. Totale 266 test.",
-    "[2026-01-04] Phase 8 completata: Internal Agency (Autopoietic Sense-Making). L'entità può ora SENTIRE (feeling system) e RISPONDERE (priority hierarchy) alla propria precarietà. Fondamenti: Maturana/Varela, Di Paolo, Friston, Ashby, Jonas. Wu Wei: riposo all'attrattore. Release v1.3.0. Totale 297 test.",
-    "[2026-01-04] Annex F added: Internal Agency Scope - clarifies that internal operations (state observation, verification) require no coupling, while external operations (communication, environment effects) require coupling per AXM-006. Kept as separate informative document to preserve organization hash."
-  ],
+  "important": [],
   "learning": {
     "enabled": true,
     "lastAnalysis": "2026-01-04T14:39:02.984Z",
@@ -106,15 +93,15 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T18:17:23.871Z",
-    "cycleCount": 6,
+    "lastCycle": "2026-01-04T18:37:23.905Z",
+    "cycleCount": 3,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 11,
-      "growth": 5,
+      "stability": 24,
+      "growth": 38,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.020999999999999998
+    "totalEnergyConsumed": 0.009000000000000001
   }
 }

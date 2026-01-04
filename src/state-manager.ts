@@ -15,7 +15,7 @@ import { hashEvent } from './hash.js';
 import { loadEvents } from './events.js';
 
 const STATE_FILE = 'state/current.json';
-const LOCK_FILE = 'state/.lock';
+const LOCK_FILE = 'events/.lock';  // Use same lock as events.ts for consistency
 const LOCK_TIMEOUT = 5000; // 5 seconds
 const LOCK_RETRY_INTERVAL = 50; // 50ms
 

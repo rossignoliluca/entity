@@ -1,0 +1,27 @@
+{
+  "seq": 289,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-04T18:34:28.161Z",
+  "data": {
+    "stats": {
+      "cycleCount": 3,
+      "responsesTotal": 3,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 2,
+        "growth": 1,
+        "rest": 0
+      },
+      "actionsExecuted": 3,
+      "actionsBlocked": 0,
+      "restCycles": 0,
+      "totalEnergyConsumed": 0.009000000000000001,
+      "startedAt": "2026-01-04T18:31:52.516Z",
+      "lastCycle": "2026-01-04T18:33:52.531Z"
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "07c0a80a04e757a59324aa7eb216cca5f38fd3f69157f767946ebf09846c3602",
+  "hash": "bc9a3d9317d6346abeab5ab71e404dd1d6f3b9d8e93a22d451f3733d0614e397"
+}

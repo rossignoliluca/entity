@@ -11,6 +11,7 @@ import { join } from 'path';
 import { executeOperation, isAllowedOperation, OPERATIONS_CATALOG } from '../operations.js';
 import { getCombinedCatalog, META_OPERATIONS_CATALOG } from '../meta-operations.js';
 import type { State } from '../types.js';
+import { getStateManager } from '../state-manager.js';
 
 // =============================================================================
 // Types
@@ -317,7 +318,11 @@ export class Scheduler extends EventEmitter {
   }
 
   private async loadEntityState(): Promise<State> {
-    const content = await readFile(join(this.baseDir, 'state', 'current.json'), 'utf-8');
-    return JSON.parse(content) as State;
+    const manager = getStateManager(this.baseDir);
+    const state = await manager.readState();
+    if (!state) {
+      throw new Error('No state available');
+    }
+    return state;
   }
 }

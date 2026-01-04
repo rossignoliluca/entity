@@ -668,9 +668,12 @@ export class InternalAgent extends EventEmitter {
     data: Record<string, unknown>
   ): Promise<void> {
     const manager = getStateManager(this.baseDir);
+    // IMPORTANT: This state update MUST match applyEvent() in events.ts exactly!
+    // Any mismatch causes INV-002 violations (state != replay(events))
     await manager.appendEventAtomic(type, data, (state, event) => {
-      // Update agent state in state file
       const newState = { ...state };
+
+      // Initialize agent state if needed (matches AGENT_WAKE in applyEvent)
       if (!newState.agent) {
         newState.agent = {
           enabled: true,
@@ -682,18 +685,25 @@ export class InternalAgent extends EventEmitter {
         };
       }
 
+      // Apply event exactly as applyEvent() does in events.ts
       switch (type) {
         case 'AGENT_WAKE':
           newState.agent.awake = true;
           break;
+
         case 'AGENT_SLEEP':
           newState.agent.awake = false;
-          newState.agent.cycleCount = this.stats.cycleCount;
-          newState.agent.totalEnergyConsumed = this.stats.totalEnergyConsumed;
+          // Only update from data.stats if present (matches applyEvent)
+          if (data.stats) {
+            const stats = data.stats as Record<string, unknown>;
+            newState.agent.cycleCount = (stats.cycleCount as number) || newState.agent.cycleCount;
+            newState.agent.totalEnergyConsumed = (stats.totalEnergyConsumed as number) || newState.agent.totalEnergyConsumed;
+          }
           break;
+
         case 'AGENT_RESPONSE':
           newState.agent.lastCycle = event.timestamp;
-          newState.agent.cycleCount = this.stats.cycleCount;
+          // Note: cycleCount is NOT updated here (matches applyEvent)
           const priority = data.priority as keyof typeof newState.agent.responsesByPriority;
           if (priority && newState.agent.responsesByPriority[priority] !== undefined) {
             newState.agent.responsesByPriority[priority]++;
@@ -702,6 +712,7 @@ export class InternalAgent extends EventEmitter {
             newState.agent.totalEnergyConsumed += data.energyCost as number;
           }
           break;
+
         case 'AGENT_REST':
           newState.agent.lastCycle = event.timestamp;
           newState.agent.responsesByPriority.rest++;
