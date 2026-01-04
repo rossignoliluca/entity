@@ -943,6 +943,104 @@ Entity identity is bound to specification hash.
 
 ---
 
+## Annex F (Informative): Internal Agency Scope
+
+This annex defines the scope and limitations of the entity's internal agency.
+
+### F.1 Sense-Making Loop
+
+The entity implements an autopoietic sense-making loop (Di Paolo, 2005):
+
+1. **FEEL**: Sense deviation from expected state (surprise ε)
+2. **RESPOND**: Let response emerge from feeling following constitutional priorities
+3. **REMEMBER**: Log action to event chain for future self
+
+### F.2 Constitutional Priority Hierarchy
+
+Actions are selected according to this strict hierarchy:
+
+| Priority | Name | Constraint | Exploration |
+|----------|------|------------|-------------|
+| 1 | Survival | INV-005 energy viability | 0% epistemic |
+| 2 | Integrity | INV-001 to INV-004 | 10% epistemic |
+| 3 | Stability | Lyapunov V → 0 | 20% epistemic |
+| 4 | Growth | Learning, autopoiesis | 50% epistemic |
+| 5 | Rest | Wu Wei (at attractor) | 60% epistemic |
+
+### F.3 Constitutive Constraint (Jonas Principle)
+
+Before any action, the agent applies the constitutive check:
+
+> **No action or inaction shall reduce the weighted possibility space of any being.**
+
+Actions that would violate this constraint are blocked.
+
+---
+
+## Annex G (Normative): Observer/Actor Separation
+
+This annex establishes requirements for separating observation from action.
+
+### G.1 Definitions
+
+**DEF-056: Pure Observation**
+An operation O is a *pure observation* if and only if:
+- O does not append events to the Merkle chain
+- O does not modify state/current.json
+- O is idempotent: calling O multiple times yields identical results
+
+**DEF-057: Action Operation**
+An operation A is an *action* if and only if:
+- A may append events to the Merkle chain, OR
+- A may modify state
+
+### G.2 Requirements
+
+**REQ-G01**: Implementations SHALL clearly distinguish pure observations from actions.
+
+**REQ-G02**: Health checks and internal verification SHALL use pure observation functions.
+
+**REQ-G03**: Actions SHALL use atomic state updates with proper locking.
+
+**REQ-G04**: Recovery procedures SHALL acquire locks before modifying state.
+
+### G.3 Classification of Operations
+
+| Operation | Type | Rationale |
+|-----------|------|-----------|
+| `verifyReadOnly()` | Pure Observation | Returns verification result without side effects |
+| `verify()` | Action | Logs VERIFICATION event, updates state |
+| `status()` | Pure Observation | Reads and displays state |
+| `recover()` | Action | Modifies state, logs events |
+| `session start/end` | Action | Logs events, updates coupling state |
+| `quickHealthCheck()` | Pure Observation | Checks essential invariants |
+
+### G.4 Concurrency Requirements
+
+**REQ-G05**: All state modifications SHALL acquire a lock via StateManager.
+
+**REQ-G06**: Event appending and state updating SHALL be atomic (single transaction).
+
+**REQ-G07**: Multiple processes accessing the same entity SHALL coordinate via file locks.
+
+### G.5 Anti-Pattern: Verify-Then-Modify
+
+The following pattern causes INV-002 violations:
+
+```
+BAD:
+1. verifyAllInvariants()  // reads state
+2. appendEvent()          // adds event (changes chain)
+3. state.memory = ...     // updates state manually
+4. writeFile(state)       // writes stale event_count
+
+GOOD:
+1. verifyAllInvariants()  // pure observation
+2. manager.appendEventAtomic(type, data, stateUpdater)  // atomic
+```
+
+---
+
 ## Bibliography
 
 [1] Maturana, H.R. & Varela, F.J. (1980). *Autopoiesis and Cognition: The Realization of the Living*. D. Reidel.

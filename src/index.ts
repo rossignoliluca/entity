@@ -481,34 +481,53 @@ export async function execute(
 }
 
 /**
- * Run verification
+ * PURE OBSERVATION: Read-only verification
+ *
+ * This is a pure observation function with NO side effects.
+ * It does not write events, does not modify state.
+ * Use this for health checks and internal verification.
+ *
+ * ISO AES-SPEC-001 Annex G: Observer/Actor Separation
+ */
+export async function verifyReadOnly(): Promise<VerificationResult> {
+  return verifyAllInvariants(BASE_DIR);
+}
+
+/**
+ * ACTION: Verify and record to event log
+ *
+ * This is an ACTION that modifies the system:
+ * - Writes a VERIFICATION event to the Merkle chain
+ * - Updates state with verification results
+ *
+ * Use verifyReadOnly() if you only need to check status without recording.
+ *
+ * ISO AES-SPEC-001 Annex G: Observer/Actor Separation
  */
 export async function verify(): Promise<VerificationResult> {
+  const manager = getStateManager(BASE_DIR);
+
+  // First, do the pure observation
   const result = await verifyAllInvariants(BASE_DIR);
 
-  // Log verification event
-  await appendEvent(BASE_DIR, 'VERIFICATION', {
+  // Then, atomically record the verification event AND update state
+  await manager.appendEventAtomic('VERIFICATION', {
     all_satisfied: result.all_satisfied,
     violations: result.invariants.filter((i) => !i.satisfied).length,
     status: result.all_satisfied ? 'nominal' : 'degraded',
     lyapunov_V: result.lyapunov_V,
+  }, (state, event) => {
+    // This updater runs atomically with the event append
+    const newState = { ...state };
+    newState.integrity.last_verification = result.timestamp;
+    newState.integrity.invariant_violations = result.invariants.filter(
+      (i) => !i.satisfied
+    ).length;
+    newState.integrity.status = result.all_satisfied ? 'nominal' : 'degraded';
+    newState.lyapunov.V_previous = newState.lyapunov.V;
+    newState.lyapunov.V = result.lyapunov_V;
+    return newState;
   });
-
-  // Update state
-  const state = await loadState();
-  state.integrity.last_verification = result.timestamp;
-  state.integrity.invariant_violations = result.invariants.filter(
-    (i) => !i.satisfied
-  ).length;
-  state.integrity.status = result.all_satisfied ? 'nominal' : 'degraded';
-  state.lyapunov.V_previous = state.lyapunov.V;
-  state.lyapunov.V = result.lyapunov_V;
-
-  const events = await loadEvents(BASE_DIR);
-  state.memory.event_count = events.length;
-  state.memory.last_event_hash = events[events.length - 1].hash;
-
-  await saveState(state);
 
   return result;
 }

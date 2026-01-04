@@ -7,11 +7,12 @@
  * AXM-016: Graceful Degradation
  */
 
-import { readFile, writeFile, readdir, unlink } from 'fs/promises';
+import { readdir, unlink } from 'fs/promises';
 import { join } from 'path';
-import { replayEvents, loadEvents, appendEvent } from './events.js';
-import { verifyChain, hashEvent } from './hash.js';
-import type { State, Event, Config, VerificationResult, InvariantCheck } from './types.js';
+import { replayEvents, loadEvents } from './events.js';
+import { hashEvent } from './hash.js';
+import { getStateManager } from './state-manager.js';
+import type { State, Config, InvariantCheck } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
 
 /**
@@ -41,17 +42,29 @@ export interface RecoveryReport {
 /**
  * §7.2.1 INV-002 Recovery: State Reconstruction
  * Procedure: Replay all events to reconstruct valid state
+ *
+ * Uses StateManager for atomic state writes with locking.
  */
 async function recoverStateDeterminism(
   baseDir: string
 ): Promise<RecoveryResult> {
   const timestamp = new Date().toISOString();
   const actions: string[] = [];
+  const manager = getStateManager(baseDir);
 
-  // Load current (possibly corrupted) state
-  const currentPath = join(baseDir, 'state', 'current.json');
-  const currentContent = await readFile(currentPath, 'utf-8');
-  const stateBefore = JSON.parse(currentContent) as State;
+  // Load current (possibly corrupted) state using manager
+  const stateBefore = await manager.readState();
+  if (!stateBefore) {
+    return {
+      timestamp,
+      invariant_id: 'INV-002',
+      status: 'terminal',
+      procedure: 'State reconstruction via event replay',
+      actions_taken: ['No current state found - terminal state'],
+      state_before: {},
+      state_after: {},
+    };
+  }
 
   actions.push('Loaded current state');
 
@@ -79,9 +92,9 @@ async function recoverStateDeterminism(
   // Update timestamp
   replayed.updated = timestamp;
 
-  // Write reconstructed state
-  await writeFile(currentPath, JSON.stringify(replayed, null, 2));
-  actions.push('Wrote reconstructed state');
+  // Write reconstructed state atomically with lock
+  await manager.writeState(replayed);
+  actions.push('Wrote reconstructed state (with lock)');
 
   return {
     timestamp,
@@ -159,12 +172,12 @@ async function recoverChainIntegrity(
     }
   }
 
-  // Reconstruct state from valid events
+  // Reconstruct state from valid events using StateManager
   const replayed = await replayEvents(baseDir);
   if (replayed) {
-    const currentPath = join(baseDir, 'state', 'current.json');
-    await writeFile(currentPath, JSON.stringify(replayed, null, 2));
-    actions.push('Reconstructed state from valid events');
+    const manager = getStateManager(baseDir);
+    await manager.writeState(replayed);
+    actions.push('Reconstructed state from valid events (with lock)');
   }
 
   return {
@@ -181,16 +194,28 @@ async function recoverChainIntegrity(
 /**
  * §7.2.3 INV-004 Recovery: Lyapunov Reset
  * Procedure: Reset V to valid value
+ *
+ * Uses StateManager for atomic state writes with locking.
  */
 async function recoverLyapunovMonotone(
   baseDir: string
 ): Promise<RecoveryResult> {
   const timestamp = new Date().toISOString();
   const actions: string[] = [];
+  const manager = getStateManager(baseDir);
 
-  const currentPath = join(baseDir, 'state', 'current.json');
-  const content = await readFile(currentPath, 'utf-8');
-  const state = JSON.parse(content) as State;
+  const state = await manager.readState();
+  if (!state) {
+    return {
+      timestamp,
+      invariant_id: 'INV-004',
+      status: 'terminal',
+      procedure: 'Lyapunov value reset',
+      actions_taken: ['No state found - terminal state'],
+      state_before: {},
+      state_after: {},
+    };
+  }
 
   const stateBefore = {
     lyapunov: { ...state.lyapunov },
@@ -208,7 +233,7 @@ async function recoverLyapunovMonotone(
     actions.push('Reset V to 0 (attractor)');
   }
 
-  await writeFile(currentPath, JSON.stringify(state, null, 2));
+  await manager.writeState(state);
 
   return {
     timestamp,
@@ -224,6 +249,8 @@ async function recoverLyapunovMonotone(
 /**
  * §7.2.4 INV-005 Recovery: Energy Management
  * Procedure: Enter dormant state or request energy
+ *
+ * Uses StateManager for atomic state writes with locking.
  */
 async function recoverEnergyViable(
   baseDir: string,
@@ -231,10 +258,20 @@ async function recoverEnergyViable(
 ): Promise<RecoveryResult> {
   const timestamp = new Date().toISOString();
   const actions: string[] = [];
+  const manager = getStateManager(baseDir);
 
-  const currentPath = join(baseDir, 'state', 'current.json');
-  const content = await readFile(currentPath, 'utf-8');
-  const state = JSON.parse(content) as State;
+  const state = await manager.readState();
+  if (!state) {
+    return {
+      timestamp,
+      invariant_id: 'INV-005',
+      status: 'terminal',
+      procedure: 'Energy recovery via dormant state',
+      actions_taken: ['No state found - terminal state'],
+      state_before: {},
+      state_after: {},
+    };
+  }
 
   const stateBefore = {
     energy: { ...state.energy },
@@ -245,25 +282,23 @@ async function recoverEnergyViable(
 
   if (state.energy.current < config.E_min) {
     // Enter dormant state per DEF-047
-    state.integrity.status = 'dormant';
-    state.coupling.active = false;
-    state.coupling.partner = null;
-    state.coupling.since = null;
-
-    // Set energy to minimum viable
-    state.energy.current = config.E_min;
-
     actions.push('Entered dormant state (DEF-047)');
     actions.push('Decoupled from partner');
     actions.push(`Set energy to E_min: ${config.E_min}`);
 
-    await writeFile(currentPath, JSON.stringify(state, null, 2));
-
-    // Log dormant event
-    await appendEvent(baseDir, 'STATE_UPDATE', {
+    // Atomically log event AND update state
+    await manager.appendEventAtomic('STATE_UPDATE', {
       reason: 'Energy recovery - entered dormant state',
-      energy: state.energy.current,
+      energy: config.E_min,
       status: 'dormant',
+    }, (currentState) => {
+      const newState = { ...currentState };
+      newState.integrity.status = 'dormant';
+      newState.coupling.active = false;
+      newState.coupling.partner = null;
+      newState.coupling.since = null;
+      newState.energy.current = config.E_min;
+      return newState;
     });
 
     return {
@@ -273,7 +308,7 @@ async function recoverEnergyViable(
       procedure: 'Energy recovery via dormant state',
       actions_taken: actions,
       state_before: stateBefore,
-      state_after: { energy: state.energy, integrity: state.integrity },
+      state_after: { energy: { ...state.energy, current: config.E_min }, integrity: { ...state.integrity, status: 'dormant' } },
     };
   }
 
@@ -366,12 +401,11 @@ export async function recover(
     }
   }
 
-  // Check for dormant
+  // Check for dormant using StateManager
+  const manager = getStateManager(baseDir);
   if (finalStatus !== 'terminal') {
-    const currentPath = join(baseDir, 'state', 'current.json');
-    const content = await readFile(currentPath, 'utf-8');
-    const state = JSON.parse(content) as State;
-    if (state.integrity.status === 'dormant') {
+    const state = await manager.readState();
+    if (state && state.integrity.status === 'dormant') {
       finalStatus = 'dormant';
     }
   }
@@ -384,24 +418,18 @@ export async function recover(
                 finalStatus === 'dormant' ? 0.5 : 0.2;
   }
 
-  // Log recovery event and update state to match
+  // Log recovery event and update state atomically
   if (recoveries.length > 0 && finalStatus !== 'terminal') {
-    await appendEvent(baseDir, 'STATE_UPDATE', {
+    await manager.appendEventAtomic('STATE_UPDATE', {
       reason: 'Recovery procedure executed',
       violations: violatedIds,
       recoveries: recoveries.map(r => ({ id: r.invariant_id, status: r.status })),
       final_status: finalStatus,
+    }, (state) => {
+      // State updater runs atomically with event append
+      // event_count and last_event_hash are automatically updated by appendEventAtomic
+      return state;
     });
-
-    // Re-sync state after logging event
-    const events = await loadEvents(baseDir);
-    const currentPath = join(baseDir, 'state', 'current.json');
-    const content = await readFile(currentPath, 'utf-8');
-    const state = JSON.parse(content) as State;
-    state.memory.event_count = events.length;
-    state.memory.last_event_hash = events[events.length - 1].hash;
-    state.updated = new Date().toISOString();
-    await writeFile(currentPath, JSON.stringify(state, null, 2));
   }
 
   return {

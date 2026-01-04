@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T20:21:36.317Z",
+  "updated": "2026-01-04T20:41:56.149Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -21,11 +21,11 @@
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": null
+    "V_previous": 0
   },
   "memory": {
-    "event_count": 466,
-    "last_event_hash": "1d169cb25dcd946c6a2bbd4e9018e7c9b2b530e552634a39148ada1c4b9f14d3",
+    "event_count": 476,
+    "last_event_hash": "e87ce2948dd2571a3e91233f6245bca7a7af45970754b4d638654f3403f27b20",
     "last_snapshot_at": "2026-01-04T20:12:55.639Z"
   },
   "session": {
@@ -33,9 +33,9 @@
     "current_id": null
   },
   "integrity": {
-    "invariant_violations": 1,
-    "last_verification": "2026-01-04T20:21:24.235Z",
-    "status": "degraded"
+    "invariant_violations": 0,
+    "last_verification": "2026-01-04T20:41:56.124Z",
+    "status": "nominal"
   },
   "human": {
     "name": "Unknown",
@@ -95,13 +95,13 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T20:21:30.839Z",
+    "lastCycle": "2026-01-04T20:27:30.857Z",
     "cycleCount": 5,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 71,
-      "growth": 96,
+      "stability": 76,
+      "growth": 97,
       "rest": 0
     },
     "totalEnergyConsumed": 0.015
