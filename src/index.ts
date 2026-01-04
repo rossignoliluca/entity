@@ -38,6 +38,12 @@ import {
   type LearningState,
 } from './learning.js';
 import { hashObject } from './hash.js';
+import {
+  generateDashboard,
+  printDashboard,
+  getQuickSummary,
+  exportMetrics,
+} from './analytics.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -717,25 +723,64 @@ Learning commands:
         }
         break;
 
+      case 'analytics':
+        const analyticsAction = process.argv[3];
+        const analyticsEvents = await loadEvents(BASE_DIR);
+        const analyticsState = await loadState();
+        const dashboard = generateDashboard(analyticsEvents, analyticsState);
+
+        if (analyticsAction === 'dashboard' || !analyticsAction) {
+          printDashboard(dashboard);
+        } else if (analyticsAction === 'summary') {
+          console.log('\n' + getQuickSummary(dashboard) + '\n');
+        } else if (analyticsAction === 'export') {
+          console.log(exportMetrics(dashboard));
+        } else if (analyticsAction === 'alerts') {
+          if (dashboard.alerts.length === 0) {
+            console.log('\n✓ No alerts\n');
+          } else {
+            console.log('\n=== ALERTS ===\n');
+            for (const alert of dashboard.alerts) {
+              const icon = alert.level === 'critical' ? '🔴' : alert.level === 'warning' ? '🟡' : '🔵';
+              console.log(`${icon} [${alert.level.toUpperCase()}] ${alert.message}`);
+              if (alert.recommendation) {
+                console.log(`   → ${alert.recommendation}`);
+              }
+            }
+            console.log('');
+          }
+        } else {
+          console.log(`
+Analytics commands:
+  analytics              Show full dashboard
+  analytics dashboard    Show full dashboard
+  analytics summary      Quick one-line summary
+  analytics alerts       Show only alerts
+  analytics export       Export metrics as JSON
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
 Entity System CLI - AES-SPEC-001
 
 Commands:
-  verify    Run all invariant checks
-  status    Show system status
-  session   Manage sessions (start/end)
-  snapshot  Manage state snapshots
-  recharge  Restore energy (+${ENERGY_RECHARGE_AMOUNT})
-  human     Manage human context
-  memory    Manage important memories
-  op        Execute operations from catalog
-  learn     Pattern analysis and learning (Phase 4)
-  replay    Replay events and show state
-  events    List recent events
-  recover   Attempt recovery from violations
-  help      Show this help
+  verify     Run all invariant checks
+  status     Show system status
+  session    Manage sessions (start/end)
+  snapshot   Manage state snapshots
+  recharge   Restore energy (+${ENERGY_RECHARGE_AMOUNT})
+  human      Manage human context
+  memory     Manage important memories
+  op         Execute operations from catalog
+  learn      Pattern analysis and learning (Phase 4)
+  analytics  Metrics dashboard and insights (Phase 5)
+  replay     Replay events and show state
+  events     List recent events
+  recover    Attempt recovery from violations
+  help       Show this help
 
 Usage:
   node dist/src/index.js <command>
