@@ -1333,6 +1333,107 @@ Default scheduled tasks:
   - health-check: every 5 minutes
   - energy-check: every 2 minutes
   - autopoiesis-check: every hour
+
+Phase 8: Internal Agent (autopoietic sense-making)
+  agent status        Show agent status and feeling
+  agent feeling       Show current feeling
+  agent cycle         Force a sense-making cycle
+          `);
+        }
+        break;
+
+      case 'agent':
+        // Phase 8: Internal Agent CLI
+        const agentAction = process.argv[3];
+        const { createAgent } = await import('./daemon/agent.js');
+        const agent = createAgent(BASE_DIR);
+
+        if (agentAction === 'status') {
+          await agent.printStatus();
+        } else if (agentAction === 'wake') {
+          const result = await agent.wake();
+          console.log(result.message);
+          if (result.success) {
+            console.log('\nAgent is now awake and sensing...');
+            console.log('Use "agent status" to check feeling');
+            console.log('Use Ctrl+C to stop\n');
+
+            // Keep process running
+            process.on('SIGINT', async () => {
+              await agent.sleep();
+              console.log('\nAgent sleeping');
+              process.exit(0);
+            });
+
+            // Keep alive
+            setInterval(() => {}, 1000);
+          }
+        } else if (agentAction === 'sleep') {
+          console.log('Agent sleep command');
+          console.log('Note: Agent runs within daemon. Use "daemon status" to check.');
+        } else if (agentAction === 'cycle') {
+          console.log('\n=== FORCED SENSE-MAKING CYCLE ===\n');
+          const { feeling, response } = await agent.forceCycle();
+
+          console.log('--- Feeling ---');
+          console.log(`Energy: ${feeling.energyFeeling} (${(feeling.energy * 100).toFixed(1)}%)`);
+          console.log(`Stability: ${feeling.stabilityFeeling} (V=${feeling.lyapunovV.toFixed(4)})`);
+          console.log(`Integrity: ${feeling.integrityFeeling} (${feeling.invariantsSatisfied}/${feeling.invariantsTotal})`);
+          console.log(`Surprise (ε): ${feeling.surprise.toFixed(4)}`);
+          console.log(`Threatens existence: ${feeling.threatsExistence}`);
+          console.log(`Threatens stability: ${feeling.threatsStability}`);
+          console.log('');
+
+          console.log('--- Response ---');
+          console.log(`Priority: ${response.priority}`);
+          console.log(`Action: ${response.action || '(rest)'}`);
+          console.log(`Reason: ${response.reason}`);
+          console.log(`Constitutional check: ${response.constitutionalCheck}`);
+          if (response.blockReason) {
+            console.log(`Block reason: ${response.blockReason}`);
+          }
+          console.log(`Energy: ${response.energyBefore.toFixed(4)} -> ${response.energyAfter.toFixed(4)}`);
+          if (response.executed && response.result) {
+            console.log(`Result: ${response.result.success ? '✓' : '✗'} ${response.result.message}`);
+          }
+          console.log('');
+        } else if (agentAction === 'feeling') {
+          const feeling = await agent.getCurrentFeeling();
+          console.log('\n=== CURRENT FEELING ===\n');
+          console.log(`Energy: ${feeling.energyFeeling} (${(feeling.energy * 100).toFixed(1)}%)`);
+          console.log(`Stability: ${feeling.stabilityFeeling} (V=${feeling.lyapunovV.toFixed(4)})`);
+          console.log(`Integrity: ${feeling.integrityFeeling} (${feeling.invariantsSatisfied}/${feeling.invariantsTotal})`);
+          console.log(`Surprise (ε): ${feeling.surprise.toFixed(4)}`);
+          console.log('');
+          console.log('Assessments:');
+          console.log(`  Threatens existence: ${feeling.threatsExistence ? 'YES' : 'no'}`);
+          console.log(`  Threatens stability: ${feeling.threatsStability ? 'YES' : 'no'}`);
+          console.log(`  Needs growth: ${feeling.needsGrowth ? 'YES' : 'no'}`);
+          console.log('');
+        } else {
+          console.log(`
+Internal Agent (Phase 8: Autopoietic Sense-Making)
+
+Based on:
+  - Maturana & Varela: Autopoiesis and Cognition
+  - Di Paolo: Sense-making and Precariousness
+  - Friston: Free Energy Principle / Active Inference
+  - Ashby: Ultrastability and Homeostasis
+
+The agent does not "decide" - it RESPONDS to its own precariousness.
+
+Commands:
+  agent status        Show agent status and statistics
+  agent feeling       Show current feeling (without acting)
+  agent cycle         Force a sense-making cycle
+  agent wake          Wake the agent (standalone mode)
+
+Priority Hierarchy (constitutional):
+  1. Survival   - Energy viability (INV-005)
+  2. Integrity  - Core invariants (INV-001 to INV-004)
+  3. Stability  - Lyapunov convergence (V → 0)
+  4. Growth     - Learning and autopoiesis
+  5. Rest       - Wu Wei (do nothing at attractor)
           `);
         }
         break;

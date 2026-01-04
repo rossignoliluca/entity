@@ -1,9 +1,17 @@
 /**
  * Daemon Module
  * AES-SPEC-001 Phase 7b: Autonomous Operation
+ * AES-SPEC-001 Phase 8: Internal Agency
  *
  * Enables the entity to operate autonomously without constant human interaction.
- * Implements scheduled tasks, self-maintenance, and auto-coupling.
+ * Implements scheduled tasks, self-maintenance, auto-coupling, and internal agency.
+ *
+ * Phase 8 adds the Internal Agent - an autopoietic sense-making loop that
+ * responds to the system's own precariousness based on:
+ * - Maturana & Varela: Autopoiesis
+ * - Di Paolo: Sense-making and Precariousness
+ * - Friston: Free Energy Principle
+ * - Ashby: Ultrastability
  */
 
 import { EventEmitter } from 'events';
@@ -13,6 +21,7 @@ import { Scheduler, type ScheduledTask } from './scheduler.js';
 import { HooksManager, type HookEvent } from './hooks.js';
 import { IPCServer } from './ipc.js';
 import { SelfMaintenance } from './maintenance.js';
+import { InternalAgent, type AgentConfig, DEFAULT_AGENT_CONFIG } from './agent.js';
 import type { State } from '../types.js';
 
 // =============================================================================
@@ -28,6 +37,9 @@ export interface DaemonConfig {
   autoRecovery: boolean;
   autoCoupling: boolean;
   maxIdleTime: number;        // ms before auto-decoupling
+  // Phase 8: Internal Agent
+  agentEnabled: boolean;
+  agentConfig: Partial<AgentConfig>;
 }
 
 export interface DaemonStatus {
@@ -39,6 +51,9 @@ export interface DaemonStatus {
   scheduledTasks: number;
   activeHooks: number;
   couplingRequests: number;
+  // Phase 8: Agent status
+  agentAwake: boolean;
+  agentCycles: number;
 }
 
 export const DEFAULT_DAEMON_CONFIG: DaemonConfig = {
@@ -50,6 +65,9 @@ export const DEFAULT_DAEMON_CONFIG: DaemonConfig = {
   autoRecovery: true,
   autoCoupling: false,
   maxIdleTime: 300000,        // 5 minutes
+  // Phase 8: Agent enabled by default
+  agentEnabled: true,
+  agentConfig: {},
 };
 
 // =============================================================================
@@ -63,6 +81,7 @@ export class Daemon extends EventEmitter {
   private hooks: HooksManager;
   private ipc: IPCServer;
   private maintenance: SelfMaintenance;
+  private agent: InternalAgent;
 
   private running: boolean = false;
   private startedAt: Date | null = null;
@@ -81,6 +100,11 @@ export class Daemon extends EventEmitter {
     this.maintenance = new SelfMaintenance(baseDir, {
       energyThreshold: this.config.energyAlertThreshold,
       autoRecovery: this.config.autoRecovery,
+    });
+    // Phase 8: Internal Agent
+    this.agent = new InternalAgent(baseDir, {
+      enabled: this.config.agentEnabled,
+      ...this.config.agentConfig,
     });
 
     this.setupEventHandlers();
@@ -130,6 +154,29 @@ export class Daemon extends EventEmitter {
       this.log(`Coupling request from: ${partner}`);
       this.hooks.trigger('onCouplingRequest', { partner });
     });
+
+    // Phase 8: Agent events
+    this.agent.on('wake', () => {
+      this.log('Internal agent awakened');
+      this.hooks.trigger('onAgentWake', {});
+    });
+
+    this.agent.on('sleep', () => {
+      this.log('Internal agent sleeping');
+      this.hooks.trigger('onAgentSleep', {});
+    });
+
+    this.agent.on('cycle', ({ feeling, response }) => {
+      if (response?.action) {
+        this.log(`Agent response: ${response.priority} -> ${response.action}`);
+      }
+      this.hooks.trigger('onAgentCycle', { feeling, response });
+    });
+
+    this.agent.on('error', ({ error, cycle }) => {
+      this.log(`Agent error in cycle ${cycle}: ${error}`, 'error');
+      this.hooks.trigger('onAgentError', { error, cycle });
+    });
   }
 
   // ===========================================================================
@@ -173,6 +220,11 @@ export class Daemon extends EventEmitter {
       // Register default tasks
       this.registerDefaultTasks();
 
+      // Phase 8: Wake the internal agent
+      if (this.config.agentEnabled) {
+        await this.agent.wake();
+      }
+
       return { success: true, message: `Daemon started (PID: ${process.pid})` };
     } catch (error) {
       return { success: false, message: `Failed to start daemon: ${error}` };
@@ -187,6 +239,11 @@ export class Daemon extends EventEmitter {
     try {
       this.log('Stopping daemon...');
       this.hooks.trigger('onDaemonStop', {});
+
+      // Phase 8: Sleep the internal agent first
+      if (this.agent.isAwake()) {
+        await this.agent.sleep();
+      }
 
       // Stop main loop
       if (this.mainLoopInterval) {
@@ -218,6 +275,7 @@ export class Daemon extends EventEmitter {
     const uptime = this.startedAt
       ? Math.floor((Date.now() - this.startedAt.getTime()) / 1000)
       : null;
+    const agentStats = this.agent.getStats();
 
     return {
       running: this.running,
@@ -228,6 +286,9 @@ export class Daemon extends EventEmitter {
       scheduledTasks: this.scheduler.getTaskCount(),
       activeHooks: this.hooks.getHookCount(),
       couplingRequests: this.couplingRequests,
+      // Phase 8: Agent status
+      agentAwake: this.agent.isAwake(),
+      agentCycles: agentStats.cycleCount,
     };
   }
 
@@ -288,6 +349,25 @@ export class Daemon extends EventEmitter {
 
       case 'logs':
         return this.getLogs(cmd.payload as number || 50);
+
+      // Phase 8: Agent commands
+      case 'agent-status':
+        return {
+          awake: this.agent.isAwake(),
+          stats: this.agent.getStats(),
+        };
+
+      case 'agent-wake':
+        return this.agent.wake();
+
+      case 'agent-sleep':
+        return this.agent.sleep();
+
+      case 'agent-feeling':
+        return this.agent.getCurrentFeeling();
+
+      case 'agent-cycle':
+        return this.agent.forceCycle();
 
       default:
         return { error: `Unknown command: ${cmd.type}` };
@@ -404,6 +484,23 @@ export class Daemon extends EventEmitter {
   isRunning(): boolean {
     return this.running;
   }
+
+  // Phase 8: Agent public API
+  getAgent(): InternalAgent {
+    return this.agent;
+  }
+
+  async wakeAgent(): Promise<{ success: boolean; message: string }> {
+    return this.agent.wake();
+  }
+
+  async sleepAgent(): Promise<{ success: boolean; message: string }> {
+    return this.agent.sleep();
+  }
+
+  isAgentAwake(): boolean {
+    return this.agent.isAwake();
+  }
 }
 
 // =============================================================================
@@ -414,3 +511,14 @@ export { Scheduler, type ScheduledTask } from './scheduler.js';
 export { HooksManager, type HookEvent, type HookHandler } from './hooks.js';
 export { IPCServer, IPCClient, sendDaemonCommand, isDaemonRunning } from './ipc.js';
 export { SelfMaintenance } from './maintenance.js';
+// Phase 8: Export agent
+export {
+  InternalAgent,
+  createAgent,
+  type AgentConfig,
+  type AgentStats,
+  type Feeling,
+  type Response,
+  type Priority,
+  DEFAULT_AGENT_CONFIG,
+} from './agent.js';

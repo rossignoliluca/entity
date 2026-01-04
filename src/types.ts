@@ -117,6 +117,22 @@ export interface State {
     lastGeneration: Timestamp | null;
     selfProductionHash: Hash | null;
   };
+
+  // Phase 8: Internal Agency state
+  agent?: {
+    enabled: boolean;
+    awake: boolean;
+    lastCycle: Timestamp | null;
+    cycleCount: number;
+    responsesByPriority: {
+      survival: number;
+      integrity: number;
+      stability: number;
+      growth: number;
+      rest: number;
+    };
+    totalEnergyConsumed: number;
+  };
 }
 
 // =============================================================================
@@ -135,7 +151,12 @@ export type EventType =
   | 'SNAPSHOT'
   | 'VERIFICATION'
   | 'LEARNING'
-  | 'META_OPERATION';
+  | 'META_OPERATION'
+  // Phase 8: Internal Agency events
+  | 'AGENT_WAKE'      // Agent sense-making loop started
+  | 'AGENT_SLEEP'     // Agent sense-making loop paused
+  | 'AGENT_RESPONSE'  // Agent responded to feeling
+  | 'AGENT_REST';     // Agent resting (Wu Wei)
 
 export interface Event {
   seq: number;

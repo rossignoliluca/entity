@@ -29,7 +29,12 @@ export type HookEvent =
   | 'onSessionStart'
   | 'onSessionEnd'
   | 'onSnapshotCreated'
-  | 'onStateChange';
+  | 'onStateChange'
+  // Phase 8: Agent events
+  | 'onAgentWake'
+  | 'onAgentSleep'
+  | 'onAgentCycle'
+  | 'onAgentError';
 
 export type HookHandler = (data: unknown) => void | Promise<void>;
 

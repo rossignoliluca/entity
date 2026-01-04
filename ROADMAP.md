@@ -86,6 +86,33 @@
 
 **Status:** Autonomous operation enabled. 266 tests
 
+## Phase 8: Internal Agency (COMPLETED)
+
+Based on scientific foundations:
+- Maturana & Varela: Autopoiesis and Cognition
+- Di Paolo: Sense-making and Precariousness
+- Friston: Free Energy Principle / Active Inference
+- Ashby: Ultrastability and Homeostasis
+- Jonas: Responsibility Principle
+
+Features:
+- [x] Autopoietic sense-making loop (src/daemon/agent.ts)
+- [x] Feeling system (energy, stability, integrity feelings)
+- [x] Surprise computation (ε = deviation from expected state)
+- [x] Constitutional priority hierarchy:
+  1. Survival (INV-005 energy viability)
+  2. Integrity (INV-001 to INV-004)
+  3. Stability (Lyapunov V → 0)
+  4. Growth (learning, autopoiesis)
+  5. Rest (Wu Wei - do nothing at attractor)
+- [x] Constitutional check before actions (Jonas principle)
+- [x] Agent event types (AGENT_WAKE, AGENT_SLEEP, AGENT_RESPONSE, AGENT_REST)
+- [x] Integration with daemon (auto-wake on daemon start)
+- [x] CLI commands: agent status/feeling/cycle/wake
+- [x] 31 agent tests
+
+**Status:** Internal agency implemented. The entity can now FEEL and RESPOND to its own precariousness. 297 tests
+
 ---
 
 ## Priority Queue

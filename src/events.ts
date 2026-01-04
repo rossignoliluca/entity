@@ -250,6 +250,53 @@ function applyEvent(state: State, event: Event): State {
       }
       break;
 
+    // Phase 8: Internal Agency events
+    case 'AGENT_WAKE':
+      if (!newState.agent) {
+        newState.agent = {
+          enabled: true,
+          awake: true,
+          lastCycle: null,
+          cycleCount: 0,
+          responsesByPriority: { survival: 0, integrity: 0, stability: 0, growth: 0, rest: 0 },
+          totalEnergyConsumed: 0,
+        };
+      } else {
+        newState.agent.awake = true;
+      }
+      break;
+
+    case 'AGENT_SLEEP':
+      if (newState.agent) {
+        newState.agent.awake = false;
+        if (event.data.stats) {
+          const stats = event.data.stats as Record<string, unknown>;
+          newState.agent.cycleCount = (stats.cycleCount as number) || newState.agent.cycleCount;
+          newState.agent.totalEnergyConsumed = (stats.totalEnergyConsumed as number) || newState.agent.totalEnergyConsumed;
+        }
+      }
+      break;
+
+    case 'AGENT_RESPONSE':
+      if (newState.agent) {
+        newState.agent.lastCycle = event.timestamp;
+        const priority = event.data.priority as keyof typeof newState.agent.responsesByPriority;
+        if (priority && newState.agent.responsesByPriority[priority] !== undefined) {
+          newState.agent.responsesByPriority[priority]++;
+        }
+        if (event.data.energyCost) {
+          newState.agent.totalEnergyConsumed += event.data.energyCost as number;
+        }
+      }
+      break;
+
+    case 'AGENT_REST':
+      if (newState.agent) {
+        newState.agent.lastCycle = event.timestamp;
+        newState.agent.responsesByPriority.rest++;
+      }
+      break;
+
     default:
       // Unknown event type - no state change
       break;
