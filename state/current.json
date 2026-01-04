@@ -3,19 +3,19 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:43:02.773Z",
+  "updated": "2026-01-04T18:44:43.389Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
     "instantiated_at": "2025-01-04T09:00:00.000Z"
   },
   "coupling": {
-    "active": true,
-    "partner": "human",
-    "since": "2026-01-04T18:43:02.758Z"
+    "active": false,
+    "partner": null,
+    "since": null
   },
   "energy": {
-    "current": 0.46399999999999997,
+    "current": 0.414,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,13 +24,13 @@
     "V_previous": 0
   },
   "memory": {
-    "event_count": 316,
-    "last_event_hash": "b666eb794383ded8a228eccf4eb32f02152bd4524f3be4e0c5bcc4647e89509f",
-    "last_snapshot_at": "2026-01-04T18:41:05.657Z"
+    "event_count": 319,
+    "last_event_hash": "17953e493d5ba7d2e909e7ae3666559d230813903488231a122fd3ad20af8e79",
+    "last_snapshot_at": "2026-01-04T18:44:43.342Z"
   },
   "session": {
     "total_count": 42,
-    "current_id": "73061a66-790b-4068-9495-4ae7787f8a07"
+    "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
@@ -41,7 +41,9 @@
     "name": "Unknown",
     "context": ""
   },
-  "important": [],
+  "important": [
+    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations"
+  ],
   "learning": {
     "enabled": true,
     "lastAnalysis": "2026-01-04T14:39:02.984Z",
