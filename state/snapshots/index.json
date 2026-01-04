@@ -8,7 +8,15 @@
       "event_hash": "4960bcba7553a6832f7af9d200f357afc3c153ef94a6ba3ba245b62d067eeddd",
       "state_hash": "a71371097ecc067a281812ad29ac23f5b7ac2d6dece08ea2bc9fe38f7120b58a",
       "description": "Backup before testing"
+    },
+    {
+      "id": "snap-2026-01-04T13-02-32",
+      "timestamp": "2026-01-04T13:02:32.684Z",
+      "event_seq": 20,
+      "event_hash": "332951d381c9cb464d922e65e34feef4d241675865f257d519970735a52a9121",
+      "state_hash": "f58442ff165d1f84987a1aeecad22f5b9e84c51ee01933111a1adc943e4ba310",
+      "description": "Post-restore test checkpoint"
     }
   ],
-  "latest": "snap-2026-01-04T12-50-14"
+  "latest": "snap-2026-01-04T13-02-32"
 }

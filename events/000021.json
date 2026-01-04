@@ -1,0 +1,13 @@
+{
+  "seq": 21,
+  "type": "SNAPSHOT",
+  "timestamp": "2026-01-04T13:02:32.688Z",
+  "data": {
+    "snapshot_id": "snap-2026-01-04T13-02-32",
+    "event_seq": 20,
+    "state_hash": "f58442ff165d1f84987a1aeecad22f5b9e84c51ee01933111a1adc943e4ba310",
+    "description": "Post-restore test checkpoint"
+  },
+  "prev_hash": "332951d381c9cb464d922e65e34feef4d241675865f257d519970735a52a9121",
+  "hash": "af2e30a04fb93d7a30b7d6770179f78bc4ba6e63b60b1fe618d7890b77c76096"
+}
