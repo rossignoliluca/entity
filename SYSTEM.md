@@ -139,11 +139,21 @@ Prefer termination to corrupted persistence.
 ## Commands
 
 ```bash
-npm run verify        # Verify all invariants
-npm run replay        # Reconstruct state from events
-npm run lyapunov      # Compute V(σ)
-npm run session       # Start session
-npm test              # Run all tests
+# Build and test
+npm run build         # Compile TypeScript
+npm run test          # Run all tests (353)
+
+# Core operations
+node dist/src/index.js verify           # Verify all invariants
+node dist/src/index.js status           # Show system status
+node dist/src/index.js session start    # Start session
+node dist/src/index.js session end      # End session
+node dist/src/index.js recover          # Auto-recover from violations
+
+# Daemon mode
+node dist/src/index.js daemon start     # Start autonomous daemon
+node dist/src/index.js daemon stop      # Stop daemon
+node dist/src/index.js agent status     # Show agent status
 ```
 
 ---

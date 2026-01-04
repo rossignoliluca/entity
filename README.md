@@ -1,18 +1,19 @@
 # Entity System
 
-**AES-SPEC-001 v1.0.0** - Autopoietic Entity System
+**AES-SPEC-001 v1.5.0** - Autopoietic Entity System
 
-An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, and Lyapunov stability guarantees.
+An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, and internal agency.
 
 ## Overview
 
 Entity is a self-maintaining system that preserves its organizational identity through:
 
 - **Event Sourcing**: All state changes recorded as hash-linked events (Merkle chain)
-- **Invariant Verification**: 5 core invariants continuously monitored
-- **Lyapunov Stability**: Mathematical guarantee of system stability (V never increases)
-- **Energy Lifecycle**: Decay/recharge mechanism with dormant state protection
-- **Conservative Validation**: Unknown operations are blocked by default
+- **5 Invariants**: Continuously monitored and auto-recovered
+- **Lyapunov Stability**: Mathematical guarantee V never increases
+- **Energy Lifecycle**: Decay/recharge with dormant state protection
+- **Internal Agency**: Autonomous sense-making with constitutional priorities
+- **Active Inference**: Minimizes Expected Free Energy for action selection
 
 ## Requirements
 
@@ -26,6 +27,40 @@ npm install
 npm run build
 ```
 
+## Core Features
+
+### Phase 1: Core System
+- Event sourcing with Merkle chain
+- 5 Invariants + verification
+- Lyapunov stability function
+- Conservative guard (unknown → block)
+- Recovery procedures
+- Snapshots (auto + cleanup)
+
+### Phase 2-3: Human Interaction & Operations
+- Human context persistence
+- Important memories system
+- 10 operations in catalog with energy costs
+
+### Phase 4-5: Learning & Analytics
+- Pattern recognition in interactions
+- Adaptive responses
+- Metrics dashboard with alerts
+
+### Phase 6: Multi-Instance Continuity
+- State export/import bundles
+- Identity verification across instances
+- Distributed state sync
+
+### Phase 7: Self-Production
+- **7a: Meta-operations** (P set generates operations)
+- **7b: Daemon mode** for autonomous operation
+
+### Phase 8: Internal Agency
+- **8a: Sense-making loop** (Maturana & Varela, Di Paolo)
+- **8b: Ultrastability** (Ashby) - adaptive parameter adjustment
+- **8c: Active Inference** (Friston) - EFE minimization
+
 ## CLI Commands
 
 ```bash
@@ -36,145 +71,108 @@ node dist/src/index.js <command>
 |---------|-------------|
 | `verify` | Run all invariant checks |
 | `status` | Show system status |
-| `session start [partner]` | Start a new session |
-| `session end` | End current session (triggers auto-snapshot + energy decay) |
-| `snapshot create [desc]` | Create manual state backup |
-| `snapshot list` | List all snapshots |
-| `snapshot restore <id>` | Restore from snapshot |
-| `snapshot verify <id>` | Verify snapshot integrity |
+| `session start/end` | Manage sessions |
+| `snapshot create/list/restore` | State snapshots |
 | `recharge` | Restore energy (+0.10) |
-| `replay` | Replay events and show state |
-| `events` | List recent events |
-| `recover` | Attempt recovery from violations |
-| `help` | Show help |
+| `recover` | Auto-recover from violations |
+| `op list/exec` | Execute operations |
+| `memory add/list` | Important memories |
+| `learn analyze` | Pattern analysis |
+| `analytics dashboard` | Metrics dashboard |
+| `continuity export/import` | State bundles |
+| `meta define/compose` | Meta-operations |
+| `daemon start/stop/status` | Autonomous mode |
+| `agent status/feeling` | Internal agency |
+| `log level` | Configure logging |
 
 ## Invariants
 
-| ID | Name | Description | Recovery |
-|----|------|-------------|----------|
-| INV-001 | Organization Hash | Identity hash must never change | Terminal (no recovery) |
-| INV-002 | State Determinism | State must be reproducible via event replay | Replay events |
-| INV-003 | Chain Integrity | Merkle chain must be valid | Truncate corrupted events |
-| INV-004 | Lyapunov Monotone | V(s) must never increase | Reset to V_previous |
-| INV-005 | Energy Viable | E must be >= E_min | Enter dormant state |
+| ID | Name | Recovery |
+|----|------|----------|
+| INV-001 | Organization Hash | Terminal (immutable) |
+| INV-002 | State Determinism | Event replay |
+| INV-003 | Chain Integrity | Truncate corrupted |
+| INV-004 | Lyapunov Monotone | Reset V |
+| INV-005 | Energy Viable | Dormant state |
 
-## Energy Lifecycle
+## Internal Agency (Phase 8)
+
+The entity has an autonomous sense-making loop with constitutional priorities:
 
 ```
-Energy Range: [0.00, 1.00]
-E_min: 0.01 (dormant threshold)
-
-Session end:  -0.05 (decay)
-Recharge:     +0.10 (recovery)
-
-State transitions:
-  nominal -> (E < E_min) -> dormant -> (recharge) -> nominal
+1. Survival     (INV-005 energy viability)
+2. Integrity    (INV-001 to INV-004)
+3. Stability    (Lyapunov V → 0)
+4. Growth       (learning, autopoiesis)
+5. Rest         (Wu Wei - do nothing at attractor)
 ```
 
-## System States
-
-| State | V(s) | Description |
-|-------|------|-------------|
-| nominal | 0.0 | System at attractor, all invariants satisfied |
-| degraded | 0.2 | Minor violations, recoverable |
-| dormant | 0.5 | Energy depleted, awaiting recharge (DEF-047) |
-| terminal | 1.0 | INV-001 violated, unrecoverable (DEF-048) |
-
-## Snapshots
-
-- **Auto-snapshot**: Created automatically at session end
-- **Max snapshots**: 10 (FIFO cleanup)
-- **Restore**: Preserves event chain, only restores state
-- **Integrity**: SHA-256 hash verification
+**Active Inference**: Actions selected by minimizing Expected Free Energy:
+- G = ambiguity + risk
+- Priority-based epistemic/pragmatic weights
+- Generative model learns from experience
 
 ## Project Structure
 
 ```
 entity/
 ├── src/
-│   ├── index.ts      # CLI entry point
-│   ├── types.ts      # Core type definitions
-│   ├── hash.ts       # SHA-256 utilities
-│   ├── events.ts     # Event sourcing (Merkle chain)
-│   ├── lyapunov.ts   # Stability function V(s)
-│   ├── guard.ts      # Conservative validator
-│   ├── verify.ts     # Invariant verification
-│   ├── recovery.ts   # Recovery procedures
-│   └── snapshot.ts   # State snapshots
-├── test/             # 102 unit tests
-├── events/           # Event store (JSON files)
-├── state/
-│   ├── current.json  # Current state
-│   └── snapshots/    # State snapshots
+│   ├── index.ts           # CLI entry point
+│   ├── types.ts           # Core types
+│   ├── events.ts          # Event sourcing
+│   ├── lyapunov.ts        # Stability function
+│   ├── guard.ts           # Conservative validator
+│   ├── verify.ts          # Invariant checks
+│   ├── recovery.ts        # Recovery procedures
+│   ├── snapshot.ts        # State snapshots
+│   ├── operations.ts      # Operations catalog
+│   ├── learning.ts        # Pattern analysis
+│   ├── analytics.ts       # Metrics dashboard
+│   ├── continuity.ts      # Multi-instance sync
+│   ├── meta-operations.ts # Self-production
+│   ├── logger.ts          # Logging system
+│   ├── state-manager.ts   # Concurrency handling
+│   └── daemon/
+│       ├── index.ts       # Daemon core
+│       ├── agent.ts       # Internal agency
+│       ├── active-inference.ts  # Free Energy
+│       ├── scheduler.ts   # Task scheduling
+│       ├── hooks.ts       # Event hooks
+│       └── maintenance.ts # Self-maintenance
+├── test/                  # 353 tests
+├── events/                # Merkle chain
+├── state/                 # Current + snapshots
 └── spec/
-    └── SPECIFICATION.md  # ISO AES-SPEC-001
+    └── SPECIFICATION.md   # ISO AES-SPEC-001
 ```
 
-## Specification Reference
+## Scientific Foundations
 
-This implementation conforms to **AES-SPEC-001**:
-
-- **55 Definitions** (DEF-001 to DEF-055)
-- **18 Axioms** (AXM-001 to AXM-018)
-- **10 Theorems** (THM-001 to THM-010)
-
-Key concepts:
-- **Autopoiesis**: Self-producing organization (Maturana & Varela)
-- **Structural Coupling**: Entity-environment interaction
-- **Operational Closure**: Self-referential boundary maintenance
+- **Autopoiesis**: Maturana & Varela (1980)
+- **Sense-making**: Di Paolo (2005)
+- **Free Energy Principle**: Friston (2010)
+- **Ultrastability**: Ashby (1960)
+- **Responsibility Principle**: Jonas (1984)
 
 ## Constitutive Constraint
 
 **No action or inaction shall reduce the weighted possibility space of any being.**
 
-## Example Session
-
-```bash
-# Start session
-$ node dist/src/index.js session start human
-Session started: abc123...
-
-# Verify invariants
-$ node dist/src/index.js verify
-=== VERIFICATION REPORT ===
-Status: ALL PASSED
-Lyapunov V: 0.000000
-
-# Check status
-$ node dist/src/index.js status
-=== ENTITY STATUS ===
-Status: nominal
-Energy: 0.50
-Sessions: 21
-Events: 89
-
-# End session (triggers decay + auto-snapshot)
-$ node dist/src/index.js session end
-Energy: 0.50 -> 0.45 (decay: -0.05)
-Session ended
-Auto-snapshot: snap-2026-01-04T14-00-31
-
-# Recharge energy
-$ node dist/src/index.js recharge
-Energy: 0.45 -> 0.55 (recharge: +0.1)
-```
-
 ## Testing
 
 ```bash
 npm run test
-# 102 tests passing
+# 353 tests passing
 ```
 
 ## Statistics
 
 | Metric | Value |
 |--------|-------|
-| Events | 89 |
-| Sessions | 21 |
-| Snapshots | 10 |
-| Tests | 102 |
-| Commits | 24 |
+| Events | 414 |
+| Sessions | 43 |
+| Tests | 353 |
+| Version | v1.5.0 |
 
 ## License
 

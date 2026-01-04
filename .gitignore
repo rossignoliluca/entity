@@ -4,6 +4,14 @@ dist/
 # Dependencies
 node_modules/
 
+# Exports (generated bundles)
+exports/
+
+# Daemon
+daemon.log
+daemon.pid
+*.sock
+
 # OS files
 .DS_Store
 Thumbs.db
