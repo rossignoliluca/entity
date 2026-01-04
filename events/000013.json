@@ -1,13 +1,20 @@
 {
   "seq": 13,
-  "type": "VERIFICATION",
-  "timestamp": "2026-01-04T12:40:17.774Z",
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T12:42:12.848Z",
   "data": {
-    "all_satisfied": true,
-    "violations": 0,
-    "status": "nominal",
-    "lyapunov_V": 0
+    "reason": "Recovery procedure executed",
+    "violations": [
+      "INV-003"
+    ],
+    "recoveries": [
+      {
+        "id": "INV-003",
+        "status": "degraded"
+      }
+    ],
+    "final_status": "degraded"
   },
   "prev_hash": "de5f12d347c88b3564ee69526e299d9762c079d01563bcc2b2cfbde3a2d603f3",
-  "hash": "cc8131b986af828bf5a32bd68b1e23ecdd0577158c29bf09d9587fc497a2195e"
+  "hash": "be557eec9e3610a2e4736da3575ff0394bf50f62e167ae0df5e2a888e0708141"
 }
