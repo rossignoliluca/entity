@@ -1,6 +1,6 @@
 {
   "name": "entity",
-  "version": "1.0.0",
+  "version": "1.7.2",
   "description": "Autopoietic Entity System - ISO AES-SPEC-001 Conformant",
   "type": "module",
   "main": "dist/src/index.js",
@@ -20,7 +20,8 @@
     "lyapunov",
     "event-sourcing",
     "merkle-chain",
-    "iso-specification"
+    "active-inference",
+    "self-organization"
   ],
   "author": "Luca Rossignoli",
   "license": "MIT",

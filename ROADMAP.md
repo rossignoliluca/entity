@@ -210,6 +210,31 @@ Agent uses meta-operations to create new responses autonomously.
 
 **Status:** Self-producing agent implemented. 399 tests
 
+## Annex H: Self-Production Safety (Sigilli) - COMPLETED
+
+Safety seals to prevent autopoietic drift.
+
+- [x] **Sigillo 1: Quarantine Gate** (Ashby + AgentOps):
+  - OperationStatus: QUARANTINED → TRIAL → ACTIVE | DEPRECATED
+  - quarantineCycles before TRIAL (default: 10)
+  - minTrialUses before ACTIVE (default: 5)
+  - Zero tolerance: any block → DEPRECATED
+  - getDynamicOperation/getAllOperations filter ACTIVE only
+- [x] **Sigillo 2: Context Filter** (Observer/Actor separation):
+  - CycleContext: 'production' | 'test' | 'audit'
+  - Context derived from NODE_ENV + coupling.active (not manual)
+  - Test/audit excluded from pattern tracking
+- [x] **Sigillo 3: Specialization Bounds**:
+  - complexity ≤ parent (AXM-008)
+  - energyCost ≤ parent
+  - requiresCoupling cannot relax
+  - MAX_SPECIALIZATION_DEPTH = 5
+- [x] **Zero tolerance spike detection**:
+  - maxVDelta, maxSurpriseDelta tracked per trial use
+  - ANY ΔV > 0 → DEPRECATED (not average)
+
+**Status:** Sigilli hardening complete. 405 tests, v1.7.2
+
 ## Phase 8f: Structural Coupling Protocol
 
 Formalize agent-human interaction.
