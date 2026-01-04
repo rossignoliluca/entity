@@ -1,0 +1,12 @@
+{
+  "seq": 11,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T12:30:28.150Z",
+  "data": {
+    "reason": "Energy restored - exiting dormant state",
+    "energy": 0.5,
+    "status": "nominal"
+  },
+  "prev_hash": "02dc069fc00610c29556ddeb89282db05dbbf4aa3d7f2560d0c57b70d79b9f44",
+  "hash": "9e08f5293867ead3e1c388464dec1f36d0ab162cba03526eff9361a465e64018"
+}

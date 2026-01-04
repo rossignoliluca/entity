@@ -1,0 +1,12 @@
+{
+  "seq": 9,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T12:30:02.508Z",
+  "data": {
+    "reason": "Energy recovery - entered dormant state",
+    "energy": 0.01,
+    "status": "dormant"
+  },
+  "prev_hash": "b2aa4197a855abf98bf7835b80ee3a9fb5709eb7765810e276b2a8723c8fd085",
+  "hash": "5a6f13ac6fcb1cf963bcf31d7d4874a6fa17004365937881fe37053f0ea98a0b"
+}
