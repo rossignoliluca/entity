@@ -171,10 +171,10 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 463+ |
+| Events | 493+ |
 | Sessions | 44 |
 | Tests | 386 |
-| Version | v1.6.0 |
+| Version | v1.6.1 |
 
 ## License
 
