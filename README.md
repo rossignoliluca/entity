@@ -171,7 +171,7 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 452 |
+| Events | 463+ |
 | Sessions | 44 |
 | Tests | 386 |
 | Version | v1.6.0 |
