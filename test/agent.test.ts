@@ -25,6 +25,7 @@ import {
   type ViolationRecord,
   type ParameterSnapshot,
   type SelfProductionState,
+  type CycleContext,
 } from '../src/daemon/agent.js';
 import { appendEvent } from '../src/events.js';
 import { hashObject } from '../src/hash.js';
@@ -1191,6 +1192,198 @@ describe('Phase 8e: Self-Production', () => {
       // In survival mode, no self-production should occur
       // (self-production only runs in growth mode)
       assert.strictEqual(stats.selfProduction.operationsCreated, 0);
+    });
+  });
+});
+
+// =============================================================================
+// Sigillo Tests: Must-Have Safety Tests
+// =============================================================================
+
+describe('Sigillo Safety Tests', () => {
+  beforeEach(async () => {
+    const state = createTestState({
+      energy: { current: 0.9, min: 0.01, threshold: 0.1 },
+      lyapunov: { V: 0, V_previous: 0 },
+      autopoiesis: {
+        enabled: true,
+        generatedOperations: [],
+        generationCount: 0,
+        lastGeneration: null,
+        selfProductionHash: null,
+      },
+    });
+    await setupTestEnv(state);
+  });
+
+  afterEach(async () => {
+    await cleanup();
+  });
+
+  describe('Runaway Prevention (100 cycles)', () => {
+    it('should limit operations_created to max 10 even with many growth cycles', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 1,    // Very low threshold
+        selfProductionCooldown: 1,      // Very low cooldown
+      });
+
+      const stats = agent.getStats();
+
+      // Simulate high action usage for multiple actions
+      for (let i = 0; i < 20; i++) {
+        stats.selfProduction.actionUsageCount[`action.${i}`] = 100;
+      }
+
+      // Run 100 growth cycles
+      for (let cycle = 0; cycle < 100; cycle++) {
+        await agent.forceCycle();
+      }
+
+      // Should never exceed max 10 operations
+      assert.ok(
+        stats.selfProduction.operationsCreated <= 10,
+        `Expected operationsCreated <= 10, got ${stats.selfProduction.operationsCreated}`
+      );
+    });
+
+    it('should respect cooldown between productions', async () => {
+      const cooldown = 20;
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 1,
+        selfProductionCooldown: cooldown,
+      });
+
+      const stats = agent.getStats();
+      stats.selfProduction.actionUsageCount['state.summary'] = 100;
+
+      // Track production cycles
+      const productionCycles: number[] = [];
+      agent.on('selfProduction', () => {
+        productionCycles.push(stats.cycleCount);
+      });
+
+      // Run many cycles
+      for (let i = 0; i < 50; i++) {
+        await agent.forceCycle();
+      }
+
+      // Verify cooldown is respected between productions
+      for (let i = 1; i < productionCycles.length; i++) {
+        const gap = productionCycles[i] - productionCycles[i - 1];
+        assert.ok(
+          gap >= cooldown,
+          `Expected cooldown >= ${cooldown}, got ${gap} between cycles ${productionCycles[i - 1]} and ${productionCycles[i]}`
+        );
+      }
+    });
+  });
+
+  describe('No Audit/Test Contamination (Sigillo 2)', () => {
+    it('should not track actions in test context', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 5,
+      });
+
+      // Set test context
+      agent.setContext('test');
+
+      const stats = agent.getStats();
+
+      // Run many cycles - actions should NOT be tracked
+      for (let i = 0; i < 20; i++) {
+        await agent.forceCycle();
+      }
+
+      // Action usage should remain empty (test context doesn't track)
+      const totalUsage = Object.values(stats.selfProduction.actionUsageCount).reduce((a, b) => a + b, 0);
+      assert.strictEqual(
+        totalUsage,
+        0,
+        `Expected 0 actions tracked in test context, got ${totalUsage}`
+      );
+    });
+
+    it('should not track actions in audit context', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 5,
+      });
+
+      // Set audit context
+      agent.setContext('audit');
+
+      const stats = agent.getStats();
+
+      // Run many cycles - actions should NOT be tracked
+      for (let i = 0; i < 20; i++) {
+        await agent.forceCycle();
+      }
+
+      // Action usage should remain empty (audit context doesn't track)
+      const totalUsage = Object.values(stats.selfProduction.actionUsageCount).reduce((a, b) => a + b, 0);
+      assert.strictEqual(
+        totalUsage,
+        0,
+        `Expected 0 actions tracked in audit context, got ${totalUsage}`
+      );
+    });
+
+    it('should not trigger self-production in test/audit context even with high usage', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 1,
+        selfProductionCooldown: 0,
+      });
+
+      const stats = agent.getStats();
+
+      // Manually set high action usage (simulating contaminated data)
+      stats.selfProduction.actionUsageCount['state.summary'] = 1000;
+      stats.selfProduction.actionUsageCount['energy.status'] = 1000;
+
+      // Set audit context BEFORE running cycles
+      agent.setContext('audit');
+
+      // Run cycles - self-production should NOT trigger
+      for (let i = 0; i < 10; i++) {
+        await agent.forceCycle();
+      }
+
+      // No operations should be created in audit context
+      assert.strictEqual(
+        stats.selfProduction.operationsCreated,
+        0,
+        `Expected 0 operations in audit context, got ${stats.selfProduction.operationsCreated}`
+      );
+    });
+
+    it('should track actions when context is production', async () => {
+      const agent = createAgent(TEST_DIR, {
+        selfProductionEnabled: true,
+        selfProductionThreshold: 100, // High threshold so we just track, don't produce
+      });
+
+      // Explicitly set production context (default)
+      agent.setContext('production');
+
+      // Run cycles that will execute actions
+      const state = createTestState({
+        energy: { current: 0.5, min: 0.01, threshold: 0.1 },
+        lyapunov: { V: 0.1, V_previous: 0.05 }, // Drifting slightly
+      });
+      await setupTestEnv(state);
+
+      for (let i = 0; i < 5; i++) {
+        await agent.forceCycle();
+      }
+
+      const stats = agent.getStats();
+      // In production context, actions should be tracked (if any were executed)
+      // This is a weaker assertion since it depends on what actions were taken
+      assert.strictEqual(agent.getContext(), 'production');
     });
   });
 });

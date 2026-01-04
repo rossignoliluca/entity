@@ -89,6 +89,14 @@ export interface AgentConfig {
   selfProductionCooldown: number;     // cycles between productions
 }
 
+/**
+ * Cycle context for Sigillo 2 (Observer/Actor separation)
+ * - 'production': Normal operation, track patterns for self-production
+ * - 'test': Test context, don't track patterns
+ * - 'audit': Audit/verification context, don't track patterns
+ */
+export type CycleContext = 'production' | 'test' | 'audit';
+
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   enabled: true,
   decisionInterval: 60000,       // 1 minute between cycles
@@ -297,6 +305,9 @@ export class InternalAgent extends EventEmitter {
   private cycleMemory: CycleMemory;
   private lastAction: string | null = null;
   private lastActionBlocked: boolean = false;
+
+  // Sigillo 2: Context tracking for observer/actor separation
+  private currentContext: CycleContext = 'production';
 
   constructor(
     baseDir: string,
@@ -980,18 +991,42 @@ export class InternalAgent extends EventEmitter {
 
   /**
    * Track action usage for pattern detection
+   * Sigillo 2: Only track in production context (observer/actor separation)
    */
   private trackActionUsage(action: string): void {
+    // Sigillo 2: Don't track actions in test/audit context
+    if (this.currentContext !== 'production') {
+      return;
+    }
     const sp = this.stats.selfProduction;
     sp.actionUsageCount[action] = (sp.actionUsageCount[action] || 0) + 1;
   }
 
   /**
+   * Set the cycle context (Sigillo 2)
+   * Use 'test' or 'audit' to prevent action tracking during verification/testing
+   */
+  setContext(context: CycleContext): void {
+    this.currentContext = context;
+  }
+
+  /**
+   * Get the current cycle context
+   */
+  getContext(): CycleContext {
+    return this.currentContext;
+  }
+
+  /**
    * Check if we should create a new operation based on patterns
+   * Sigillo 2: Only in production context
    */
   private async checkSelfProduction(feeling: Feeling): Promise<void> {
     const sp = this.stats.selfProduction;
     if (!sp.enabled) return;
+
+    // Sigillo 2: Don't produce in test/audit context
+    if (this.currentContext !== 'production') return;
 
     // Cooldown check
     const cyclesSinceLastProduction = this.stats.cycleCount - sp.lastProductionCycle;

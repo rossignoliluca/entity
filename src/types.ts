@@ -112,6 +112,21 @@ export interface State {
       generatedAt: string;
       parentOperations?: string[];
       generation: number;
+      // Sigillo 1: Quarantine Gate (Ashby + AgentOps)
+      status?: 'QUARANTINED' | 'TRIAL' | 'ACTIVE' | 'DEPRECATED';
+      statusChangedAt?: string;
+      quarantineStartCycle?: number;
+      trialMetrics?: {
+        trialStartedAt: string;
+        trialUses: number;
+        blocks: number;
+        totalVDelta: number;
+        totalSurpriseDelta: number;
+        totalEnergyCost: number;
+        parentEnergyCost: number;
+        lastTrialUse: string | null;
+      };
+      deprecationReason?: string;
     }>;
     generationCount: number;
     lastGeneration: Timestamp | null;

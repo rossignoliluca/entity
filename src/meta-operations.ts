@@ -36,6 +36,69 @@ export type HandlerTemplate =
 export type GeneratedCategory = OperationDef['category'] | 'generated';
 
 /**
+ * Operation lifecycle status (Ashby ultrastability + AgentOps canary)
+ *
+ * QUARANTINED: Newly created, cooling period before trial
+ * TRIAL: Being tested, metrics collected
+ * ACTIVE: Proven safe, can be used in production
+ * DEPRECATED: Failed trial or accumulated violations
+ */
+export type OperationStatus = 'QUARANTINED' | 'TRIAL' | 'ACTIVE' | 'DEPRECATED';
+
+/**
+ * Trial metrics for staged activation (Friston epistemic value)
+ *
+ * An operation graduates TRIAL → ACTIVE only when:
+ * - blocks == 0 (no constitutional violations)
+ * - avgVDelta <= 0 (Lyapunov never increases)
+ * - avgSurpriseDelta <= 0 (uncertainty not increasing)
+ * - energyEfficiency >= 1.0 (not worse than parent)
+ */
+export interface TrialMetrics {
+  trialStartedAt: string;
+  trialUses: number;
+  blocks: number;
+  totalVDelta: number;           // Sum of V changes during trial uses
+  totalSurpriseDelta: number;    // Sum of surprise changes
+  totalEnergyCost: number;       // Total energy spent in trial
+  parentEnergyCost: number;      // Parent operation's energy cost for comparison
+  lastTrialUse: string | null;
+}
+
+/**
+ * Default trial metrics for new operations
+ */
+export const DEFAULT_TRIAL_METRICS: TrialMetrics = {
+  trialStartedAt: '',
+  trialUses: 0,
+  blocks: 0,
+  totalVDelta: 0,
+  totalSurpriseDelta: 0,
+  totalEnergyCost: 0,
+  parentEnergyCost: 0,
+  lastTrialUse: null,
+};
+
+/**
+ * Quarantine configuration (AgentOps staged rollout)
+ */
+export interface QuarantineConfig {
+  quarantineCycles: number;      // Cycles before QUARANTINED → TRIAL
+  minTrialUses: number;          // Minimum uses before TRIAL → ACTIVE
+  maxTrialBlocks: number;        // Max blocks before TRIAL → DEPRECATED (0 = strict)
+  maxVDeltaPerUse: number;       // Max avg V increase per use (0 = strict)
+  maxSurpriseDeltaPerUse: number; // Max avg surprise increase per use
+}
+
+export const DEFAULT_QUARANTINE_CONFIG: QuarantineConfig = {
+  quarantineCycles: 10,          // 10 cycles cooling period
+  minTrialUses: 5,               // 5 successful uses minimum
+  maxTrialBlocks: 0,             // Zero tolerance for blocks
+  maxVDeltaPerUse: 0,            // Lyapunov must not increase
+  maxSurpriseDeltaPerUse: 0.01,  // Small surprise increase tolerated
+};
+
+/**
  * Serializable operation definition (can be stored in state)
  */
 export interface GeneratedOperationDef {
@@ -52,6 +115,13 @@ export interface GeneratedOperationDef {
   generatedAt: string;           // Timestamp
   parentOperations?: string[];   // For composed operations
   generation: number;            // How many generations from base (0 = base catalog)
+
+  // Sigillo 1: Quarantine Gate (Ashby + AgentOps)
+  status: OperationStatus;       // Lifecycle status
+  statusChangedAt: string;       // When status last changed
+  quarantineStartCycle: number;  // Cycle when quarantine started
+  trialMetrics?: TrialMetrics;   // Metrics during trial phase
+  deprecationReason?: string;    // Why deprecated (if applicable)
 }
 
 /**
@@ -364,6 +434,7 @@ export function defineOperation(
     requiresCoupling?: boolean;
     template: HandlerTemplate;
     templateParams: Record<string, unknown>;
+    currentCycle?: number;  // For quarantine tracking
   }
 ): OperationResult & { generatedOperation?: GeneratedOperationDef } {
   // Validate ID doesn't conflict with catalog
@@ -391,6 +462,7 @@ export function defineOperation(
     };
   }
 
+  const now = new Date().toISOString();
   const generatedOp: GeneratedOperationDef = {
     id: params.id,
     name: params.name,
@@ -402,8 +474,12 @@ export function defineOperation(
     template: params.template,
     templateParams: params.templateParams,
     generatedBy: 'meta.define',
-    generatedAt: new Date().toISOString(),
+    generatedAt: now,
     generation: 1,
+    // Sigillo 1: All new operations start QUARANTINED (Ashby + AgentOps)
+    status: 'QUARANTINED',
+    statusChangedAt: now,
+    quarantineStartCycle: params.currentCycle ?? 0,
   };
 
   const newAutopoiesis: AutopoiesisState = {
@@ -440,6 +516,7 @@ export function composeOperations(
     description: string;
     operations: string[];
     energyCost?: number;
+    currentCycle?: number;  // For quarantine tracking
   }
 ): OperationResult & { generatedOperation?: GeneratedOperationDef } {
   // Validate all source operations exist
@@ -473,7 +550,8 @@ export function composeOperations(
     return Math.max(max, genOp?.generation || 0);
   }, 0);
 
-  return defineOperation(state, {
+  const now = new Date().toISOString();
+  const result = defineOperation(state, {
     id: params.id,
     name: params.name,
     description: params.description,
@@ -483,51 +561,32 @@ export function composeOperations(
     requiresCoupling: true,
     template: 'compose',
     templateParams: { operations: params.operations },
-  }).success
-    ? {
-        ...defineOperation(state, {
-          id: params.id,
-          name: params.name,
-          description: params.description,
-          category: 'generated',
-          complexity,
-          energyCost,
-          requiresCoupling: true,
-          template: 'compose',
-          templateParams: { operations: params.operations },
-        }),
-        generatedOperation: {
-          id: params.id,
-          name: params.name,
-          description: params.description,
-          category: 'generated',
-          complexity,
-          energyCost,
-          requiresCoupling: true,
-          template: 'compose',
-          templateParams: { operations: params.operations },
-          generatedBy: 'meta.compose',
-          generatedAt: new Date().toISOString(),
-          parentOperations: params.operations,
-          generation: maxGeneration + 1,
-        },
-      }
-    : defineOperation(state, {
-        id: params.id,
-        name: params.name,
-        description: params.description,
-        category: 'generated',
-        complexity,
-        energyCost,
-        requiresCoupling: true,
-        template: 'compose',
-        templateParams: { operations: params.operations },
-      });
+    currentCycle: params.currentCycle,
+  });
+
+  if (result.success && result.generatedOperation) {
+    // Override with compose-specific metadata
+    result.generatedOperation.generatedBy = 'meta.compose';
+    result.generatedOperation.parentOperations = params.operations;
+    result.generatedOperation.generation = maxGeneration + 1;
+  }
+
+  return result;
 }
 
 /**
  * Create a specialized version of an existing operation with preset params
+ *
+ * Sigillo 3: Specialization must RESTRICT, not EXPAND
+ *
+ * Bounds enforced:
+ * - complexity ≤ parent (AXM-008)
+ * - scope cannot expand (internal stays internal)
+ * - coupling requirements cannot be relaxed
+ * - generation depth is limited
  */
+const MAX_SPECIALIZATION_DEPTH = 5;
+
 export function specializeOperation(
   state: State,
   params: {
@@ -536,6 +595,11 @@ export function specializeOperation(
     description: string;
     sourceOperation: string;
     presetParams: Record<string, unknown>;
+    currentCycle?: number;  // For quarantine tracking
+    // Optional overrides (must satisfy bounds)
+    complexity?: number;
+    energyCost?: number;
+    requiresCoupling?: boolean;
   }
 ): OperationResult & { generatedOperation?: GeneratedOperationDef } {
   // Find source operation
@@ -556,6 +620,49 @@ export function specializeOperation(
   );
   const sourceGeneration = sourceGenOp?.generation || 0;
 
+  // ===========================================================================
+  // Sigillo 3: Bounds Validation
+  // ===========================================================================
+
+  // Bound 1: Generation depth limit
+  if (sourceGeneration >= MAX_SPECIALIZATION_DEPTH) {
+    return {
+      success: false,
+      message: `Specialization depth limit reached (max ${MAX_SPECIALIZATION_DEPTH}). Cannot specialize ${params.sourceOperation} further.`,
+    };
+  }
+
+  // Bound 2: Complexity cannot increase (AXM-008)
+  const effectiveComplexity = params.complexity ?? sourceOp.complexity;
+  if (effectiveComplexity > sourceOp.complexity) {
+    return {
+      success: false,
+      message: `Sigillo 3 violation: complexity ${effectiveComplexity} > parent ${sourceOp.complexity}. Specialization must restrict, not expand.`,
+    };
+  }
+
+  // Bound 3: Energy cost cannot increase
+  const effectiveEnergyCost = params.energyCost ?? sourceOp.energyCost;
+  if (effectiveEnergyCost > sourceOp.energyCost) {
+    return {
+      success: false,
+      message: `Sigillo 3 violation: energyCost ${effectiveEnergyCost} > parent ${sourceOp.energyCost}. Specialization must restrict, not expand.`,
+    };
+  }
+
+  // Bound 4: Coupling requirement cannot be relaxed
+  const effectiveRequiresCoupling = params.requiresCoupling ?? sourceOp.requiresCoupling;
+  if (sourceOp.requiresCoupling && !effectiveRequiresCoupling) {
+    return {
+      success: false,
+      message: `Sigillo 3 violation: cannot remove coupling requirement. Specialization must restrict, not expand.`,
+    };
+  }
+
+  // ===========================================================================
+  // Create specialized operation (inherits bounds from parent)
+  // ===========================================================================
+
   // For catalog operations, we need to determine the template
   let template: HandlerTemplate = 'echo';
   let templateParams: Record<string, unknown> = { ...params.presetParams };
@@ -570,12 +677,13 @@ export function specializeOperation(
     id: params.id,
     name: params.name,
     description: params.description,
-    category: sourceOp.category,
-    complexity: sourceOp.complexity,
-    energyCost: sourceOp.energyCost,
-    requiresCoupling: sourceOp.requiresCoupling,
+    category: sourceOp.category,  // Category inherited, cannot expand
+    complexity: effectiveComplexity,
+    energyCost: effectiveEnergyCost,
+    requiresCoupling: effectiveRequiresCoupling,
     template,
     templateParams,
+    currentCycle: params.currentCycle,
   });
 
   if (result.success && result.generatedOperation) {
@@ -587,12 +695,215 @@ export function specializeOperation(
   return result;
 }
 
+// =============================================================================
+// Sigillo 1: Quarantine Lifecycle Management (Ashby + AgentOps)
+// =============================================================================
+
 /**
- * List all generated operations
+ * Check if operation is ready to transition from QUARANTINED to TRIAL
+ * (Ashby: cooling period before structural change takes effect)
+ */
+export function canTransitionToTrial(
+  op: GeneratedOperationDef,
+  currentCycle: number,
+  config: QuarantineConfig = DEFAULT_QUARANTINE_CONFIG
+): boolean {
+  if (op.status !== 'QUARANTINED') return false;
+  const cyclesSinceCreation = currentCycle - op.quarantineStartCycle;
+  return cyclesSinceCreation >= config.quarantineCycles;
+}
+
+/**
+ * Check if operation passes trial metrics (Friston: epistemic → pragmatic)
+ */
+export function canTransitionToActive(
+  op: GeneratedOperationDef,
+  config: QuarantineConfig = DEFAULT_QUARANTINE_CONFIG
+): { canActivate: boolean; reason: string } {
+  if (op.status !== 'TRIAL') {
+    return { canActivate: false, reason: 'Not in TRIAL status' };
+  }
+
+  const metrics = op.trialMetrics;
+  if (!metrics) {
+    return { canActivate: false, reason: 'No trial metrics recorded' };
+  }
+
+  if (metrics.trialUses < config.minTrialUses) {
+    return { canActivate: false, reason: `Insufficient trial uses: ${metrics.trialUses}/${config.minTrialUses}` };
+  }
+
+  if (metrics.blocks > config.maxTrialBlocks) {
+    return { canActivate: false, reason: `Too many blocks: ${metrics.blocks}` };
+  }
+
+  const avgVDelta = metrics.trialUses > 0 ? metrics.totalVDelta / metrics.trialUses : 0;
+  if (avgVDelta > config.maxVDeltaPerUse) {
+    return { canActivate: false, reason: `V delta too high: ${avgVDelta.toFixed(4)}` };
+  }
+
+  const avgSurpriseDelta = metrics.trialUses > 0 ? metrics.totalSurpriseDelta / metrics.trialUses : 0;
+  if (avgSurpriseDelta > config.maxSurpriseDeltaPerUse) {
+    return { canActivate: false, reason: `Surprise delta too high: ${avgSurpriseDelta.toFixed(4)}` };
+  }
+
+  return { canActivate: true, reason: 'All metrics passed' };
+}
+
+/**
+ * Check if operation should be deprecated (trial failed)
+ */
+export function shouldDeprecate(
+  op: GeneratedOperationDef,
+  config: QuarantineConfig = DEFAULT_QUARANTINE_CONFIG
+): { shouldDeprecate: boolean; reason: string } {
+  if (op.status !== 'TRIAL') {
+    return { shouldDeprecate: false, reason: 'Not in TRIAL status' };
+  }
+
+  const metrics = op.trialMetrics;
+  if (!metrics) {
+    return { shouldDeprecate: false, reason: 'No metrics yet' };
+  }
+
+  // Immediate deprecation on any block (zero tolerance)
+  if (metrics.blocks > config.maxTrialBlocks) {
+    return { shouldDeprecate: true, reason: `Constitutional block detected: ${metrics.blocks}` };
+  }
+
+  // Deprecate if V is consistently increasing
+  if (metrics.trialUses >= 3) {
+    const avgVDelta = metrics.totalVDelta / metrics.trialUses;
+    if (avgVDelta > config.maxVDeltaPerUse * 2) {
+      return { shouldDeprecate: true, reason: `Lyapunov consistently increasing: ${avgVDelta.toFixed(4)}` };
+    }
+  }
+
+  return { shouldDeprecate: false, reason: 'Metrics within bounds' };
+}
+
+/**
+ * Transition operation status (immutable - returns new op)
+ */
+export function transitionOperationStatus(
+  op: GeneratedOperationDef,
+  newStatus: OperationStatus,
+  reason?: string
+): GeneratedOperationDef {
+  const now = new Date().toISOString();
+  const updated: GeneratedOperationDef = {
+    ...op,
+    status: newStatus,
+    statusChangedAt: now,
+  };
+
+  if (newStatus === 'TRIAL' && !op.trialMetrics) {
+    updated.trialMetrics = {
+      ...DEFAULT_TRIAL_METRICS,
+      trialStartedAt: now,
+      parentEnergyCost: op.energyCost,
+    };
+  }
+
+  if (newStatus === 'DEPRECATED' && reason) {
+    updated.deprecationReason = reason;
+  }
+
+  return updated;
+}
+
+/**
+ * Record trial use metrics
+ */
+export function recordTrialUse(
+  op: GeneratedOperationDef,
+  vDelta: number,
+  surpriseDelta: number,
+  energyCost: number,
+  blocked: boolean
+): GeneratedOperationDef {
+  if (op.status !== 'TRIAL' || !op.trialMetrics) {
+    return op;
+  }
+
+  const now = new Date().toISOString();
+  return {
+    ...op,
+    trialMetrics: {
+      ...op.trialMetrics,
+      trialUses: op.trialMetrics.trialUses + 1,
+      blocks: op.trialMetrics.blocks + (blocked ? 1 : 0),
+      totalVDelta: op.trialMetrics.totalVDelta + vDelta,
+      totalSurpriseDelta: op.trialMetrics.totalSurpriseDelta + surpriseDelta,
+      totalEnergyCost: op.trialMetrics.totalEnergyCost + energyCost,
+      lastTrialUse: now,
+    },
+  };
+}
+
+/**
+ * Normalize legacy operation to include quarantine fields
+ * (Backward compatibility for operations created before v1.7.1)
+ */
+export function normalizeOperation(op: Partial<GeneratedOperationDef> & { id: string }): GeneratedOperationDef {
+  const now = new Date().toISOString();
+  return {
+    id: op.id,
+    name: op.name || op.id,
+    description: op.description || '',
+    category: op.category || 'generated',
+    complexity: op.complexity ?? 5,
+    energyCost: op.energyCost ?? 0.01,
+    requiresCoupling: op.requiresCoupling ?? true,
+    template: op.template || 'echo',
+    templateParams: op.templateParams || {},
+    generatedBy: op.generatedBy || 'unknown',
+    generatedAt: op.generatedAt || now,
+    parentOperations: op.parentOperations,
+    generation: op.generation ?? 1,
+    // Legacy operations without status are treated as ACTIVE (they were pre-quarantine)
+    status: op.status || 'ACTIVE',
+    statusChangedAt: op.statusChangedAt || op.generatedAt || now,
+    quarantineStartCycle: op.quarantineStartCycle ?? 0,
+    trialMetrics: op.trialMetrics,
+    deprecationReason: op.deprecationReason,
+  };
+}
+
+/**
+ * Get only ACTIVE operations (for production use)
+ */
+export function getActiveGeneratedOperations(state: State): GeneratedOperationDef[] {
+  const autopoiesis = (state as State & { autopoiesis?: AutopoiesisState }).autopoiesis;
+  return (autopoiesis?.generatedOperations || [])
+    .map(op => normalizeOperation(op as Partial<GeneratedOperationDef> & { id: string }))
+    .filter(op => op.status === 'ACTIVE');
+}
+
+/**
+ * Get operations available for trial (QUARANTINED ready to transition or TRIAL)
+ */
+export function getTrialableOperations(
+  state: State,
+  currentCycle: number,
+  config: QuarantineConfig = DEFAULT_QUARANTINE_CONFIG
+): GeneratedOperationDef[] {
+  const autopoiesis = (state as State & { autopoiesis?: AutopoiesisState }).autopoiesis;
+  return (autopoiesis?.generatedOperations || [])
+    .map(op => normalizeOperation(op as Partial<GeneratedOperationDef> & { id: string }))
+    .filter(op =>
+      op.status === 'TRIAL' ||
+      (op.status === 'QUARANTINED' && canTransitionToTrial(op, currentCycle, config))
+    );
+}
+
+/**
+ * List all generated operations (normalized for backward compatibility)
  */
 export function listGeneratedOperations(state: State): GeneratedOperationDef[] {
   const autopoiesis = (state as State & { autopoiesis?: AutopoiesisState }).autopoiesis;
-  return autopoiesis?.generatedOperations || [];
+  return (autopoiesis?.generatedOperations || [])
+    .map(op => normalizeOperation(op as Partial<GeneratedOperationDef> & { id: string }));
 }
 
 /**

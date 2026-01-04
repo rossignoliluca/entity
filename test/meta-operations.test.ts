@@ -15,8 +15,10 @@ import {
   getDynamicOperation,
   getAllOperations,
   META_OPERATIONS_CATALOG,
+  normalizeOperation,
   type HandlerTemplate,
   type AutopoiesisState,
+  type GeneratedOperationDef,
 } from '../src/meta-operations.js';
 import { OPERATIONS_CATALOG } from '../src/operations.js';
 import type { State } from '../src/types.js';
@@ -42,14 +44,19 @@ function createState(): State {
   };
 }
 
+// Helper to create a mock generated operation with quarantine fields
+function mockOp(partial: Partial<GeneratedOperationDef> & { id: string }): GeneratedOperationDef {
+  return normalizeOperation(partial);
+}
+
 // Helper to create state with autopoiesis
-function createStateWithAutopoiesis(genOps: AutopoiesisState['generatedOperations'] = []): State & { autopoiesis: AutopoiesisState } {
+function createStateWithAutopoiesis(genOps: Array<Partial<GeneratedOperationDef> & { id: string }> = []): State & { autopoiesis: AutopoiesisState } {
   const state = createState();
   return {
     ...state,
     autopoiesis: {
       enabled: true,
-      generatedOperations: genOps,
+      generatedOperations: genOps.map(op => mockOp(op)),
       generationCount: genOps.length,
       lastGeneration: genOps.length > 0 ? new Date().toISOString() : null,
       selfProductionHash: null,
