@@ -1,6 +1,6 @@
 # Entity System
 
-**AES-SPEC-001 v1.7.2** - Autopoietic Entity System
+**AES-SPEC-001 v1.8.0** - Autopoietic Entity System
 
 An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, and internal agency.
 
@@ -62,6 +62,7 @@ npm run build
 - **8c: Active Inference** (Friston) - EFE minimization
 - **8d: Cycle Memory** - learns from past cycles
 - **8e: Self-Producing Agent** - agent creates operations from patterns
+- **8f: Structural Coupling Protocol** - non-coercive agent-human signaling
 
 ### Annex H: Self-Production Safety (Sigilli)
 - **Sigillo 1: Quarantine Gate** - QUARANTINED → TRIAL → ACTIVE lifecycle
@@ -89,7 +90,8 @@ node dist/src/index.js <command>
 | `continuity export/import` | State bundles |
 | `meta define/compose` | Meta-operations |
 | `daemon start/stop/status` | Autonomous mode |
-| `agent status/feeling` | Internal agency |
+| `agent status/feeling/cycle` | Internal agency |
+| `coupling list/grant/complete` | Coupling protocol |
 | `log level` | Configure logging |
 
 ## Invariants
@@ -137,6 +139,7 @@ entity/
 │   ├── analytics.ts       # Metrics dashboard
 │   ├── continuity.ts      # Multi-instance sync
 │   ├── meta-operations.ts # Self-production
+│   ├── coupling-protocol.ts # Agent-human signaling
 │   ├── logger.ts          # Logging system
 │   ├── state-manager.ts   # Concurrency handling
 │   └── daemon/
@@ -147,7 +150,7 @@ entity/
 │       ├── scheduler.ts   # Task scheduling
 │       ├── hooks.ts       # Event hooks
 │       └── maintenance.ts # Self-maintenance
-├── test/                  # 386 tests
+├── test/                  # 434 tests
 ├── events/                # Merkle chain
 ├── state/                 # Current + snapshots
 └── spec/
@@ -170,17 +173,17 @@ entity/
 
 ```bash
 npm run test
-# 399 tests passing
+# 434 tests passing
 ```
 
 ## Statistics
 
 | Metric | Value |
 |--------|-------|
-| Events | 503+ |
-| Sessions | 46 |
-| Tests | 405 |
-| Version | v1.7.2 |
+| Events | 520+ |
+| Sessions | 49 |
+| Tests | 434 |
+| Version | v1.8.0 |
 
 ## License
 

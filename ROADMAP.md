@@ -235,17 +235,24 @@ Safety seals to prevent autopoietic drift.
 
 **Status:** Sigilli hardening complete. 405 tests, v1.7.2
 
-## Phase 8f: Structural Coupling Protocol
+## Phase 8f: Structural Coupling Protocol - COMPLETED
 
-Formalize agent-human interaction.
+Non-coercive signaling for agent-human interaction (AXM-007 compliant).
 
-- [ ] `requestCoupling()`: Signal need for human
-- [ ] Coupling priority levels (urgent, normal, low)
-- [ ] Queue requests when human unavailable
-- [ ] Handoff protocol (agent → human → agent)
-- [ ] Coupling metrics and quality assessment
+- [x] `requestCoupling()`: Signal need for human (internal event + enqueue)
+- [x] Coupling priority levels (urgent, normal, low)
+- [x] Queue requests with TTL expiration (urgent: 1h, normal: 4h, low: 24h)
+- [x] Trigger rules:
+  - URGENT: Invariant violations, critical energy, 3+ blocks
+  - NORMAL: 3+ deprecations in window
+  - LOW: Persistent epistemic uncertainty (5+ cycles)
+- [x] Anti-spam mechanisms: cap=5, dedup, cooldown after grant
+- [x] CLI commands: coupling list/grant/complete/cancel
+- [x] 29 new tests
 
-**Goal:** Clean protocol for agent asking for help.
+Key principle: Agent CANNOT grant coupling (human controls).
+
+**Status:** Structural coupling protocol complete. 434 tests, v1.8.0
 
 ---
 
