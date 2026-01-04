@@ -141,7 +141,7 @@ Prefer termination to corrupted persistence.
 ```bash
 # Build and test
 npm run build         # Compile TypeScript
-npm run test          # Run all tests (405)
+npm run test          # Run all tests (434)
 
 # Core operations
 node dist/src/index.js verify           # Verify all invariants
