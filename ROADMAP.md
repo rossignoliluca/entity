@@ -84,7 +84,7 @@
 - [x] Default scheduled tasks (health, energy, autopoiesis)
 - [x] CLI commands for daemon control
 
-**Status:** Autonomous operation enabled. 245 tests (incl. 21 integration)
+**Status:** Autonomous operation enabled. 266 tests
 
 ---
 
@@ -99,5 +99,5 @@
 
 - [x] Add integration tests (21 tests covering full workflows)
 - [ ] Improve error handling
-- [ ] Add logging levels
+- [x] Add logging levels (DEBUG/INFO/WARN/ERROR/SILENT)
 - [ ] Performance optimization for large event chains

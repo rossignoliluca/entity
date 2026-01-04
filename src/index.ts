@@ -70,6 +70,15 @@ import {
   META_OPERATIONS_CATALOG,
   type HandlerTemplate,
 } from './meta-operations.js';
+import {
+  configureLogger,
+  setLogLevel,
+  getLogLevel,
+  parseLogLevel,
+  getAvailableLevels,
+  createLogger,
+  type LogLevel,
+} from './logger.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -1328,6 +1337,50 @@ Default scheduled tasks:
         }
         break;
 
+      case 'log':
+        const logAction = process.argv[3];
+        if (logAction === 'level') {
+          const newLevel = process.argv[4];
+          if (newLevel) {
+            const parsed = parseLogLevel(newLevel);
+            if (parsed) {
+              setLogLevel(parsed);
+              console.log(`Log level set to: ${parsed}`);
+            } else {
+              console.log(`Invalid log level: ${newLevel}`);
+              console.log(`Available levels: ${getAvailableLevels().join(', ')}`);
+            }
+          } else {
+            console.log(`Current log level: ${getLogLevel()}`);
+          }
+        } else if (logAction === 'levels') {
+          console.log('Available log levels:');
+          for (const level of getAvailableLevels()) {
+            const current = level === getLogLevel() ? ' (current)' : '';
+            console.log(`  ${level}${current}`);
+          }
+        } else if (logAction === 'test') {
+          const logger = createLogger('test');
+          console.log('\nTesting logger output:');
+          logger.debug('This is a debug message');
+          logger.info('This is an info message');
+          logger.warn('This is a warning message');
+          logger.error('This is an error message');
+          console.log('');
+        } else {
+          console.log(`
+Log Configuration
+
+Usage:
+  log level [LEVEL]  Get or set log level
+  log levels         List available log levels
+  log test           Test logger output
+
+Levels: debug, info, warn, error, silent
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -1347,6 +1400,7 @@ Commands:
   continuity  Multi-instance export/import (Phase 6)
   meta        Self-production meta-operations (Phase 7a)
   daemon      Autonomous daemon mode (Phase 7b)
+  log         Configure logging levels
   replay      Replay events and show state
   events      List recent events
   recover     Attempt recovery from violations
