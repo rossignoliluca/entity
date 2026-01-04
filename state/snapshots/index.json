@@ -16,7 +16,15 @@
       "event_hash": "332951d381c9cb464d922e65e34feef4d241675865f257d519970735a52a9121",
       "state_hash": "f58442ff165d1f84987a1aeecad22f5b9e84c51ee01933111a1adc943e4ba310",
       "description": "Post-restore test checkpoint"
+    },
+    {
+      "id": "snap-2026-01-04T13-19-20",
+      "timestamp": "2026-01-04T13:19:20.793Z",
+      "event_seq": 26,
+      "event_hash": "3383f936ff3ff870bc0f7e2e685b9cb9f38d330cd760a9a880c5d412ca0d68b6",
+      "state_hash": "16f2bd29be0f74e11f31fc37e62060ea61a7e877dfb5eae9c1b853216852ae28",
+      "description": "Auto-snapshot: Session 6 end"
     }
   ],
-  "latest": "snap-2026-01-04T13-02-32"
+  "latest": "snap-2026-01-04T13-19-20"
 }

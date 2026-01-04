@@ -114,7 +114,12 @@ export async function endSession(): Promise<void> {
 
   await saveState(state);
 
+  // Auto-snapshot at session end (AES-SPEC-001 §6.4)
+  const sessionNum = state.session.total_count;
+  const snapshot = await createSnapshot(BASE_DIR, `Auto-snapshot: Session ${sessionNum} end`);
+
   console.log('Session ended');
+  console.log(`Auto-snapshot: ${snapshot.id}`);
 }
 
 /**
