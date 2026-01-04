@@ -1,27 +1,25 @@
 {
   "seq": 413,
-  "type": "AGENT_RESPONSE",
-  "timestamp": "2026-01-04T19:28:56.547Z",
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T19:48:55.151Z",
   "data": {
-    "priority": "stability",
-    "action": "state.summary",
-    "reason": "Stability feeling: drifting (V=0.1600)",
-    "constitutionalCheck": "passed",
-    "energyBefore": 0.476,
-    "energyAfter": 0.473,
-    "executed": true,
-    "result": {
-      "success": true,
-      "message": "Summary generated",
-      "effects": {
-        "status": "nominal",
-        "energy": 0.476,
-        "events": 412,
-        "sessions": 43,
-        "coupled": false
+    "reason": "Recovery procedure executed",
+    "violations": [
+      "INV-003",
+      "INV-004"
+    ],
+    "recoveries": [
+      {
+        "id": "INV-003",
+        "status": "degraded"
+      },
+      {
+        "id": "INV-004",
+        "status": "recovered"
       }
-    }
+    ],
+    "final_status": "degraded"
   },
-  "prev_hash": "17b86da2bc3114d12415faaa9656003b6fb82aab3418e984c56ca5ff3cded78f",
-  "hash": "7a4b37b3f09304774e448720700aebe6c9f6f3c27b4d5897a96421b2a3e87906"
+  "prev_hash": "b7e9ab88ca694ddda5f922fa14fd6f86d750b9f4d0c0949b5f0a9410bca23bfd",
+  "hash": "97137c62c7d426fee271a437a259524d404eac01854e21a516ee9749b2d091e6"
 }

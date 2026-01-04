@@ -1,11 +1,13 @@
 {
   "seq": 414,
-  "type": "SESSION_START",
-  "timestamp": "2026-01-04T19:47:22.768Z",
+  "type": "VERIFICATION",
+  "timestamp": "2026-01-04T19:49:02.356Z",
   "data": {
-    "session_id": "4e6d7412-f2fc-413d-ab39-0e9d4d907c11",
-    "partner": "human"
+    "all_satisfied": true,
+    "violations": 0,
+    "status": "nominal",
+    "lyapunov_V": 0
   },
-  "prev_hash": "7a4b37b3f09304774e448720700aebe6c9f6f3c27b4d5897a96421b2a3e87906",
-  "hash": "7dc79e47552e30ece809c59ce18929fb35c53db7bd6b2aa4d5ea34d44dbf04b0"
+  "prev_hash": "97137c62c7d426fee271a437a259524d404eac01854e21a516ee9749b2d091e6",
+  "hash": "1b80864aaa63c4aff9770a74a85e8737c7e419bf358ab91b4955883cdc00868f"
 }

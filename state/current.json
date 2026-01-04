@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T19:47:32.941Z",
+  "updated": "2026-01-04T19:49:02.377Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,37 +15,33 @@
     "since": null
   },
   "energy": {
-    "current": 0.42,
+    "current": 0.5,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": null
+    "V_previous": 0
   },
   "memory": {
-    "event_count": 417,
-    "last_event_hash": "cb0820e48ea08c95219e84f9fe22c41419c60de074d6c6579550730466583a2e",
-    "last_snapshot_at": "2026-01-04T19:47:32.881Z"
+    "event_count": 414,
+    "last_event_hash": "1b80864aaa63c4aff9770a74a85e8737c7e419bf358ab91b4955883cdc00868f",
+    "last_snapshot_at": "2026-01-04T19:05:02.387Z"
   },
   "session": {
-    "total_count": 44,
+    "total_count": 43,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:42:09.627Z",
+    "last_verification": "2026-01-04T19:49:02.310Z",
     "status": "nominal"
   },
   "human": {
     "name": "Unknown",
     "context": ""
   },
-  "important": [
-    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations",
-    "[2026-01-04] Phase 8b Ultrastability (Ashby) completed - agent now learns optimal operating parameters through violation history. Adaptive thresholds for energy/stability. Release v1.4.0. 323 tests.",
-    "[2026-01-04] Phase 8c Active Inference (Friston) completed - agent now minimizes EFE: G = ambiguity + risk. Generative model learns from experience. Priority-based weights: survival=pure pragmatic, rest=more epistemic. Release v1.5.0"
-  ],
+  "important": [],
   "learning": {
     "enabled": true,
     "lastAnalysis": "2026-01-04T14:39:02.984Z",
@@ -97,12 +93,12 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T19:28:56.529Z",
-    "cycleCount": 63,
+    "lastCycle": "2026-01-04T19:26:56.225Z",
+    "cycleCount": 18,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 58,
+      "stability": 57,
       "growth": 83,
       "rest": 0
     },
