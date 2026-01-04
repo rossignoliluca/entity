@@ -1,0 +1,12 @@
+{
+  "seq": 188,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T18:03:45.420Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Annex F added: Internal Agency Scope - clarifies that internal operations (state observation, verification) require no coupling, while external operations (communication, environment effects) require coupling per AXM-006. Kept as separate informative document to preserve organization hash.",
+    "total_memories": 12
+  },
+  "prev_hash": "f7409d457560970c71540f761b41f3e9d11224a07d09511fc3201d5b103cf303",
+  "hash": "b70bc9929611470a6528bbb2d1b7672f2bf0f31348f8666ddf67ab54e1057bde"
+}
