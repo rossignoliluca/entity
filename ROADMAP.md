@@ -256,7 +256,88 @@ Key principle: Agent CANNOT grant coupling (human controls).
 
 ---
 
-## Technical Debt
+# POST-v1.8.0: SATURATION SPACE
+
+> *"Quando uno spazio è saturo, costruire altro non è evoluzione: è fuga."*
+
+All core phases (1-8f) are complete. What remains is a **finite, enumerable set of actions**.
+Each category saturates. After saturation, any further action is either redundant, prohibited, or ontology shift.
+
+---
+
+## Category 1: Ontological Hygiene (close what exists)
+
+- [ ] **CORE-FROZEN.md**: Declare core immutable, any change → new line (v2.x)
+- [ ] **ANNEX-I: Non-Goals**: What the system will NEVER do
+- [ ] **ANNEX-J: Failure Modes**: When the system fails, what's not covered
+
+**Saturation:** 3 documents, then CLOSED
+
+---
+
+## Category 2: Real Usage (observation)
+
+- [ ] **Field usage period**: Daemon on, no development, collect natural patterns
+- [ ] **Behavioral report**: % REST, coupling frequency, deprecation rate
+
+**Saturation:** Requires TIME, not code
+
+---
+
+## Category 3: Peripheral Organs (body)
+
+These don't touch core — they build around it.
+
+- [ ] **MCP Server**: Peripheral nerves, real coupling with Claude
+  - Read-only: status, feeling, memory list
+  - Coupling: list, grant, complete (human-initiated only)
+- [ ] **Dashboard read-only**: Visualization, coupling queue, timeline
+- [ ] **Event ingestion**: Passive perception, no interpretation
+- [ ] **Operation rollback**: Reversible action, time-bounded, core can block
+
+**Saturation:** 4 implementations, then CLOSED
+
+---
+
+## Category 4: Governance
+
+- [ ] **GOVERNANCE.md**: Who can modify spec, who can release, who can change constitution (NOBODY)
+- [ ] **ROLES.md**: Human partner, environment, contract — explicit
+
+**Saturation:** 2 documents, then CLOSED
+
+---
+
+## Category 5: Rigor & Defense
+
+- [ ] **TLA+ specification**: Formal verification of 5 invariants, quarantine FSM, coupling FSM
+- [ ] **Safety case dossier**: Hazard analysis, mitigation evidence, ISO-style
+
+**Saturation:** 2 artifacts, then CLOSED
+
+---
+
+## Category 6: Meta-Decision
+
+- [ ] **Stop criterion**: When is "enough"? Define explicitly
+  - All categories saturated
+  - Observation confirms stability
+  - No drift for N sessions
+
+**Saturation:** 1 declaration, then CLOSED
+
+---
+
+## SATURATION COMPLETE
+
+When all categories are closed:
+- No sensible action remains
+- Any further construction is ontology shift
+- Creativity moves from **construction** to **use**
+
+---
+
+## Technical Debt (legacy)
 
 - [x] Add integration tests (21 tests covering full workflows)
 - [ ] Improve error handling in daemon
@@ -264,3 +345,13 @@ Key principle: Agent CANNOT grant coupling (human controls).
 - [ ] Performance optimization for large event chains
 - [x] Concurrency handling (StateManager, file locking)
 - [ ] Atomic agent cycles (single transaction per cycle)
+
+---
+
+## Out of Scope (AES-SPEC-002 territory)
+
+- Multi-entity interaction → new species
+- Goal formation → prohibited
+- Self-replication → prohibited
+- Autonomous resource acquisition → prohibited
+- Persuasion/manipulation → prohibited
