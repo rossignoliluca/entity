@@ -141,23 +141,34 @@ Adaptive parameter adjustment based on history of violations.
 
 **Status:** Ultrastability implemented + stabilized. 323 tests, v1.4.0
 
-## Phase 8c: Active Inference (Friston)
+## Phase 8c: Active Inference (Friston) - COMPLETED
 
 Full Free Energy Principle implementation.
 
-- [ ] Generative model interface:
-  ```typescript
-  interface GenerativeModel {
-    predict(action: Action): ExpectedState;
-    update(actual: State): void; // Bayesian update
-  }
-  ```
-- [ ] Expected free energy computation
-- [ ] Action selection minimizing EFE
-- [ ] Epistemic vs pragmatic value balance
-- [ ] Model learning from experience
+- [x] Generative model interface (src/daemon/active-inference.ts):
+  - `GenerativeModel.predict(action, currentState)`: Predict future state
+  - `GenerativeModel.update(observation)`: Bayesian update from experience
+  - Action effects learned from observation history
+- [x] Expected Free Energy computation:
+  - `computeEFE()`: G = ambiguity + risk
+  - Ambiguity = uncertainty about outcomes (epistemic)
+  - Risk = KL divergence from preferred state (pragmatic)
+- [x] Action selection minimizing EFE:
+  - `ActiveInferenceEngine.selectAction()`: Choose action with minimum EFE
+  - Returns ActionEvaluation with predicted state, EFE, epistemic/pragmatic values
+- [x] Epistemic vs pragmatic value balance:
+  - Priority-based weight adjustment:
+    - survival: 100% pragmatic (no exploration)
+    - integrity: 90% pragmatic / 10% epistemic
+    - stability: 80% pragmatic / 20% epistemic
+    - growth: 50% pragmatic / 50% epistemic
+    - rest: 40% pragmatic / 60% epistemic (most exploration)
+- [x] Model learning from experience:
+  - `recordObservation()`: Update model after action
+  - Exponential moving average for action effects
+  - Confidence increases asymptotically with observations
 
-**Goal:** Agent that actively minimizes surprise through prediction.
+**Status:** Active inference implemented. 353 tests
 
 ## Phase 8d: Cycle Memory
 

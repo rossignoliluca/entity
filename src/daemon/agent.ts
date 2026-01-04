@@ -25,6 +25,13 @@ import { computeV, isAtAttractor, stabilityMargin } from '../lyapunov.js';
 import { executeOperation, getOperation, OPERATIONS_CATALOG } from '../operations.js';
 import { autoRecover } from '../recovery.js';
 import { getStateManager } from '../state-manager.js';
+import {
+  ActiveInferenceEngine,
+  type ActiveInferenceConfig,
+  type ActionEvaluation,
+  type PredictedState,
+  DEFAULT_ACTIVE_INFERENCE_CONFIG,
+} from './active-inference.js';
 
 // =============================================================================
 // Types
@@ -52,6 +59,10 @@ export interface AgentConfig {
   // Caps to prevent hyper-reactivity (ultrastability ≠ nervousness)
   minRestThreshold: number;      // minimum sensitivity (can't be too nervous)
   maxAdaptationsPerWindow: number; // limit adaptation frequency
+
+  // Phase 8c: Active Inference (Friston)
+  activeInferenceEnabled: boolean;
+  activeInferenceConfig: Partial<ActiveInferenceConfig>;
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -73,6 +84,10 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   // Caps to prevent hyper-reactivity
   minRestThreshold: 0.0001,      // can't go below this (avoid noise sensitivity)
   maxAdaptationsPerWindow: 5,    // max 5 adaptations per violation window
+
+  // Phase 8c: Active Inference defaults
+  activeInferenceEnabled: true,
+  activeInferenceConfig: {},
 };
 
 /**
@@ -227,6 +242,11 @@ export class InternalAgent extends EventEmitter {
   private cycleInterval: NodeJS.Timeout | null = null;
   private stats: AgentStats;
 
+  // Phase 8c: Active Inference
+  private activeInference: ActiveInferenceEngine;
+  private lastFeeling: Feeling | null = null;
+  private lastPrediction: PredictedState | null = null;
+
   constructor(
     baseDir: string,
     config: Partial<AgentConfig> = {},
@@ -278,6 +298,9 @@ export class InternalAgent extends EventEmitter {
         },
       },
     };
+
+    // Phase 8c: Initialize Active Inference
+    this.activeInference = new ActiveInferenceEngine(this.config.activeInferenceConfig);
   }
 
   // ===========================================================================
@@ -360,6 +383,9 @@ export class InternalAgent extends EventEmitter {
    *
    * This is NOT a decision loop. It is the system feeling itself
    * and responding from its structure, not from calculation.
+   *
+   * Phase 8c adds Active Inference: the agent predicts outcomes
+   * and selects actions to minimize expected free energy.
    */
   private async senseMakingCycle(): Promise<void> {
     this.stats.cycleCount++;
@@ -368,6 +394,17 @@ export class InternalAgent extends EventEmitter {
     try {
       // 1. FEEL - sense the current state relative to expected
       const feeling = await this.feel();
+
+      // Phase 8c: Record previous cycle's outcome for learning
+      if (this.config.activeInferenceEnabled && this.lastFeeling && this.lastPrediction) {
+        this.activeInference.recordObservation(
+          null, // Last action (simplified - we track feeling changes)
+          this.lastFeeling,
+          feeling,
+          this.lastPrediction
+        );
+      }
+      this.lastFeeling = feeling;
 
       // 2. CHECK COUPLING - defer to human if present
       if (feeling.energy > 0) {  // Only check if we have energy to sense
@@ -694,16 +731,34 @@ export class InternalAgent extends EventEmitter {
 
     // Priority 3: STABILITY
     if (feeling.stabilityFeeling === 'unstable' || feeling.stabilityFeeling === 'drifting') {
+      // Phase 8c: Use Active Inference for action selection
+      if (this.config.activeInferenceEnabled) {
+        const evaluation = this.selectActionViaActiveInference(feeling, 'stability');
+        return {
+          priority: 'stability',
+          action: evaluation.action,
+          reason: `Stability (V=${feeling.lyapunovV.toFixed(4)}) - AI selected: EFE=${evaluation.efe.total.toFixed(4)}`,
+        };
+      }
       return {
         priority: 'stability',
-        action: 'state.summary',  // Understand current state
+        action: 'state.summary',  // Fallback: understand current state
         reason: `Stability feeling: ${feeling.stabilityFeeling} (V=${feeling.lyapunovV.toFixed(4)})`,
       };
     }
 
     // Priority 4: GROWTH (only if stable and vital)
     if (feeling.needsGrowth && feeling.energyFeeling === 'vital') {
-      // Alternate between learning and introspection
+      // Phase 8c: Use Active Inference for exploration
+      if (this.config.activeInferenceEnabled) {
+        const evaluation = this.selectActionViaActiveInference(feeling, 'growth');
+        return {
+          priority: 'growth',
+          action: evaluation.action,
+          reason: `Growth mode - AI selected: epistemic=${evaluation.epistemicValue.toFixed(3)}, pragmatic=${evaluation.pragmaticValue.toFixed(3)}`,
+        };
+      }
+      // Fallback: alternate between learning and introspection
       const action = this.stats.cycleCount % 3 === 0
         ? 'system.health'
         : 'state.summary';
@@ -715,6 +770,19 @@ export class InternalAgent extends EventEmitter {
     }
 
     // Priority 5: REST (Wu Wei - do nothing at attractor)
+    // Phase 8c: Even at rest, active inference can suggest exploration
+    if (this.config.activeInferenceEnabled && feeling.stabilityFeeling === 'attractor') {
+      const evaluation = this.selectActionViaActiveInference(feeling, 'rest');
+      // Only act if epistemic value is high (worth exploring)
+      if (evaluation.epistemicValue > 0.3) {
+        return {
+          priority: 'rest',
+          action: evaluation.action,
+          reason: `Rest with exploration - epistemic value: ${evaluation.epistemicValue.toFixed(3)}`,
+        };
+      }
+    }
+
     return {
       priority: 'rest',
       action: null,
@@ -722,6 +790,26 @@ export class InternalAgent extends EventEmitter {
         ? 'At attractor - resting (Wu Wei)'
         : `Adequate state (ε=${feeling.surprise.toFixed(4)}) - resting`,
     };
+  }
+
+  /**
+   * Select action using Active Inference (Phase 8c)
+   */
+  private selectActionViaActiveInference(feeling: Feeling, priority: Priority): ActionEvaluation {
+    // Available actions for the agent
+    const availableActions: (string | null)[] = [
+      null,              // Rest
+      'state.summary',   // Check state
+      'system.health',   // Check health
+      'energy.status',   // Check energy
+    ];
+
+    const evaluation = this.activeInference.selectAction(feeling, availableActions, priority);
+
+    // Store prediction for learning in next cycle
+    this.lastPrediction = evaluation.predictedState;
+
+    return evaluation;
   }
 
   // ===========================================================================
@@ -1266,6 +1354,32 @@ export class InternalAgent extends EventEmitter {
     console.log(`  Rest: ${us.adaptiveParameters.restThreshold.toFixed(4)} (default: ${this.config.restThreshold.toFixed(4)})`);
     console.log(`  Interval: ${(us.adaptiveParameters.decisionInterval / 1000).toFixed(1)}s (default: ${(this.config.decisionInterval / 1000).toFixed(1)}s)`);
     console.log('');
+
+    // Phase 8c: Active Inference info
+    if (this.config.activeInferenceEnabled) {
+      const aiConfig = this.activeInference.getConfig();
+      const model = this.activeInference.getModel();
+      console.log('--- Active Inference (Friston) ---');
+      console.log(`Enabled: ${aiConfig.enabled}`);
+      console.log(`Epistemic Weight: ${(aiConfig.epistemicWeight * 100).toFixed(0)}%`);
+      console.log(`Pragmatic Weight: ${(aiConfig.pragmaticWeight * 100).toFixed(0)}%`);
+      console.log(`Learning Rate: ${aiConfig.learningRate}`);
+      console.log(`Observations: ${model.getObservations().length}`);
+      console.log('');
+      console.log('--- Learned Action Effects ---');
+      for (const [action, effects] of model.getActionEffects()) {
+        const actionName = action === 'null' ? 'rest' : action;
+        console.log(`  ${actionName}: E${effects.energyDelta > 0 ? '+' : ''}${(effects.energyDelta * 100).toFixed(1)}%, V${effects.vDelta > 0 ? '+' : ''}${effects.vDelta.toFixed(3)}, conf=${(effects.confidence * 100).toFixed(0)}%`);
+      }
+      console.log('');
+    }
+  }
+
+  /**
+   * Get active inference engine (for inspection)
+   */
+  getActiveInference(): ActiveInferenceEngine {
+    return this.activeInference;
   }
 }
 
