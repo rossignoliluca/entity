@@ -12,6 +12,9 @@ daemon.log
 daemon.pid
 *.sock
 
+# Audit (session logs)
+audit/
+
 # OS files
 .DS_Store
 Thumbs.db
