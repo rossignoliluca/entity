@@ -1,0 +1,12 @@
+{
+  "seq": 415,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T19:47:28.621Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Phase 8c Active Inference (Friston) completed - agent now minimizes EFE: G = ambiguity + risk. Generative model learns from experience. Priority-based weights: survival=pure pragmatic, rest=more epistemic. Release v1.5.0",
+    "total_memories": 3
+  },
+  "prev_hash": "7dc79e47552e30ece809c59ce18929fb35c53db7bd6b2aa4d5ea34d44dbf04b0",
+  "hash": "e653979c55fba4cf3b777cdd1d66a40922e73188f72e2d42846d770074628e65"
+}
