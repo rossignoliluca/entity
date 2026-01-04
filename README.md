@@ -1,6 +1,6 @@
 # Entity System
 
-**AES-SPEC-001 v1.5.0** - Autopoietic Entity System
+**AES-SPEC-001 v1.7.2** - Autopoietic Entity System
 
 An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, and internal agency.
 
@@ -61,6 +61,12 @@ npm run build
 - **8b: Ultrastability** (Ashby) - adaptive parameter adjustment
 - **8c: Active Inference** (Friston) - EFE minimization
 - **8d: Cycle Memory** - learns from past cycles
+- **8e: Self-Producing Agent** - agent creates operations from patterns
+
+### Annex H: Self-Production Safety (Sigilli)
+- **Sigillo 1: Quarantine Gate** - QUARANTINED → TRIAL → ACTIVE lifecycle
+- **Sigillo 2: Context Filter** - test/audit excluded from pattern tracking
+- **Sigillo 3: Specialization Bounds** - complexity ≤ parent, depth limit
 
 ## CLI Commands
 
@@ -171,10 +177,10 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 493+ |
-| Sessions | 44 |
-| Tests | 399 |
-| Version | v1.7.0 |
+| Events | 503+ |
+| Sessions | 46 |
+| Tests | 405 |
+| Version | v1.7.2 |
 
 ## License
 
