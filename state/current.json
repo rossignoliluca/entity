@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:54:34.067Z",
+  "updated": "2026-01-04T18:56:34.079Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.3449999999999999,
+    "current": 0.2799999999999999,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": 0
   },
   "memory": {
-    "event_count": 336,
-    "last_event_hash": "0f8e77687f256f8f5b186595d07c77ca1008509caceecf0853427705382f49b0",
-    "last_snapshot_at": "2026-01-04T18:44:43.342Z"
+    "event_count": 342,
+    "last_event_hash": "57d37e256726177c44d6958505ddc86281a3fdac91c93be783356b634c827740",
+    "last_snapshot_at": "2026-01-04T18:56:30.558Z"
   },
   "session": {
-    "total_count": 42,
+    "total_count": 43,
     "current_id": null
   },
   "integrity": {
@@ -42,7 +42,8 @@
     "context": ""
   },
   "important": [
-    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations"
+    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations",
+    "[2026-01-04] Phase 8b Ultrastability (Ashby) completed - agent now learns optimal operating parameters through violation history. Adaptive thresholds for energy/stability. Release v1.4.0. 323 tests."
   ],
   "learning": {
     "enabled": true,
@@ -95,13 +96,13 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T18:54:34.067Z",
-    "cycleCount": 36,
+    "lastCycle": "2026-01-04T18:56:34.079Z",
+    "cycleCount": 38,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 37,
-      "growth": 41,
+      "growth": 43,
       "rest": 0
     },
     "totalEnergyConsumed": 0.009000000000000001
