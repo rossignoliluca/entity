@@ -69,6 +69,11 @@ npm run build
 - **Sigillo 2: Context Filter** - test/audit excluded from pattern tracking
 - **Sigillo 3: Specialization Bounds** - complexity ≤ parent, depth limit
 
+### Annex I: Non-Goals (Normative)
+- **Prohibited**: Goal formation, planning, self-replication, resource acquisition
+- **Prohibited**: Persuasion, deception, autonomy expansion, coercive coupling
+- **Boundary**: Any system requiring these = new species (AES-SPEC-002)
+
 ## CLI Commands
 
 ```bash

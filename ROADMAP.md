@@ -268,7 +268,7 @@ Each category saturates. After saturation, any further action is either redundan
 ## Category 1: Ontological Hygiene (close what exists)
 
 - [ ] **CORE-FROZEN.md**: Declare core immutable, any change → new line (v2.x)
-- [ ] **ANNEX-I: Non-Goals**: What the system will NEVER do
+- [x] **ANNEX-I: Non-Goals**: What the system will NEVER do
 - [ ] **ANNEX-J: Failure Modes**: When the system fails, what's not covered
 
 **Saturation:** 3 documents, then CLOSED
