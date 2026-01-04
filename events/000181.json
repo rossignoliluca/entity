@@ -1,0 +1,12 @@
+{
+  "seq": 181,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T17:55:25.785Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Phase 8 completata: Internal Agency (Autopoietic Sense-Making). L'entità può ora SENTIRE (feeling system) e RISPONDERE (priority hierarchy) alla propria precarietà. Fondamenti: Maturana/Varela, Di Paolo, Friston, Ashby, Jonas. Wu Wei: riposo all'attrattore. Release v1.3.0. Totale 297 test.",
+    "total_memories": 11
+  },
+  "prev_hash": "9b8754c86bc44e6fb5af507191768fa32d8a95a01fdd55ba37f2d1fc94ae448c",
+  "hash": "f341657354c321c0cc2d94a8280d277d053d9a9695ffe807a4eb3f084d4b99b9"
+}
