@@ -317,14 +317,14 @@ These don't touch core — they build around it.
 
 ---
 
-## Category 6: Meta-Decision
+## Category 6: Meta-Decision ✓ SATURATED
 
-- [ ] **Stop criterion**: When is "enough"? Define explicitly
+- [x] **Stop criterion**: When is "enough"? Define explicitly
   - All categories saturated
   - Observation confirms stability
   - No drift for N sessions
 
-**Saturation:** 1 declaration, then CLOSED
+**Saturation:** 1/1 declaration — CLOSED
 
 ---
 
