@@ -1,0 +1,74 @@
+{
+  "seq": 513,
+  "type": "META_OPERATION",
+  "timestamp": "2026-01-04T22:16:42.719Z",
+  "data": {
+    "action": "define",
+    "operation_id": "test.quarantine",
+    "template": "echo",
+    "autopoiesis": {
+      "enabled": true,
+      "generatedOperations": [
+        {
+          "id": "self.hello",
+          "name": "Self Hello",
+          "description": "Generated operation: Self Hello",
+          "category": "generated",
+          "complexity": 5,
+          "energyCost": 0.01,
+          "requiresCoupling": true,
+          "template": "echo",
+          "templateParams": {
+            "message": "Hello, I am autopoietic\\!"
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T15:31:13.684Z",
+          "generation": 1
+        },
+        {
+          "id": "combined.check",
+          "name": "Combined Check",
+          "description": "Composed from: state.summary, energy.status",
+          "category": "generated",
+          "complexity": 3,
+          "energyCost": 0.002,
+          "requiresCoupling": true,
+          "template": "compose",
+          "templateParams": {
+            "operations": [
+              "state.summary",
+              "energy.status"
+            ]
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T15:31:26.690Z",
+          "generation": 1
+        },
+        {
+          "id": "test.quarantine",
+          "name": "Test Quarantine",
+          "description": "Generated operation: Test Quarantine",
+          "category": "generated",
+          "complexity": 5,
+          "energyCost": 0.01,
+          "requiresCoupling": true,
+          "template": "echo",
+          "templateParams": {
+            "message": "Testing quarantine lifecycle"
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T22:16:42.662Z",
+          "generation": 1,
+          "status": "QUARANTINED",
+          "statusChangedAt": "2026-01-04T22:16:42.662Z",
+          "quarantineStartCycle": 0
+        }
+      ],
+      "generationCount": 3,
+      "lastGeneration": "2026-01-04T22:16:42.662Z",
+      "selfProductionHash": "0c3798fb43371009b24acff363d488b8cd777d27e8f62b4be290fe7dff7a800a"
+    }
+  },
+  "prev_hash": "9993dac3c36573b2eb33e45a3c39df517c258d10d6f6880c1815041e53ee3d41",
+  "hash": "f8bdab97a9272c5cb32623b066984ced9f7acdbc2c9642733078fd38988646d8"
+}

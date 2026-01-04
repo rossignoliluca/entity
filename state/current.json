@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T22:11:21.012Z",
+  "updated": "2026-01-04T22:19:09.382Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.4,
+    "current": 0.39899999999999997,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 507,
-    "last_event_hash": "617c39bcf5d20a9f4645284b13cbae9a3ef2177fb02fdb61b32946db53cbdf03",
-    "last_snapshot_at": "2026-01-04T22:11:20.938Z"
+    "event_count": 515,
+    "last_event_hash": "633e554bd949c9ac170e04ebcc7e0e7608124642ad975cfdeb105f16a711eab8",
+    "last_snapshot_at": "2026-01-04T22:19:09.307Z"
   },
   "session": {
-    "total_count": 47,
+    "total_count": 48,
     "current_id": null
   },
   "integrity": {
@@ -88,24 +88,43 @@
         "generatedBy": "meta.define",
         "generatedAt": "2026-01-04T15:31:26.690Z",
         "generation": 1
+      },
+      {
+        "id": "test.quarantine",
+        "name": "Test Quarantine",
+        "description": "Generated operation: Test Quarantine",
+        "category": "generated",
+        "complexity": 5,
+        "energyCost": 0.01,
+        "requiresCoupling": true,
+        "template": "echo",
+        "templateParams": {
+          "message": "Testing quarantine lifecycle"
+        },
+        "generatedBy": "meta.define",
+        "generatedAt": "2026-01-04T22:16:42.662Z",
+        "generation": 1,
+        "status": "QUARANTINED",
+        "statusChangedAt": "2026-01-04T22:16:42.662Z",
+        "quarantineStartCycle": 0
       }
     ],
-    "generationCount": 2,
-    "lastGeneration": "2026-01-04T15:31:26.690Z",
-    "selfProductionHash": "38dfc67321d91481aee8cacb73f9c74916111651ae6452080474aee12ce4494f"
+    "generationCount": 3,
+    "lastGeneration": "2026-01-04T22:16:42.662Z",
+    "selfProductionHash": "0c3798fb43371009b24acff363d488b8cd777d27e8f62b4be290fe7dff7a800a"
   },
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T20:48:22.682Z",
-    "cycleCount": 4,
+    "lastCycle": "2026-01-04T22:14:29.750Z",
+    "cycleCount": 1,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 76,
-      "growth": 101,
+      "growth": 102,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.012
+    "totalEnergyConsumed": 0.003
   }
 }

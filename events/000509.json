@@ -1,0 +1,41 @@
+{
+  "seq": 509,
+  "type": "AGENT_WAKE",
+  "timestamp": "2026-01-04T22:14:29.669Z",
+  "data": {
+    "config": {
+      "enabled": true,
+      "decisionInterval": 60000,
+      "feelingCost": 0.001,
+      "activeWhenCoupled": false,
+      "restThreshold": 0.001,
+      "urgencyThreshold": 0.15,
+      "criticalThreshold": 0.05,
+      "ultrastabilityEnabled": true,
+      "adaptationInterval": 10,
+      "violationWindowSize": 50,
+      "adaptationRate": 0.1,
+      "minDecisionInterval": 10000,
+      "maxDecisionInterval": 300000,
+      "minRestThreshold": 0.0001,
+      "maxAdaptationsPerWindow": 5,
+      "activeInferenceEnabled": true,
+      "activeInferenceConfig": {},
+      "cycleMemoryEnabled": true,
+      "cycleMemoryConfig": {},
+      "selfProductionEnabled": true,
+      "selfProductionThreshold": 10,
+      "selfProductionCooldown": 50,
+      "quarantineConfig": {
+        "quarantineCycles": 10,
+        "minTrialUses": 5,
+        "maxTrialBlocks": 0,
+        "maxVDeltaPerUse": 0,
+        "maxSurpriseDeltaPerUse": 0.01
+      }
+    },
+    "reason": "Agent awakened to begin sense-making"
+  },
+  "prev_hash": "39a2679dd42a6612107a153fc75edfcff390e931cbacd4d172182ed14491fc6d",
+  "hash": "f77dd426088b9f301f7a6fe948f6a270f07e5f24e2ba147a57a30599cfa1ea30"
+}

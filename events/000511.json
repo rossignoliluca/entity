@@ -1,0 +1,61 @@
+{
+  "seq": 511,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-04T22:14:36.713Z",
+  "data": {
+    "stats": {
+      "cycleCount": 1,
+      "responsesTotal": 1,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 0,
+        "growth": 1,
+        "rest": 0
+      },
+      "actionsExecuted": 1,
+      "actionsBlocked": 0,
+      "restCycles": 0,
+      "totalEnergyConsumed": 0.003,
+      "startedAt": "2026-01-04T22:14:29.639Z",
+      "lastCycle": "2026-01-04T22:14:29.671Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 0,
+        "lastAdaptation": null,
+        "violations": [],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-04T22:14:29.636Z",
+            "cycle": 0,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.001,
+            "decisionInterval": 60000,
+            "reason": "Initial parameters"
+          }
+        ],
+        "violationRate": 0,
+        "stabilityScore": 1,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.05,
+          "urgencyThreshold": 0.15,
+          "restThreshold": 0.001,
+          "decisionInterval": 60000
+        }
+      },
+      "selfProduction": {
+        "enabled": true,
+        "operationsCreated": 0,
+        "lastProductionCycle": 0,
+        "actionUsageCount": {
+          "state.summary": 1
+        },
+        "createdOperations": []
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "327ce1b036dc7fed0ea7908abb274323122df883e6862d5b64f4e91754109c19",
+  "hash": "2c32f05a34b3e29837a27e3cea871dc8ec452c5de910bcbe5804b2ed601aea84"
+}
