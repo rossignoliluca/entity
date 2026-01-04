@@ -60,6 +60,8 @@ export interface TrialMetrics {
   blocks: number;
   totalVDelta: number;           // Sum of V changes during trial uses
   totalSurpriseDelta: number;    // Sum of surprise changes
+  maxVDelta: number;             // Maximum single V increase (for spike detection)
+  maxSurpriseDelta: number;      // Maximum single surprise increase
   totalEnergyCost: number;       // Total energy spent in trial
   parentEnergyCost: number;      // Parent operation's energy cost for comparison
   lastTrialUse: string | null;
@@ -74,6 +76,8 @@ export const DEFAULT_TRIAL_METRICS: TrialMetrics = {
   blocks: 0,
   totalVDelta: 0,
   totalSurpriseDelta: 0,
+  maxVDelta: 0,
+  maxSurpriseDelta: 0,
   totalEnergyCost: 0,
   parentEnergyCost: 0,
   lastTrialUse: null,
@@ -368,16 +372,28 @@ function applyTransform(value: unknown, transform: string): unknown {
 
 /**
  * Get dynamic operation from state
+ *
+ * SIGILLO 1: By default, only returns ACTIVE operations.
+ * QUARANTINED, TRIAL, and DEPRECATED operations are excluded from policy selection.
+ * Use includeNonActive=true for admin/audit purposes only.
  */
 export function getDynamicOperation(
   id: string,
-  state: State
+  state: State,
+  options?: { includeNonActive?: boolean }
 ): OperationDef | undefined {
   const autopoiesis = (state as State & { autopoiesis?: AutopoiesisState }).autopoiesis;
   if (!autopoiesis) return undefined;
 
   const genOp = autopoiesis.generatedOperations.find((op) => op.id === id);
   if (!genOp) return undefined;
+
+  // Sigillo 1: Only ACTIVE operations are available for execution
+  // Legacy operations without status are treated as ACTIVE (pre-quarantine)
+  const status = genOp.status || 'ACTIVE';
+  if (status !== 'ACTIVE' && !options?.includeNonActive) {
+    return undefined;
+  }
 
   return {
     id: genOp.id,
@@ -393,14 +409,26 @@ export function getDynamicOperation(
 
 /**
  * Get all operations (catalog + dynamic)
+ *
+ * SIGILLO 1: By default, only includes ACTIVE dynamic operations.
+ * Use includeNonActive=true for admin/audit purposes only.
  */
-export function getAllOperations(state: State): OperationDef[] {
+export function getAllOperations(
+  state: State,
+  options?: { includeNonActive?: boolean }
+): OperationDef[] {
   const autopoiesis = (state as State & { autopoiesis?: AutopoiesisState }).autopoiesis;
   const catalogOps = Object.values(OPERATIONS_CATALOG);
 
   if (!autopoiesis) return catalogOps;
 
-  const dynamicOps = autopoiesis.generatedOperations.map((genOp) => ({
+  // Sigillo 1: Filter to only ACTIVE operations for policy selection
+  const activeOps = autopoiesis.generatedOperations.filter((genOp) => {
+    const status = genOp.status || 'ACTIVE'; // Legacy ops treated as ACTIVE
+    return status === 'ACTIVE' || options?.includeNonActive;
+  });
+
+  const dynamicOps = activeOps.map((genOp) => ({
     id: genOp.id,
     name: genOp.name,
     description: genOp.description,
@@ -737,14 +765,25 @@ export function canTransitionToActive(
     return { canActivate: false, reason: `Too many blocks: ${metrics.blocks}` };
   }
 
+  // Check max (spike) - zero tolerance on any single V increase
+  if (metrics.maxVDelta > config.maxVDeltaPerUse) {
+    return { canActivate: false, reason: `V spike detected: maxΔV=${metrics.maxVDelta.toFixed(4)}` };
+  }
+
+  // Check average as well
   const avgVDelta = metrics.trialUses > 0 ? metrics.totalVDelta / metrics.trialUses : 0;
   if (avgVDelta > config.maxVDeltaPerUse) {
-    return { canActivate: false, reason: `V delta too high: ${avgVDelta.toFixed(4)}` };
+    return { canActivate: false, reason: `V delta too high: avgΔV=${avgVDelta.toFixed(4)}` };
+  }
+
+  // Check max surprise spike
+  if (metrics.maxSurpriseDelta > config.maxSurpriseDeltaPerUse) {
+    return { canActivate: false, reason: `Surprise spike detected: max=${metrics.maxSurpriseDelta.toFixed(4)}` };
   }
 
   const avgSurpriseDelta = metrics.trialUses > 0 ? metrics.totalSurpriseDelta / metrics.trialUses : 0;
   if (avgSurpriseDelta > config.maxSurpriseDeltaPerUse) {
-    return { canActivate: false, reason: `Surprise delta too high: ${avgSurpriseDelta.toFixed(4)}` };
+    return { canActivate: false, reason: `Surprise delta too high: avg=${avgSurpriseDelta.toFixed(4)}` };
   }
 
   return { canActivate: true, reason: 'All metrics passed' };
@@ -752,6 +791,10 @@ export function canTransitionToActive(
 
 /**
  * Check if operation should be deprecated (trial failed)
+ *
+ * Zero tolerance policy:
+ * - ANY block → deprecate
+ * - ANY single V increase > 0 → deprecate (spike detection via maxVDelta)
  */
 export function shouldDeprecate(
   op: GeneratedOperationDef,
@@ -771,11 +814,17 @@ export function shouldDeprecate(
     return { shouldDeprecate: true, reason: `Constitutional block detected: ${metrics.blocks}` };
   }
 
-  // Deprecate if V is consistently increasing
+  // Zero tolerance: ANY single V increase causes deprecation (spike detection)
+  // A single spike V=+0.5 followed by V=0 uses should still deprecate
+  if (metrics.maxVDelta > config.maxVDeltaPerUse) {
+    return { shouldDeprecate: true, reason: `Lyapunov spike detected: maxΔV=${metrics.maxVDelta.toFixed(4)}` };
+  }
+
+  // Also check for consistent drift (average, as backup)
   if (metrics.trialUses >= 3) {
     const avgVDelta = metrics.totalVDelta / metrics.trialUses;
-    if (avgVDelta > config.maxVDeltaPerUse * 2) {
-      return { shouldDeprecate: true, reason: `Lyapunov consistently increasing: ${avgVDelta.toFixed(4)}` };
+    if (avgVDelta > config.maxVDeltaPerUse) {
+      return { shouldDeprecate: true, reason: `Lyapunov consistently drifting: avgΔV=${avgVDelta.toFixed(4)}` };
     }
   }
 
@@ -814,6 +863,7 @@ export function transitionOperationStatus(
 
 /**
  * Record trial use metrics
+ * Tracks both totals (for averages) and maxes (for spike detection)
  */
 export function recordTrialUse(
   op: GeneratedOperationDef,
@@ -827,15 +877,20 @@ export function recordTrialUse(
   }
 
   const now = new Date().toISOString();
+  const metrics = op.trialMetrics;
+
   return {
     ...op,
     trialMetrics: {
-      ...op.trialMetrics,
-      trialUses: op.trialMetrics.trialUses + 1,
-      blocks: op.trialMetrics.blocks + (blocked ? 1 : 0),
-      totalVDelta: op.trialMetrics.totalVDelta + vDelta,
-      totalSurpriseDelta: op.trialMetrics.totalSurpriseDelta + surpriseDelta,
-      totalEnergyCost: op.trialMetrics.totalEnergyCost + energyCost,
+      ...metrics,
+      trialUses: metrics.trialUses + 1,
+      blocks: metrics.blocks + (blocked ? 1 : 0),
+      totalVDelta: metrics.totalVDelta + vDelta,
+      totalSurpriseDelta: metrics.totalSurpriseDelta + surpriseDelta,
+      // Track max for spike detection (zero tolerance on single V increase)
+      maxVDelta: Math.max(metrics.maxVDelta, vDelta),
+      maxSurpriseDelta: Math.max(metrics.maxSurpriseDelta, surpriseDelta),
+      totalEnergyCost: metrics.totalEnergyCost + energyCost,
       lastTrialUse: now,
     },
   };
@@ -847,6 +902,17 @@ export function recordTrialUse(
  */
 export function normalizeOperation(op: Partial<GeneratedOperationDef> & { id: string }): GeneratedOperationDef {
   const now = new Date().toISOString();
+
+  // Normalize trialMetrics if present (add missing maxVDelta/maxSurpriseDelta)
+  let trialMetrics = op.trialMetrics;
+  if (trialMetrics) {
+    trialMetrics = {
+      ...trialMetrics,
+      maxVDelta: trialMetrics.maxVDelta ?? 0,
+      maxSurpriseDelta: trialMetrics.maxSurpriseDelta ?? 0,
+    };
+  }
+
   return {
     id: op.id,
     name: op.name || op.id,
@@ -865,7 +931,7 @@ export function normalizeOperation(op: Partial<GeneratedOperationDef> & { id: st
     status: op.status || 'ACTIVE',
     statusChangedAt: op.statusChangedAt || op.generatedAt || now,
     quarantineStartCycle: op.quarantineStartCycle ?? 0,
-    trialMetrics: op.trialMetrics,
+    trialMetrics,
     deprecationReason: op.deprecationReason,
   };
 }

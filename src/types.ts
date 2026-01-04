@@ -122,6 +122,8 @@ export interface State {
         blocks: number;
         totalVDelta: number;
         totalSurpriseDelta: number;
+        maxVDelta: number;             // Spike detection (zero tolerance)
+        maxSurpriseDelta: number;      // Spike detection (zero tolerance)
         totalEnergyCost: number;
         parentEnergyCost: number;
         lastTrialUse: string | null;

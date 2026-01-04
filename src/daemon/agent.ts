@@ -324,7 +324,9 @@ export class InternalAgent extends EventEmitter {
   private lastActionBlocked: boolean = false;
 
   // Sigillo 2: Context tracking for observer/actor separation
-  private currentContext: CycleContext = 'production';
+  // Context is derived from environment, with optional manual override
+  private manualContextOverride: CycleContext | null = null;
+  private lastKnownCoupling: boolean = false; // Cached from state reads
 
   constructor(
     baseDir: string,
@@ -513,6 +515,7 @@ export class InternalAgent extends EventEmitter {
       // 2. CHECK COUPLING - defer to human if present
       if (feeling.energy > 0) {  // Only check if we have energy to sense
         const state = await this.loadState();
+        this.updateCouplingCache(state); // Sigillo 2: Keep context cache fresh
         if (state.coupling.active && !this.config.activeWhenCoupled) {
           // Human is present - rest and let them lead
           this.emit('cycle', {
@@ -1017,7 +1020,7 @@ export class InternalAgent extends EventEmitter {
    */
   private trackActionUsage(action: string): void {
     // Sigillo 2: Don't track actions in test/audit context
-    if (this.currentContext !== 'production') {
+    if (this.getContext() !== 'production') {
       return;
     }
     const sp = this.stats.selfProduction;
@@ -1025,18 +1028,48 @@ export class InternalAgent extends EventEmitter {
   }
 
   /**
-   * Set the cycle context (Sigillo 2)
-   * Use 'test' or 'audit' to prevent action tracking during verification/testing
+   * Set manual context override (Sigillo 2)
+   * Use 'test' or 'audit' to prevent action tracking during verification/testing.
+   * Set to null to use derived context (recommended).
    */
-  setContext(context: CycleContext): void {
-    this.currentContext = context;
+  setContext(context: CycleContext | null): void {
+    this.manualContextOverride = context;
   }
 
   /**
-   * Get the current cycle context
+   * Get the effective cycle context (Sigillo 2)
+   *
+   * Context is DERIVED from verifiable properties, not manually set:
+   * - NODE_ENV === 'test' → 'test' (cannot be bypassed)
+   * - coupling.active === true → 'audit' (human is observing)
+   * - Otherwise → 'production'
+   *
+   * Manual override is only for explicit test scenarios.
    */
   getContext(): CycleContext {
-    return this.currentContext;
+    // Environment check cannot be bypassed
+    if (process.env.NODE_ENV === 'test') {
+      return 'test';
+    }
+
+    // Manual override takes precedence (for explicit test/audit scenarios)
+    if (this.manualContextOverride !== null) {
+      return this.manualContextOverride;
+    }
+
+    // Derived from coupling state: if human is coupled, we're in audit mode
+    if (this.lastKnownCoupling) {
+      return 'audit';
+    }
+
+    return 'production';
+  }
+
+  /**
+   * Update cached coupling state (called when state is loaded)
+   */
+  private updateCouplingCache(state: State): void {
+    this.lastKnownCoupling = state.coupling?.active ?? false;
   }
 
   /**
@@ -1048,7 +1081,7 @@ export class InternalAgent extends EventEmitter {
     if (!sp.enabled) return;
 
     // Sigillo 2: Don't produce in test/audit context
-    if (this.currentContext !== 'production') return;
+    if (this.getContext() !== 'production') return;
 
     // Cooldown check
     const cyclesSinceLastProduction = this.stats.cycleCount - sp.lastProductionCycle;
@@ -1161,9 +1194,10 @@ export class InternalAgent extends EventEmitter {
     if (!sp.enabled) return;
 
     // Sigillo 2: Only manage in production context
-    if (this.currentContext !== 'production') return;
+    if (this.getContext() !== 'production') return;
 
     const state = await this.loadState();
+    this.updateCouplingCache(state); // Keep coupling cache fresh
     const autopoiesis = (state as State & { autopoiesis?: { generatedOperations: GeneratedOperationDef[] } }).autopoiesis;
     if (!autopoiesis?.generatedOperations.length) return;
 
