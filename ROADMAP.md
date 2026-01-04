@@ -116,19 +116,25 @@ Features:
 
 ---
 
-## Phase 8b: Ultrastability (Ashby) - NEXT
+## Phase 8b: Ultrastability (Ashby) - COMPLETED
 
 Adaptive parameter adjustment based on history of violations.
 
-- [ ] Track violation patterns over time
-- [ ] `adaptParameters()`: Adjust thresholds based on history
-  - E_threshold: raise if frequent energy warnings
-  - V thresholds: adjust stability sensitivity
-  - decisionInterval: speed up/slow down based on stability
-- [ ] Ultrastability state in agent
-- [ ] Tests for parameter adaptation
+- [x] Track violation patterns over time (ViolationRecord, rolling window)
+- [x] `checkAndAdaptParameters()`: Adjust thresholds based on history
+  - criticalThreshold, urgencyThreshold: raise if frequent energy issues
+  - restThreshold: tighten if stability issues
+  - decisionInterval: speed up/slow down based on violations
+- [x] Ultrastability state in agent (UltrastabilityState, ParameterSnapshot)
+- [x] `recordViolation()`, `updateStabilityMetrics()` methods
+- [x] `raiseEnergyThresholds()`, `tightenStabilityParameters()`, `relaxParameters()`
+- [x] Adaptive thresholds used in `feelEnergy()`, `feelStability()`
+- [x] Parameter bounds (critical capped at 15%, urgency at 30%)
+- [x] Decision interval bounds (min/max configurable)
+- [x] `printStatus()` shows ultrastability info
+- [x] 26 new tests for ultrastability
 
-**Goal:** System that learns optimal operating parameters.
+**Status:** Ultrastability implemented. 323 tests, v1.4.0
 
 ## Phase 8c: Active Inference (Friston)
 

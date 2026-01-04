@@ -41,6 +41,14 @@ export interface AgentConfig {
   restThreshold: number;         // V below which to rest
   urgencyThreshold: number;      // energy level for urgent action
   criticalThreshold: number;     // energy level for dormant
+
+  // Phase 8b: Ultrastability (Ashby)
+  ultrastabilityEnabled: boolean;
+  adaptationInterval: number;    // cycles between adaptation checks
+  violationWindowSize: number;   // how many violations to track
+  adaptationRate: number;        // adjustment factor (0.1 = 10%)
+  minDecisionInterval: number;   // minimum ms between cycles
+  maxDecisionInterval: number;   // maximum ms between cycles
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -51,7 +59,64 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   restThreshold: 0.001,          // V < 0.001 = at attractor
   urgencyThreshold: 0.15,        // E < 15% = urgent
   criticalThreshold: 0.05,       // E < 5% = critical, prepare dormant
+
+  // Phase 8b: Ultrastability defaults
+  ultrastabilityEnabled: true,
+  adaptationInterval: 10,        // check every 10 cycles
+  violationWindowSize: 50,       // track last 50 violations
+  adaptationRate: 0.1,           // 10% adjustment
+  minDecisionInterval: 10000,    // min 10 seconds
+  maxDecisionInterval: 300000,   // max 5 minutes
 };
+
+/**
+ * Phase 8b: Violation record for ultrastability
+ */
+export interface ViolationRecord {
+  timestamp: string;
+  cycle: number;
+  invariant: string;
+  feeling: {
+    energy: number;
+    lyapunovV: number;
+    surprise: number;
+  };
+  recovered: boolean;
+  recoveryTime?: number;         // ms to recover
+}
+
+/**
+ * Phase 8b: Parameter snapshot for history
+ */
+export interface ParameterSnapshot {
+  timestamp: string;
+  cycle: number;
+  criticalThreshold: number;
+  urgencyThreshold: number;
+  restThreshold: number;
+  decisionInterval: number;
+  reason: string;
+}
+
+/**
+ * Phase 8b: Ultrastability state
+ */
+export interface UltrastabilityState {
+  enabled: boolean;
+  adaptationCount: number;
+  lastAdaptation: string | null;
+  violations: ViolationRecord[];
+  parameterHistory: ParameterSnapshot[];
+  // Computed metrics
+  violationRate: number;         // violations per cycle (rolling)
+  stabilityScore: number;        // 0-1, higher = more stable
+  adaptiveParameters: {
+    criticalThreshold: number;
+    urgencyThreshold: number;
+    restThreshold: number;
+    decisionInterval: number;
+  };
+}
 
 /**
  * Priority levels (from constitutional hierarchy)
@@ -129,6 +194,8 @@ export interface AgentStats {
   totalEnergyConsumed: number;
   startedAt: string | null;
   lastCycle: string | null;
+  // Phase 8b: Ultrastability stats
+  ultrastability: UltrastabilityState;
 }
 
 // =============================================================================
@@ -180,6 +247,30 @@ export class InternalAgent extends EventEmitter {
       totalEnergyConsumed: 0,
       startedAt: null,
       lastCycle: null,
+      // Phase 8b: Initialize ultrastability
+      ultrastability: {
+        enabled: this.config.ultrastabilityEnabled,
+        adaptationCount: 0,
+        lastAdaptation: null,
+        violations: [],
+        parameterHistory: [{
+          timestamp: new Date().toISOString(),
+          cycle: 0,
+          criticalThreshold: this.config.criticalThreshold,
+          urgencyThreshold: this.config.urgencyThreshold,
+          restThreshold: this.config.restThreshold,
+          decisionInterval: this.config.decisionInterval,
+          reason: 'Initial parameters',
+        }],
+        violationRate: 0,
+        stabilityScore: 1.0,
+        adaptiveParameters: {
+          criticalThreshold: this.config.criticalThreshold,
+          urgencyThreshold: this.config.urgencyThreshold,
+          restThreshold: this.config.restThreshold,
+          decisionInterval: this.config.decisionInterval,
+        },
+      },
     };
   }
 
@@ -330,6 +421,23 @@ export class InternalAgent extends EventEmitter {
       }
       this.stats.totalEnergyConsumed += response.energyCost;
 
+      // 5. ULTRASTABILITY - record violations and adapt
+      if (feeling.integrityFeeling !== 'whole') {
+        // Record violation based on what's wrong
+        if (feeling.invariantsSatisfied < feeling.invariantsTotal) {
+          this.recordViolation('INV-*', feeling, true); // Recovered since we're still running
+        }
+      }
+      if (feeling.stabilityFeeling === 'unstable' || feeling.stabilityFeeling === 'drifting') {
+        this.recordViolation('stability', feeling, feeling.stabilityFeeling !== 'unstable');
+      }
+      if (feeling.energyFeeling === 'critical' || feeling.energyFeeling === 'low') {
+        this.recordViolation('energy', feeling, feeling.energyFeeling !== 'critical');
+      }
+
+      // Check if parameters need adaptation
+      this.checkAndAdaptParameters();
+
       this.emit('cycle', { feeling, response });
 
     } catch (error) {
@@ -424,14 +532,21 @@ export class InternalAgent extends EventEmitter {
   }
 
   private feelEnergy(energy: number): Feeling['energyFeeling'] {
-    if (energy < this.config.criticalThreshold) return 'critical';
-    if (energy < this.config.urgencyThreshold) return 'low';
+    // Use adaptive thresholds from ultrastability
+    const critical = this.getAdaptiveThreshold('critical');
+    const urgency = this.getAdaptiveThreshold('urgency');
+
+    if (energy < critical) return 'critical';
+    if (energy < urgency) return 'low';
     if (energy < this.entityConfig.E_threshold * 2) return 'adequate';
     return 'vital';
   }
 
   private feelStability(V: number): Feeling['stabilityFeeling'] {
-    if (V < this.config.restThreshold) return 'attractor';
+    // Use adaptive threshold from ultrastability
+    const restThreshold = this.getAdaptiveThreshold('rest');
+
+    if (V < restThreshold) return 'attractor';
     if (V < 0.1) return 'stable';
     if (V < 0.3) return 'drifting';
     return 'unstable';
@@ -653,6 +768,269 @@ export class InternalAgent extends EventEmitter {
   }
 
   // ===========================================================================
+  // ULTRASTABILITY - Ashby's adaptive parameter adjustment
+  // ===========================================================================
+
+  /**
+   * Record a violation for ultrastability tracking
+   */
+  private recordViolation(
+    invariant: string,
+    feeling: Feeling,
+    recovered: boolean,
+    recoveryTime?: number
+  ): void {
+    if (!this.stats.ultrastability.enabled) return;
+
+    const violation: ViolationRecord = {
+      timestamp: new Date().toISOString(),
+      cycle: this.stats.cycleCount,
+      invariant,
+      feeling: {
+        energy: feeling.energy,
+        lyapunovV: feeling.lyapunovV,
+        surprise: feeling.surprise,
+      },
+      recovered,
+      recoveryTime,
+    };
+
+    this.stats.ultrastability.violations.push(violation);
+
+    // Keep only recent violations (rolling window)
+    if (this.stats.ultrastability.violations.length > this.config.violationWindowSize) {
+      this.stats.ultrastability.violations.shift();
+    }
+
+    // Update violation rate
+    this.updateStabilityMetrics();
+  }
+
+  /**
+   * Update stability metrics based on violation history
+   */
+  private updateStabilityMetrics(): void {
+    const us = this.stats.ultrastability;
+    const windowSize = Math.min(this.stats.cycleCount, this.config.violationWindowSize);
+
+    if (windowSize === 0) {
+      us.violationRate = 0;
+      us.stabilityScore = 1.0;
+      return;
+    }
+
+    // Count recent violations (in last windowSize cycles)
+    const recentViolations = us.violations.filter(
+      v => this.stats.cycleCount - v.cycle < windowSize
+    ).length;
+
+    us.violationRate = recentViolations / windowSize;
+    us.stabilityScore = Math.max(0, 1 - us.violationRate);
+  }
+
+  /**
+   * Check if adaptation is needed and perform it
+   * Called periodically based on adaptationInterval
+   */
+  private checkAndAdaptParameters(): void {
+    if (!this.stats.ultrastability.enabled) return;
+    if (this.stats.cycleCount % this.config.adaptationInterval !== 0) return;
+    if (this.stats.cycleCount === 0) return;
+
+    const us = this.stats.ultrastability;
+    const rate = this.config.adaptationRate;
+
+    // Analyze violation patterns
+    const recentViolations = us.violations.slice(-this.config.adaptationInterval);
+    if (recentViolations.length === 0) {
+      // No violations - system is stable, can relax parameters slightly
+      this.relaxParameters(rate * 0.5); // Relax more slowly than tighten
+      return;
+    }
+
+    // Count violation types
+    const energyViolations = recentViolations.filter(v =>
+      v.invariant === 'INV-005' || v.feeling.energy < this.config.urgencyThreshold
+    ).length;
+
+    const stabilityViolations = recentViolations.filter(v =>
+      v.invariant === 'INV-002' || v.invariant === 'INV-004' || v.feeling.lyapunovV > 0.1
+    ).length;
+
+    const integrityViolations = recentViolations.filter(v =>
+      v.invariant === 'INV-001' || v.invariant === 'INV-003'
+    ).length;
+
+    // Adapt based on patterns
+    const reasons: string[] = [];
+
+    // Too many energy issues → raise thresholds
+    if (energyViolations > recentViolations.length * 0.3) {
+      this.raiseEnergyThresholds(rate);
+      reasons.push(`Energy issues (${energyViolations}/${recentViolations.length})`);
+    }
+
+    // Too many stability issues → tighten stability, speed up cycles
+    if (stabilityViolations > recentViolations.length * 0.3) {
+      this.tightenStabilityParameters(rate);
+      reasons.push(`Stability issues (${stabilityViolations}/${recentViolations.length})`);
+    }
+
+    // Integrity issues → cannot adapt, but note them
+    if (integrityViolations > 0) {
+      reasons.push(`Integrity issues (${integrityViolations}) - requires attention`);
+    }
+
+    // Record adaptation if any changes made
+    if (reasons.length > 0) {
+      this.recordParameterChange(reasons.join('; '));
+    }
+  }
+
+  /**
+   * Raise energy thresholds to be more conservative
+   */
+  private raiseEnergyThresholds(rate: number): void {
+    const ap = this.stats.ultrastability.adaptiveParameters;
+
+    // Raise critical threshold (but cap at 0.15)
+    ap.criticalThreshold = Math.min(0.15, ap.criticalThreshold * (1 + rate));
+
+    // Raise urgency threshold (but cap at 0.3)
+    ap.urgencyThreshold = Math.min(0.3, ap.urgencyThreshold * (1 + rate));
+
+    this.emit('parameterAdapted', {
+      type: 'energy',
+      direction: 'raise',
+      criticalThreshold: ap.criticalThreshold,
+      urgencyThreshold: ap.urgencyThreshold,
+    });
+  }
+
+  /**
+   * Tighten stability parameters - more sensitive, faster response
+   */
+  private tightenStabilityParameters(rate: number): void {
+    const ap = this.stats.ultrastability.adaptiveParameters;
+
+    // Lower rest threshold (more sensitive to drift)
+    ap.restThreshold = Math.max(0.0001, ap.restThreshold * (1 - rate));
+
+    // Speed up decision interval (but not below minimum)
+    ap.decisionInterval = Math.max(
+      this.config.minDecisionInterval,
+      ap.decisionInterval * (1 - rate)
+    );
+
+    this.emit('parameterAdapted', {
+      type: 'stability',
+      direction: 'tighten',
+      restThreshold: ap.restThreshold,
+      decisionInterval: ap.decisionInterval,
+    });
+
+    // Reschedule cycle interval if running
+    if (this.running && this.cycleInterval) {
+      clearInterval(this.cycleInterval);
+      this.cycleInterval = setInterval(
+        () => this.senseMakingCycle(),
+        ap.decisionInterval
+      );
+    }
+  }
+
+  /**
+   * Relax parameters when stable - save energy, slower cycles
+   */
+  private relaxParameters(rate: number): void {
+    const ap = this.stats.ultrastability.adaptiveParameters;
+    const reasons: string[] = [];
+
+    // Only relax if stability score is high
+    if (this.stats.ultrastability.stabilityScore < 0.9) return;
+
+    // Slow down decision interval (but not above maximum)
+    const oldInterval = ap.decisionInterval;
+    ap.decisionInterval = Math.min(
+      this.config.maxDecisionInterval,
+      ap.decisionInterval * (1 + rate)
+    );
+
+    if (ap.decisionInterval !== oldInterval) {
+      reasons.push('Stable - slowing cycles');
+
+      // Reschedule cycle interval if running
+      if (this.running && this.cycleInterval) {
+        clearInterval(this.cycleInterval);
+        this.cycleInterval = setInterval(
+          () => this.senseMakingCycle(),
+          ap.decisionInterval
+        );
+      }
+    }
+
+    // Slightly lower thresholds if very stable
+    if (this.stats.ultrastability.stabilityScore > 0.95) {
+      ap.criticalThreshold = Math.max(0.03, ap.criticalThreshold * (1 - rate * 0.5));
+      ap.urgencyThreshold = Math.max(0.1, ap.urgencyThreshold * (1 - rate * 0.5));
+      reasons.push('Very stable - relaxing thresholds');
+    }
+
+    if (reasons.length > 0) {
+      this.recordParameterChange(reasons.join('; '));
+      this.emit('parameterAdapted', {
+        type: 'relax',
+        direction: 'relax',
+        ...ap,
+      });
+    }
+  }
+
+  /**
+   * Record parameter change to history
+   */
+  private recordParameterChange(reason: string): void {
+    const ap = this.stats.ultrastability.adaptiveParameters;
+
+    this.stats.ultrastability.parameterHistory.push({
+      timestamp: new Date().toISOString(),
+      cycle: this.stats.cycleCount,
+      criticalThreshold: ap.criticalThreshold,
+      urgencyThreshold: ap.urgencyThreshold,
+      restThreshold: ap.restThreshold,
+      decisionInterval: ap.decisionInterval,
+      reason,
+    });
+
+    // Keep only last 20 parameter changes
+    if (this.stats.ultrastability.parameterHistory.length > 20) {
+      this.stats.ultrastability.parameterHistory.shift();
+    }
+
+    this.stats.ultrastability.adaptationCount++;
+    this.stats.ultrastability.lastAdaptation = new Date().toISOString();
+  }
+
+  /**
+   * Get current adaptive parameters (used instead of config)
+   */
+  private getAdaptiveThreshold(param: 'critical' | 'urgency' | 'rest'): number {
+    if (!this.stats.ultrastability.enabled) {
+      switch (param) {
+        case 'critical': return this.config.criticalThreshold;
+        case 'urgency': return this.config.urgencyThreshold;
+        case 'rest': return this.config.restThreshold;
+      }
+    }
+    const ap = this.stats.ultrastability.adaptiveParameters;
+    switch (param) {
+      case 'critical': return ap.criticalThreshold;
+      case 'urgency': return ap.urgencyThreshold;
+      case 'rest': return ap.restThreshold;
+    }
+  }
+
+  // ===========================================================================
   // REMEMBER - Communicate with future self
   // ===========================================================================
 
@@ -802,6 +1180,25 @@ export class InternalAgent extends EventEmitter {
     console.log(`  Rest: ${this.stats.responsesByPriority.rest}`);
     console.log(`Actions: ${this.stats.actionsExecuted} executed, ${this.stats.actionsBlocked} blocked`);
     console.log(`Energy consumed: ${this.stats.totalEnergyConsumed.toFixed(4)}`);
+    console.log('');
+
+    // Phase 8b: Ultrastability info
+    const us = this.stats.ultrastability;
+    console.log('--- Ultrastability (Ashby) ---');
+    console.log(`Enabled: ${us.enabled}`);
+    console.log(`Stability Score: ${(us.stabilityScore * 100).toFixed(1)}%`);
+    console.log(`Violation Rate: ${(us.violationRate * 100).toFixed(1)}%`);
+    console.log(`Violations Tracked: ${us.violations.length}`);
+    console.log(`Adaptations: ${us.adaptationCount}`);
+    if (us.lastAdaptation) {
+      console.log(`Last Adaptation: ${us.lastAdaptation}`);
+    }
+    console.log('');
+    console.log('--- Adaptive Parameters ---');
+    console.log(`  Critical: ${(us.adaptiveParameters.criticalThreshold * 100).toFixed(1)}% (default: ${(this.config.criticalThreshold * 100).toFixed(1)}%)`);
+    console.log(`  Urgency: ${(us.adaptiveParameters.urgencyThreshold * 100).toFixed(1)}% (default: ${(this.config.urgencyThreshold * 100).toFixed(1)}%)`);
+    console.log(`  Rest: ${us.adaptiveParameters.restThreshold.toFixed(4)} (default: ${this.config.restThreshold.toFixed(4)})`);
+    console.log(`  Interval: ${(us.adaptiveParameters.decisionInterval / 1000).toFixed(1)}s (default: ${(this.config.decisionInterval / 1000).toFixed(1)}s)`);
     console.log('');
   }
 }
