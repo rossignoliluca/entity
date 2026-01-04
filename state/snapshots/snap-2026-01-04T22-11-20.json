@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:56:30.542Z",
+  "updated": "2026-01-04T22:11:20.913Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,26 +15,26 @@
     "since": null
   },
   "energy": {
-    "current": 0.2859999999999999,
+    "current": 0.4,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": 0
+    "V_previous": null
   },
   "memory": {
-    "event_count": 340,
-    "last_event_hash": "bf6c284f6b83544e9098eb410c10ea56cb1e811fae625d8f6c6eb28ac7e9cad1",
-    "last_snapshot_at": "2026-01-04T18:44:43.342Z"
+    "event_count": 506,
+    "last_event_hash": "0a95f000b3434b2aec8b636f7e16456195ddbb09e44276458ee373346573e010",
+    "last_snapshot_at": "2026-01-04T21:38:18.605Z"
   },
   "session": {
-    "total_count": 43,
+    "total_count": 47,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:42:09.594Z",
+    "last_verification": "2026-01-04T20:55:39.626Z",
     "status": "nominal"
   },
   "human": {
@@ -42,8 +42,9 @@
     "context": ""
   },
   "important": [
-    "[2026-01-04] Release v1.3.1: Concurrency fixes for daemon mode - StateManager with file locking, silent auto-recovery of transient violations",
-    "[2026-01-04] Phase 8b Ultrastability (Ashby) completed - agent now learns optimal operating parameters through violation history. Adaptive thresholds for energy/stability. Release v1.4.0. 323 tests."
+    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
+    "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8...",
+    "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state"
   ],
   "learning": {
     "enabled": true,
@@ -96,15 +97,15 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T18:55:34.079Z",
-    "cycleCount": 37,
+    "lastCycle": "2026-01-04T20:48:22.682Z",
+    "cycleCount": 4,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 37,
-      "growth": 42,
+      "stability": 76,
+      "growth": 101,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.009000000000000001
+    "totalEnergyConsumed": 0.012
   }
 }

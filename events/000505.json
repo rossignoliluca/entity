@@ -1,0 +1,12 @@
+{
+  "seq": 505,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T22:10:40.567Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state",
+    "total_memories": 3
+  },
+  "prev_hash": "081016e2439e92ddeb7b78ef5309d0da1af9510ab426c5bfb673bbca7c4a1ad3",
+  "hash": "b78e994e59d9812bd28df7c8d93a73dfb429e06e23d5db941e4f000365479589"
+}
