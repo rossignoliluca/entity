@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "snapshots": [
+    {
+      "id": "snap-2026-01-04T12-50-14",
+      "timestamp": "2026-01-04T12:50:14.479Z",
+      "event_seq": 16,
+      "event_hash": "4960bcba7553a6832f7af9d200f357afc3c153ef94a6ba3ba245b62d067eeddd",
+      "state_hash": "a71371097ecc067a281812ad29ac23f5b7ac2d6dece08ea2bc9fe38f7120b58a",
+      "description": "Backup before testing"
+    }
+  ],
+  "latest": "snap-2026-01-04T12-50-14"
+}

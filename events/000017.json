@@ -1,0 +1,13 @@
+{
+  "seq": 17,
+  "type": "SNAPSHOT",
+  "timestamp": "2026-01-04T12:50:14.482Z",
+  "data": {
+    "snapshot_id": "snap-2026-01-04T12-50-14",
+    "event_seq": 16,
+    "state_hash": "a71371097ecc067a281812ad29ac23f5b7ac2d6dece08ea2bc9fe38f7120b58a",
+    "description": "Backup before testing"
+  },
+  "prev_hash": "4960bcba7553a6832f7af9d200f357afc3c153ef94a6ba3ba245b62d067eeddd",
+  "hash": "adfdb888461856d0eaaed7446a79d8f4ad798e92fa387c601c69725776fd6671"
+}

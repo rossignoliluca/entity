@@ -13,6 +13,14 @@ import { appendEvent, loadEvents, replayEvents } from './events.js';
 import { computeV } from './lyapunov.js';
 import { guard, type Operation } from './guard.js';
 import { autoRecover, printRecoveryReport } from './recovery.js';
+import {
+  createSnapshot,
+  listSnapshots,
+  restoreFromSnapshot,
+  verifySnapshot,
+  printSnapshotInfo,
+  printSnapshotList,
+} from './snapshot.js';
 import type { State, Config, VerificationResult } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
 
@@ -266,6 +274,45 @@ async function main(): Promise<void> {
         process.exit(recoveryReport.final_status === 'terminal' ? 1 : 0);
         break;
 
+      case 'snapshot':
+        const snapAction = process.argv[3];
+        if (snapAction === 'create') {
+          const description = process.argv[4] || 'Manual snapshot';
+          const snap = await createSnapshot(BASE_DIR, description);
+          printSnapshotInfo(snap);
+          console.log('\nSnapshot created successfully');
+        } else if (snapAction === 'list') {
+          const snaps = await listSnapshots(BASE_DIR);
+          printSnapshotList(snaps);
+        } else if (snapAction === 'restore') {
+          const snapId = process.argv[4];
+          if (!snapId) {
+            console.log('Usage: snapshot restore <snapshot-id>');
+            break;
+          }
+          const restoreResult = await restoreFromSnapshot(BASE_DIR, snapId);
+          console.log(restoreResult.message);
+          process.exit(restoreResult.success ? 0 : 1);
+        } else if (snapAction === 'verify') {
+          const verifyId = process.argv[4];
+          if (!verifyId) {
+            console.log('Usage: snapshot verify <snapshot-id>');
+            break;
+          }
+          const verifyResult = await verifySnapshot(BASE_DIR, verifyId);
+          console.log(verifyResult.valid ? '✓' : '✗', verifyResult.details);
+          process.exit(verifyResult.valid ? 0 : 1);
+        } else {
+          console.log(`
+Snapshot commands:
+  snapshot create [description]  Create new snapshot
+  snapshot list                  List all snapshots
+  snapshot restore <id>          Restore from snapshot
+  snapshot verify <id>           Verify snapshot integrity
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -275,6 +322,7 @@ Commands:
   verify    Run all invariant checks
   status    Show system status
   session   Manage sessions (start/end)
+  snapshot  Manage state snapshots
   replay    Replay events and show state
   events    List recent events
   recover   Attempt recovery from violations
@@ -305,4 +353,8 @@ export {
   guard,
   autoRecover,
   printRecoveryReport,
+  createSnapshot,
+  listSnapshots,
+  restoreFromSnapshot,
+  verifySnapshot,
 };
