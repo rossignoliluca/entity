@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T22:49:15.150Z",
+  "updated": "2026-01-04T22:49:15.046Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -24,9 +24,9 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 525,
-    "last_event_hash": "e5a2524f7925afaf68562dd35b7a17ca9111ab1fbe4f40eeb329e544d87b441e",
-    "last_snapshot_at": "2026-01-04T22:49:15.073Z"
+    "event_count": 524,
+    "last_event_hash": "4f5b7e700c234bcc67543686ae11fe26b41df40089ec34993b98e1682f96b5b8",
+    "last_snapshot_at": "2026-01-04T22:42:01.372Z"
   },
   "session": {
     "total_count": 50,
