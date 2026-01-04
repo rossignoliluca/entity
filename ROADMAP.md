@@ -269,7 +269,7 @@ Each category saturates. After saturation, any further action is either redundan
 
 - [ ] **CORE-FROZEN.md**: Declare core immutable, any change → new line (v2.x)
 - [x] **ANNEX-I: Non-Goals**: What the system will NEVER do
-- [ ] **ANNEX-J: Failure Modes**: When the system fails, what's not covered
+- [x] **ANNEX-J: Failure Modes**: When the system fails, what's not covered
 
 **Saturation:** 3 documents, then CLOSED
 
