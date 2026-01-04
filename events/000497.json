@@ -1,0 +1,12 @@
+{
+  "seq": 497,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T21:35:37.451Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8...",
+    "total_memories": 2
+  },
+  "prev_hash": "3044c63234f0011eecfccb8dd9aadd1011f4ad36d0f51dc4a5daf5157ff46123",
+  "hash": "43fcb7961d4ebcb0279cb00d345f139873200a35bbbdf894b1731af45209af7b"
+}

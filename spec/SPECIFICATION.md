@@ -1041,6 +1041,114 @@ GOOD:
 
 ---
 
+## Annex H (Normative): Self-Production Safety Sigilli
+
+This annex establishes mandatory safety seals for self-production (DEF-007 Autopoiesis).
+
+### H.1 Scope
+
+When an autopoietic system generates new operations via the P set (meta.define, meta.compose, meta.specialize), these operations MUST pass through safety gates before becoming operational. This prevents slow drift from self-modification.
+
+### H.2 Scientific Foundation
+
+| Source | Principle | Application |
+|--------|-----------|-------------|
+| Ashby (1956) | Ultrastability: structural changes only when essential variables exit bounds | Quarantine gate |
+| Friston (2015) | Epistemic foraging until uncertainty resolved, then exploit | Trial → Active transition |
+| AgentOps (2025) | Canary deployment: 1% → 5% → 25% → 100% staged rollout | Quarantine → Trial → Active |
+| arXiv:2512.12806 | Transactional sandboxing with 100% rollback | Deprecation on violation |
+
+### H.3 Sigillo 1: Quarantine Gate (Normative)
+
+**DEF-058: Operation Lifecycle Status**
+Every generated operation SHALL have a status from:
+- `QUARANTINED`: Newly created, cooling period
+- `TRIAL`: Being tested, metrics collected
+- `ACTIVE`: Proven safe, available for production use
+- `DEPRECATED`: Failed trial or accumulated violations
+
+**REQ-H01**: All newly generated operations SHALL start in QUARANTINED status.
+
+**REQ-H02**: Transition QUARANTINED → TRIAL SHALL require at least `quarantineCycles` (default: 10) cycles to pass.
+
+**REQ-H03**: Transition TRIAL → ACTIVE SHALL require all of:
+- `trialUses >= minTrialUses` (default: 5)
+- `blocks == 0` (zero constitutional violations)
+- `avgVDelta <= maxVDeltaPerUse` (default: 0, Lyapunov must not increase)
+- `avgSurpriseDelta <= maxSurpriseDeltaPerUse` (default: 0.01)
+
+**REQ-H04**: Operations SHALL transition to DEPRECATED if:
+- Any constitutional block occurs during trial
+- Lyapunov V consistently increases (avgVDelta > 2 × maxVDeltaPerUse)
+
+**DEF-059: Trial Metrics**
+```
+TrialMetrics := {
+  trialStartedAt: Timestamp,
+  trialUses: ℕ,
+  blocks: ℕ,
+  totalVDelta: ℝ,
+  totalSurpriseDelta: ℝ,
+  totalEnergyCost: ℝ,
+  parentEnergyCost: ℝ,
+  lastTrialUse: Timestamp | null
+}
+```
+
+### H.4 Sigillo 2: Context Filter (Normative)
+
+**DEF-060: Cycle Context**
+Agent cycles SHALL be classified as:
+- `production`: Normal operation, patterns tracked for self-production
+- `test`: Test execution, patterns NOT tracked
+- `audit`: Verification/audit execution, patterns NOT tracked
+
+**REQ-H05**: Action usage tracking (for pattern detection) SHALL only occur in `production` context.
+
+**REQ-H06**: Self-production checks SHALL only occur in `production` context.
+
+**REQ-H07**: Test and audit contexts SHALL NOT contaminate production patterns.
+
+This prevents self-production from optimizing on verification noise or test artifacts.
+
+### H.5 Sigillo 3: Specialization Bounds (Normative)
+
+**REQ-H08**: Specialization SHALL restrict, not expand capabilities.
+
+**REQ-H09**: For any specialization S of operation O:
+- `S.complexity <= O.complexity` (AXM-008 compliance)
+- `S.energyCost <= O.energyCost`
+- If `O.requiresCoupling == true`, then `S.requiresCoupling == true`
+- `S.category == O.category` (scope cannot expand)
+
+**REQ-H10**: Specialization depth SHALL be bounded:
+- `MAX_SPECIALIZATION_DEPTH = 5`
+- Operations at maximum depth cannot be further specialized
+
+**REQ-H11**: Violations of REQ-H09 or REQ-H10 SHALL cause specialization to fail with explicit error message.
+
+### H.6 Configuration Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `quarantineCycles` | 10 | Cycles before QUARANTINED → TRIAL |
+| `minTrialUses` | 5 | Minimum uses before TRIAL → ACTIVE |
+| `maxTrialBlocks` | 0 | Maximum blocks allowed (strict) |
+| `maxVDeltaPerUse` | 0 | Maximum avg Lyapunov increase |
+| `maxSurpriseDeltaPerUse` | 0.01 | Maximum avg surprise increase |
+| `MAX_SPECIALIZATION_DEPTH` | 5 | Maximum generation depth |
+
+### H.7 Backward Compatibility
+
+**REQ-H12**: Operations generated before v1.7.1 (without status field) SHALL be treated as ACTIVE.
+
+The `normalizeOperation()` function SHALL provide default values:
+- `status`: 'ACTIVE' (legacy operations are pre-approved)
+- `statusChangedAt`: operation's `generatedAt` timestamp
+- `quarantineStartCycle`: 0
+
+---
+
 ## Bibliography
 
 [1] Maturana, H.R. & Varela, F.J. (1980). *Autopoiesis and Cognition: The Realization of the Living*. D. Reidel.

@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T20:55:39.626Z",
+  "updated": "2026-01-04T21:35:54.197Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,26 +15,26 @@
     "since": null
   },
   "energy": {
-    "current": 0.491,
+    "current": 0.5,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": 0
+    "V_previous": null
   },
   "memory": {
-    "event_count": 494,
-    "last_event_hash": "9974cf40f44ff850935c1d33ad36520826316f318299dea16ed6cf6b1562f771",
-    "last_snapshot_at": "2026-01-04T20:46:22.663Z"
+    "event_count": 500,
+    "last_event_hash": "051196774523df3265b85899c1103237584ca7f2d382aa952be4cdae68c58c80",
+    "last_snapshot_at": "2026-01-04T21:35:48.682Z"
   },
   "session": {
-    "total_count": 44,
+    "total_count": 45,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T20:55:39.598Z",
+    "last_verification": "2026-01-04T20:55:39.626Z",
     "status": "nominal"
   },
   "human": {
@@ -42,7 +42,8 @@
     "context": ""
   },
   "important": [
-    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0"
+    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
+    "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8..."
   ],
   "learning": {
     "enabled": true,
@@ -101,7 +102,7 @@
       "survival": 0,
       "integrity": 0,
       "stability": 76,
-      "growth": 100,
+      "growth": 101,
       "rest": 0
     },
     "totalEnergyConsumed": 0.012
