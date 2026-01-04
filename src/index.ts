@@ -12,6 +12,7 @@ import { verifyAllInvariants, printVerificationReport, quickHealthCheck } from '
 import { appendEvent, loadEvents, replayEvents } from './events.js';
 import { computeV } from './lyapunov.js';
 import { guard, type Operation } from './guard.js';
+import { autoRecover, printRecoveryReport } from './recovery.js';
 import type { State, Config, VerificationResult } from './types.js';
 import { DEFAULT_CONFIG } from './types.js';
 
@@ -259,10 +260,16 @@ async function main(): Promise<void> {
         }
         break;
 
+      case 'recover':
+        const recoveryReport = await autoRecover(BASE_DIR);
+        printRecoveryReport(recoveryReport);
+        process.exit(recoveryReport.final_status === 'terminal' ? 1 : 0);
+        break;
+
       case 'help':
       default:
         console.log(`
-Entity System CLI
+Entity System CLI - AES-SPEC-001
 
 Commands:
   verify    Run all invariant checks
@@ -270,10 +277,11 @@ Commands:
   session   Manage sessions (start/end)
   replay    Replay events and show state
   events    List recent events
+  recover   Attempt recovery from violations
   help      Show this help
 
 Usage:
-  npx ts-node src/index.ts <command>
+  node dist/src/index.js <command>
         `);
     }
   } catch (error) {
@@ -295,4 +303,6 @@ export {
   quickHealthCheck,
   computeV,
   guard,
+  autoRecover,
+  printRecoveryReport,
 };
