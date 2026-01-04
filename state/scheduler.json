@@ -6,10 +6,10 @@
       "operation": "system.health",
       "interval": 300000,
       "enabled": true,
-      "runCount": 16,
+      "runCount": 17,
       "failCount": 0,
-      "nextRun": "2026-01-04T20:03:35.318Z",
-      "lastRun": "2026-01-04T19:58:35.318Z"
+      "nextRun": "2026-01-04T20:16:55.355Z",
+      "lastRun": "2026-01-04T20:11:55.355Z"
     },
     {
       "id": "autopoiesis-check",
@@ -17,10 +17,10 @@
       "operation": "meta.introspect",
       "interval": 3600000,
       "enabled": true,
-      "runCount": 2,
+      "runCount": 3,
       "failCount": 0,
-      "nextRun": "2026-01-04T20:05:57.039Z",
-      "lastRun": "2026-01-04T19:05:57.039Z"
+      "nextRun": "2026-01-04T21:11:55.355Z",
+      "lastRun": "2026-01-04T20:11:55.355Z"
     },
     {
       "id": "energy-check",
@@ -28,11 +28,11 @@
       "operation": "energy.status",
       "interval": 120000,
       "enabled": true,
-      "runCount": 31,
+      "runCount": 34,
       "failCount": 0,
-      "nextRun": "2026-01-04T20:04:35.324Z",
-      "lastRun": "2026-01-04T20:02:35.324Z"
+      "nextRun": "2026-01-04T20:17:55.354Z",
+      "lastRun": "2026-01-04T20:15:55.354Z"
     }
   ],
-  "lastSave": "2026-01-04T20:02:35.324Z"
+  "lastSave": "2026-01-04T20:15:55.354Z"
 }

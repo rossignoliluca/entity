@@ -1,0 +1,27 @@
+{
+  "seq": 454,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-04T20:16:30.837Z",
+  "data": {
+    "priority": "growth",
+    "action": "state.summary",
+    "reason": "At attractor with vital energy - exploring/learning",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.5,
+    "energyAfter": 0.497,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "Summary generated",
+      "effects": {
+        "status": "nominal",
+        "energy": 0.5,
+        "events": 453,
+        "sessions": 44,
+        "coupled": false
+      }
+    }
+  },
+  "prev_hash": "0cb85c9e005d958a5ade1e95a7a4bc955e949cba45af0bc49c94036a8b84e2ba",
+  "hash": "7d924125ca1b8eda7bc20c85f93b6a4c5f15d435730565808f92f5ea47a2ddf9"
+}

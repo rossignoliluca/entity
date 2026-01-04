@@ -1,0 +1,141 @@
+{
+  "seq": 453,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-04T20:16:16.147Z",
+  "data": {
+    "stats": {
+      "cycleCount": 5,
+      "responsesTotal": 5,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 4,
+        "growth": 1,
+        "rest": 0
+      },
+      "actionsExecuted": 5,
+      "actionsBlocked": 0,
+      "restCycles": 0,
+      "totalEnergyConsumed": 0.015,
+      "startedAt": "2026-01-04T20:11:55.354Z",
+      "lastCycle": "2026-01-04T20:15:55.377Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 0,
+        "lastAdaptation": null,
+        "violations": [
+          {
+            "timestamp": "2026-01-04T20:12:55.477Z",
+            "cycle": 2,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.411,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:12:55.477Z",
+            "cycle": 2,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.411,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:13:55.470Z",
+            "cycle": 3,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.497,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:13:55.470Z",
+            "cycle": 3,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.497,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:14:55.486Z",
+            "cycle": 4,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.473,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:14:55.486Z",
+            "cycle": 4,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.473,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:15:55.468Z",
+            "cycle": 5,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-04T20:15:55.468Z",
+            "cycle": 5,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          }
+        ],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-04T20:11:55.352Z",
+            "cycle": 0,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.001,
+            "decisionInterval": 60000,
+            "reason": "Initial parameters"
+          }
+        ],
+        "violationRate": 1.6,
+        "stabilityScore": 0,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.05,
+          "urgencyThreshold": 0.15,
+          "restThreshold": 0.001,
+          "decisionInterval": 60000
+        }
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "ac4acaa4180a6f8331b787eaff2568b39d2f488b619a818fe3f5fdd6d652f581",
+  "hash": "0cb85c9e005d958a5ade1e95a7a4bc955e949cba45af0bc49c94036a8b84e2ba"
+}

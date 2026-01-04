@@ -1,0 +1,31 @@
+{
+  "seq": 438,
+  "type": "AGENT_WAKE",
+  "timestamp": "2026-01-04T20:11:55.381Z",
+  "data": {
+    "config": {
+      "enabled": true,
+      "decisionInterval": 60000,
+      "feelingCost": 0.001,
+      "activeWhenCoupled": false,
+      "restThreshold": 0.001,
+      "urgencyThreshold": 0.15,
+      "criticalThreshold": 0.05,
+      "ultrastabilityEnabled": true,
+      "adaptationInterval": 10,
+      "violationWindowSize": 50,
+      "adaptationRate": 0.1,
+      "minDecisionInterval": 10000,
+      "maxDecisionInterval": 300000,
+      "minRestThreshold": 0.0001,
+      "maxAdaptationsPerWindow": 5,
+      "activeInferenceEnabled": true,
+      "activeInferenceConfig": {},
+      "cycleMemoryEnabled": true,
+      "cycleMemoryConfig": {}
+    },
+    "reason": "Agent awakened to begin sense-making"
+  },
+  "prev_hash": "cbf89443e2ed6b5b64c76b423f8d0b2fc3b1976aefa9bed377050417a2092f54",
+  "hash": "000f901a97fd6f29a6f7cc3d0976653e22934ed204cc88a73b7c96e2e11e61af"
+}

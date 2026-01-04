@@ -1,0 +1,25 @@
+{
+  "seq": 440,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-04T20:12:30.849Z",
+  "data": {
+    "priority": "growth",
+    "action": "system.health",
+    "reason": "At attractor with vital energy - exploring/learning",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.417,
+    "energyAfter": 0.411,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "System healthy",
+      "effects": {
+        "healthy": true,
+        "issues": [],
+        "status": "nominal"
+      }
+    }
+  },
+  "prev_hash": "eac5a806d1067735c2b84b446a617628cd0ec1358415cee83bd265dd1d80eb08",
+  "hash": "1092268d846a1e33626a120d4666e31c2d696fe4a3031f1af5ab0e43bd594b15"
+}

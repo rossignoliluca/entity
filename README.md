@@ -60,6 +60,7 @@ npm run build
 - **8a: Sense-making loop** (Maturana & Varela, Di Paolo)
 - **8b: Ultrastability** (Ashby) - adaptive parameter adjustment
 - **8c: Active Inference** (Friston) - EFE minimization
+- **8d: Cycle Memory** - learns from past cycles
 
 ## CLI Commands
 
@@ -136,10 +137,11 @@ entity/
 │       ├── index.ts       # Daemon core
 │       ├── agent.ts       # Internal agency
 │       ├── active-inference.ts  # Free Energy
+│       ├── cycle-memory.ts      # Cycle Memory
 │       ├── scheduler.ts   # Task scheduling
 │       ├── hooks.ts       # Event hooks
 │       └── maintenance.ts # Self-maintenance
-├── test/                  # 353 tests
+├── test/                  # 386 tests
 ├── events/                # Merkle chain
 ├── state/                 # Current + snapshots
 └── spec/
@@ -162,17 +164,17 @@ entity/
 
 ```bash
 npm run test
-# 353 tests passing
+# 386 tests passing
 ```
 
 ## Statistics
 
 | Metric | Value |
 |--------|-------|
-| Events | 414 |
-| Sessions | 43 |
-| Tests | 353 |
-| Version | v1.5.0 |
+| Events | 452 |
+| Sessions | 44 |
+| Tests | 386 |
+| Version | v1.6.0 |
 
 ## License
 
