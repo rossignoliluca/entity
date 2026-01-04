@@ -3,7 +3,7 @@
  * AES-SPEC-001 v1.0.0
  */
 
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
@@ -44,6 +44,21 @@ import {
   getQuickSummary,
   exportMetrics,
 } from './analytics.js';
+import {
+  exportState,
+  saveBundleToFile,
+  loadBundleFromFile,
+  verifyBundle,
+  importState,
+  verifyIdentity,
+  generateFingerprint,
+  compareSyncStatus,
+  fastForwardMerge,
+  printBundleInfo,
+  printIdentityVerification,
+  printSyncStatus,
+  generateExportFilename,
+} from './continuity.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -761,26 +776,135 @@ Analytics commands:
         }
         break;
 
+      case 'continuity':
+        const contAction = process.argv[3];
+        const contEvents = await loadEvents(BASE_DIR);
+        const contState = await loadState();
+
+        if (contAction === 'export') {
+          const outputPath = process.argv[4] || join(BASE_DIR, 'exports', generateExportFilename(contState));
+          // Ensure exports directory exists
+          try {
+            await mkdir(join(BASE_DIR, 'exports'), { recursive: true });
+          } catch { /* ignore if exists */ }
+
+          const bundle = await exportState(BASE_DIR, contState, contEvents);
+          await saveBundleToFile(bundle, outputPath);
+          console.log(`\n✓ State exported to: ${outputPath}`);
+          console.log(`  Events: ${bundle.events.length}`);
+          console.log(`  Token:  ${bundle.continuity_token.id}`);
+          console.log(`  Hash:   ${bundle.bundle_hash.substring(0, 32)}...\n`);
+        } else if (contAction === 'import') {
+          const inputPath = process.argv[4];
+          if (!inputPath) {
+            console.log('Usage: continuity import <bundle-file> [--overwrite]');
+            break;
+          }
+          const overwrite = process.argv.includes('--overwrite');
+          try {
+            const bundle = await loadBundleFromFile(inputPath);
+            const result = await importState(BASE_DIR, bundle, { overwrite });
+            console.log(result.success ? `\n✓ ${result.message}\n` : `\n✗ ${result.message}\n`);
+          } catch (err) {
+            console.log(`\n✗ Failed to load bundle: ${err}\n`);
+          }
+        } else if (contAction === 'verify') {
+          const bundlePath = process.argv[4];
+          if (!bundlePath) {
+            console.log('Usage: continuity verify <bundle-file>');
+            break;
+          }
+          try {
+            const bundle = await loadBundleFromFile(bundlePath);
+            const verification = verifyBundle(bundle);
+            if (verification.valid) {
+              console.log('\n✓ Bundle is valid\n');
+              printBundleInfo(bundle);
+            } else {
+              console.log('\n✗ Bundle verification failed:');
+              for (const err of verification.errors) {
+                console.log(`  - ${err}`);
+              }
+              console.log('');
+            }
+          } catch (err) {
+            console.log(`\n✗ Failed to load bundle: ${err}\n`);
+          }
+        } else if (contAction === 'identity') {
+          const bundlePath = process.argv[4];
+          if (bundlePath) {
+            try {
+              const bundle = await loadBundleFromFile(bundlePath);
+              const result = verifyIdentity({ state: contState, events: contEvents }, bundle);
+              printIdentityVerification(result);
+            } catch (err) {
+              console.log(`\n✗ Failed to load bundle: ${err}\n`);
+            }
+          } else {
+            // Show local fingerprint
+            const fingerprint = generateFingerprint(contState, contEvents);
+            console.log(`\n=== IDENTITY FINGERPRINT ===\n`);
+            console.log(`Fingerprint: ${fingerprint}`);
+            console.log(`Org Hash:    ${contState.organization_hash.substring(0, 32)}...`);
+            console.log(`Created:     ${contState.created}`);
+            console.log(`Events:      ${contEvents.length}`);
+            console.log(`Sessions:    ${contState.session.total_count}\n`);
+          }
+        } else if (contAction === 'sync') {
+          const bundlePath = process.argv[4];
+          if (!bundlePath) {
+            console.log('Usage: continuity sync <bundle-file>');
+            break;
+          }
+          try {
+            const bundle = await loadBundleFromFile(bundlePath);
+            const status = compareSyncStatus(contEvents, bundle.events);
+            printSyncStatus(status);
+
+            if (status.can_merge && bundle.events.length > contEvents.length) {
+              console.log('Run with --merge to fast-forward local state');
+            }
+
+            if (process.argv.includes('--merge') && status.can_merge) {
+              const result = await fastForwardMerge(BASE_DIR, contEvents, bundle);
+              console.log(result.success ? `✓ ${result.message}` : `✗ ${result.message}`);
+            }
+          } catch (err) {
+            console.log(`\n✗ Failed to load bundle: ${err}\n`);
+          }
+        } else {
+          console.log(`
+Continuity commands (Phase 6):
+  continuity export [path]       Export state as portable bundle
+  continuity import <file>       Import state from bundle (--overwrite)
+  continuity verify <file>       Verify bundle integrity
+  continuity identity [file]     Show/verify identity fingerprint
+  continuity sync <file>         Compare and sync with remote bundle (--merge)
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
 Entity System CLI - AES-SPEC-001
 
 Commands:
-  verify     Run all invariant checks
-  status     Show system status
-  session    Manage sessions (start/end)
-  snapshot   Manage state snapshots
-  recharge   Restore energy (+${ENERGY_RECHARGE_AMOUNT})
-  human      Manage human context
-  memory     Manage important memories
-  op         Execute operations from catalog
-  learn      Pattern analysis and learning (Phase 4)
-  analytics  Metrics dashboard and insights (Phase 5)
-  replay     Replay events and show state
-  events     List recent events
-  recover    Attempt recovery from violations
-  help       Show this help
+  verify      Run all invariant checks
+  status      Show system status
+  session     Manage sessions (start/end)
+  snapshot    Manage state snapshots
+  recharge    Restore energy (+${ENERGY_RECHARGE_AMOUNT})
+  human       Manage human context
+  memory      Manage important memories
+  op          Execute operations from catalog
+  learn       Pattern analysis and learning (Phase 4)
+  analytics   Metrics dashboard and insights (Phase 5)
+  continuity  Multi-instance export/import (Phase 6)
+  replay      Replay events and show state
+  events      List recent events
+  recover     Attempt recovery from violations
+  help        Show this help
 
 Usage:
   node dist/src/index.js <command>
