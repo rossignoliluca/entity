@@ -86,7 +86,7 @@
 
 **Status:** Autonomous operation enabled. 266 tests
 
-## Phase 8: Internal Agency (COMPLETED)
+## Phase 8a: Internal Agency - Core (COMPLETED)
 
 Based on scientific foundations:
 - Maturana & Varela: Autopoiesis and Cognition
@@ -109,22 +109,88 @@ Features:
 - [x] Agent event types (AGENT_WAKE, AGENT_SLEEP, AGENT_RESPONSE, AGENT_REST)
 - [x] Integration with daemon (auto-wake on daemon start)
 - [x] CLI commands: agent status/feeling/cycle/wake
-- [x] 31 agent tests
+- [x] Concurrency fixes (v1.3.1): StateManager with file locking
+- [x] Annex F: Internal Agency Scope (informative)
 
-**Status:** Internal agency implemented. The entity can now FEEL and RESPOND to its own precariousness. 297 tests
+**Status:** Internal agency implemented. 297 tests, v1.3.1
 
 ---
 
-## Priority Queue
+## Phase 8b: Ultrastability (Ashby) - NEXT
 
-1. **Human context** - Essential for personalization
-2. **Important memories** - Core for continuity
-3. **Operations catalog** - Enable real actions
-4. **Analytics** - Visibility into system health
+Adaptive parameter adjustment based on history of violations.
+
+- [ ] Track violation patterns over time
+- [ ] `adaptParameters()`: Adjust thresholds based on history
+  - E_threshold: raise if frequent energy warnings
+  - V thresholds: adjust stability sensitivity
+  - decisionInterval: speed up/slow down based on stability
+- [ ] Ultrastability state in agent
+- [ ] Tests for parameter adaptation
+
+**Goal:** System that learns optimal operating parameters.
+
+## Phase 8c: Active Inference (Friston)
+
+Full Free Energy Principle implementation.
+
+- [ ] Generative model interface:
+  ```typescript
+  interface GenerativeModel {
+    predict(action: Action): ExpectedState;
+    update(actual: State): void; // Bayesian update
+  }
+  ```
+- [ ] Expected free energy computation
+- [ ] Action selection minimizing EFE
+- [ ] Epistemic vs pragmatic value balance
+- [ ] Model learning from experience
+
+**Goal:** Agent that actively minimizes surprise through prediction.
+
+## Phase 8d: Cycle Memory
+
+Learn from past sense-making cycles.
+
+- [ ] `cycleHistory: CycleRecord[]` - recent cycle outcomes
+- [ ] Pattern recognition: which actions helped which feelings
+- [ ] Correlation tracking: action → outcome
+- [ ] Adaptive response selection based on history
+- [ ] Forgetting old/irrelevant cycles
+
+**Goal:** Agent that learns what works.
+
+## Phase 8e: Self-Producing Agent
+
+Agent uses meta-operations to create new responses.
+
+- [ ] Agent access to P set (meta-operations)
+- [ ] Pattern detection: "I keep doing X, could compose Y"
+- [ ] Auto-generation of specialized operations
+- [ ] Operation lineage tracking in agent stats
+- [ ] Constitutional check on generated operations
+
+**Goal:** Agent that produces its own operations (full autopoiesis).
+
+## Phase 8f: Structural Coupling Protocol
+
+Formalize agent-human interaction.
+
+- [ ] `requestCoupling()`: Signal need for human
+- [ ] Coupling priority levels (urgent, normal, low)
+- [ ] Queue requests when human unavailable
+- [ ] Handoff protocol (agent → human → agent)
+- [ ] Coupling metrics and quality assessment
+
+**Goal:** Clean protocol for agent asking for help.
+
+---
 
 ## Technical Debt
 
 - [x] Add integration tests (21 tests covering full workflows)
-- [ ] Improve error handling
+- [ ] Improve error handling in daemon
 - [x] Add logging levels (DEBUG/INFO/WARN/ERROR/SILENT)
 - [ ] Performance optimization for large event chains
+- [x] Concurrency handling (StateManager, file locking)
+- [ ] Atomic agent cycles (single transaction per cycle)
