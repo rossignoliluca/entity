@@ -30,6 +30,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const BASE_DIR = join(__dirname, '..', '..');
 
+// Energy decay per session (AES-SPEC-001 §5.3)
+const ENERGY_DECAY_PER_SESSION = 0.05;
+
 /**
  * Load current state
  */
@@ -106,6 +109,17 @@ export async function endSession(): Promise<void> {
   state.coupling.active = false;
   state.coupling.partner = null;
   state.coupling.since = null;
+
+  // Apply energy decay (AES-SPEC-001 §5.3)
+  const previousEnergy = state.energy.current;
+  state.energy.current = Math.max(0, state.energy.current - ENERGY_DECAY_PER_SESSION);
+  console.log(`Energy: ${previousEnergy.toFixed(2)} → ${state.energy.current.toFixed(2)} (decay: -${ENERGY_DECAY_PER_SESSION})`);
+
+  // Check for dormant state (DEF-047)
+  if (state.energy.current < state.energy.min) {
+    state.integrity.status = 'dormant';
+    console.log('⚠ Energy below E_min - entering dormant state');
+  }
 
   // Update event tracking
   const events = await loadEvents(BASE_DIR);
