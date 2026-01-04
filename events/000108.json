@@ -1,0 +1,13 @@
+{
+  "seq": 108,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T14:19:38.922Z",
+  "data": {
+    "reason": "Human context updated",
+    "human_name": "Luca Rossignoli",
+    "human_context": "Creator of Entity System, interested in autopoiesis and AI consciousness",
+    "previous_name": "Unknown"
+  },
+  "prev_hash": "2407984721ed99a9116461ba25773972ace919a1fda9397c7e38da04339f86a2",
+  "hash": "b9ac3d47be88d96b5565c6be1cff9d4656cca1ec84860d44b1652e76886767c0"
+}

@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T14:19:59.129Z",
+  "updated": "2026-01-04T14:17:51.848Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -24,9 +24,9 @@
     "V_previous": 0
   },
   "memory": {
-    "event_count": 111,
-    "last_event_hash": "fcacf94b84c655ce30169063654930c5e32ad0f2e64b5cd146d8345c72e022ed",
-    "last_snapshot_at": "2026-01-04T14:17:51.853Z"
+    "event_count": 106,
+    "last_event_hash": "84b6db74f20052b573b0566ce75556da67bfdc072c4725fa18fc360f3bbc8e00",
+    "last_snapshot_at": "2026-01-04T14:14:04.061Z"
   },
   "session": {
     "total_count": 25,
@@ -38,12 +38,8 @@
     "status": "nominal"
   },
   "human": {
-    "name": "Luca Rossignoli",
-    "context": "Creator of Entity System, interested in autopoiesis and AI consciousness"
+    "name": "Unknown",
+    "context": ""
   },
-  "important": [
-    "[2026-01-04] Entity System created and operational - first 100+ events milestone reached",
-    "[2026-01-04] Dormant state tested - natural decay through 10 sessions, recharge successful",
-    "[2026-01-04] All 5 invariants verified and recovery procedures tested"
-  ]
+  "important": []
 }

@@ -177,6 +177,99 @@ export async function rechargeEnergy(): Promise<void> {
 }
 
 /**
+ * Set human context (AES-SPEC-001 §4.2)
+ * Stores information about the human partner
+ */
+export async function setHuman(name: string, context: string = ''): Promise<void> {
+  const state = await loadState();
+
+  const previousName = state.human.name;
+  state.human.name = name;
+  state.human.context = context;
+
+  // Log context update event
+  await appendEvent(BASE_DIR, 'STATE_UPDATE', {
+    reason: 'Human context updated',
+    human_name: name,
+    human_context: context,
+    previous_name: previousName,
+  });
+
+  // Update event tracking
+  const events = await loadEvents(BASE_DIR);
+  state.memory.event_count = events.length;
+  state.memory.last_event_hash = events[events.length - 1].hash;
+
+  await saveState(state);
+
+  console.log(`Human context set: ${name}`);
+  if (context) {
+    console.log(`Context: ${context}`);
+  }
+}
+
+/**
+ * Add important memory (AES-SPEC-001 §4.3)
+ * Stores significant information for continuity
+ */
+export async function addImportant(memory: string): Promise<void> {
+  const state = await loadState();
+
+  // Add timestamp to memory
+  const timestamp = new Date().toISOString();
+  const entry = `[${timestamp.substring(0, 10)}] ${memory}`;
+
+  state.important.push(entry);
+
+  // Log memory event
+  await appendEvent(BASE_DIR, 'STATE_UPDATE', {
+    reason: 'Important memory added',
+    memory: entry,
+    total_memories: state.important.length,
+  });
+
+  // Update event tracking
+  const events = await loadEvents(BASE_DIR);
+  state.memory.event_count = events.length;
+  state.memory.last_event_hash = events[events.length - 1].hash;
+
+  await saveState(state);
+
+  console.log(`Memory added: ${entry}`);
+  console.log(`Total important memories: ${state.important.length}`);
+}
+
+/**
+ * List important memories
+ */
+export async function listImportant(): Promise<void> {
+  const state = await loadState();
+
+  console.log('\n=== IMPORTANT MEMORIES ===');
+  if (state.important.length === 0) {
+    console.log('No memories stored');
+  } else {
+    console.log(`Total: ${state.important.length}\n`);
+    for (let i = 0; i < state.important.length; i++) {
+      console.log(`  ${i + 1}. ${state.important[i]}`);
+    }
+  }
+  console.log('');
+}
+
+/**
+ * Show human context
+ */
+export async function showHuman(): Promise<void> {
+  const state = await loadState();
+
+  console.log('\n=== HUMAN CONTEXT ===');
+  console.log(`Name: ${state.human.name}`);
+  console.log(`Context: ${state.human.context || '(none)'}`);
+  console.log('');
+}
+
+/**
  * Execute operation with guard
  */
 export async function execute(
@@ -376,6 +469,47 @@ Snapshot commands:
         await rechargeEnergy();
         break;
 
+      case 'human':
+        const humanAction = process.argv[3];
+        if (humanAction === 'set') {
+          const name = process.argv[4];
+          const context = process.argv.slice(5).join(' ');
+          if (!name) {
+            console.log('Usage: human set <name> [context]');
+            break;
+          }
+          await setHuman(name, context);
+        } else if (humanAction === 'show') {
+          await showHuman();
+        } else {
+          console.log(`
+Human commands:
+  human set <name> [context]  Set human partner info
+  human show                  Show current human context
+          `);
+        }
+        break;
+
+      case 'memory':
+        const memAction = process.argv[3];
+        if (memAction === 'add') {
+          const memoryText = process.argv.slice(4).join(' ');
+          if (!memoryText) {
+            console.log('Usage: memory add <text>');
+            break;
+          }
+          await addImportant(memoryText);
+        } else if (memAction === 'list') {
+          await listImportant();
+        } else {
+          console.log(`
+Memory commands:
+  memory add <text>  Add important memory
+  memory list        List all memories
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -387,6 +521,8 @@ Commands:
   session   Manage sessions (start/end)
   snapshot  Manage state snapshots
   recharge  Restore energy (+${ENERGY_RECHARGE_AMOUNT})
+  human     Manage human context
+  memory    Manage important memories
   replay    Replay events and show state
   events    List recent events
   recover   Attempt recovery from violations

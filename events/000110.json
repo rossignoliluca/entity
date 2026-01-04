@@ -1,0 +1,12 @@
+{
+  "seq": 110,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T14:19:52.421Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-04] Dormant state tested - natural decay through 10 sessions, recharge successful",
+    "total_memories": 2
+  },
+  "prev_hash": "9a14d694f3710410ded9fa7f6392192af170cd771aec05acf0fe87a2c4ad0d41",
+  "hash": "4bb44817d1bd2d302681d216fade3709f110f130117efff38efaa926fad3a64a"
+}
