@@ -6,13 +6,14 @@
  * for faster recovery than full event replay.
  */
 
-import { readFile, writeFile, readdir, mkdir } from 'fs/promises';
+import { readFile, writeFile, readdir, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
 import { sha256 } from './hash.js';
 import { appendEvent, loadEvents } from './events.js';
 import type { State, Hash, Timestamp } from './types.js';
 
 const SNAPSHOTS_DIR = 'state/snapshots';
+const MAX_SNAPSHOTS = 10;
 
 /**
  * Snapshot metadata
@@ -73,6 +74,40 @@ async function ensureSnapshotsDir(baseDir: string): Promise<void> {
 }
 
 /**
+ * Cleanup old snapshots when exceeding MAX_SNAPSHOTS
+ * Removes oldest snapshots first (FIFO)
+ */
+async function cleanupOldSnapshots(
+  baseDir: string,
+  index: SnapshotIndex
+): Promise<string[]> {
+  const removed: string[] = [];
+
+  while (index.snapshots.length > MAX_SNAPSHOTS) {
+    const oldest = index.snapshots.shift();
+    if (oldest) {
+      // Delete snapshot file
+      const snapshotPath = join(baseDir, SNAPSHOTS_DIR, `${oldest.id}.json`);
+      try {
+        await unlink(snapshotPath);
+        removed.push(oldest.id);
+      } catch {
+        // File may not exist
+      }
+    }
+  }
+
+  // Update latest if it was removed
+  if (index.snapshots.length > 0) {
+    index.latest = index.snapshots[index.snapshots.length - 1].id;
+  } else {
+    index.latest = null;
+  }
+
+  return removed;
+}
+
+/**
  * Create a state snapshot
  */
 export async function createSnapshot(
@@ -115,6 +150,13 @@ export async function createSnapshot(
   const index = await loadIndex(baseDir);
   index.snapshots.push(snapshot);
   index.latest = id;
+
+  // Cleanup old snapshots if exceeding limit
+  const removed = await cleanupOldSnapshots(baseDir, index);
+  if (removed.length > 0) {
+    console.log(`Cleaned up ${removed.length} old snapshot(s)`);
+  }
+
   await saveIndex(baseDir, index);
 
   // Update state with snapshot reference
