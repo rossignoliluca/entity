@@ -33,6 +33,9 @@ const BASE_DIR = join(__dirname, '..', '..');
 // Energy decay per session (AES-SPEC-001 §5.3)
 const ENERGY_DECAY_PER_SESSION = 0.05;
 
+// Energy recharge amount (AES-SPEC-001 §5.3)
+const ENERGY_RECHARGE_AMOUNT = 0.10;
+
 /**
  * Load current state
  */
@@ -134,6 +137,43 @@ export async function endSession(): Promise<void> {
 
   console.log('Session ended');
   console.log(`Auto-snapshot: ${snapshot.id}`);
+}
+
+/**
+ * Recharge energy (AES-SPEC-001 §5.3)
+ * External intervention to restore energy
+ */
+export async function rechargeEnergy(): Promise<void> {
+  const state = await loadState();
+
+  const previousEnergy = state.energy.current;
+  const previousStatus = state.integrity.status;
+
+  // Recharge energy (cap at 1.0)
+  state.energy.current = Math.min(1.0, state.energy.current + ENERGY_RECHARGE_AMOUNT);
+
+  // Exit dormant state if energy restored above E_min
+  if (previousStatus === 'dormant' && state.energy.current >= state.energy.min) {
+    state.integrity.status = 'nominal';
+    console.log('✓ Exited dormant state - energy restored');
+  }
+
+  // Log recharge event
+  await appendEvent(BASE_DIR, 'STATE_UPDATE', {
+    reason: 'Energy recharge',
+    energy_before: previousEnergy,
+    energy_after: state.energy.current,
+    recharge_amount: ENERGY_RECHARGE_AMOUNT,
+  });
+
+  // Update event tracking
+  const events = await loadEvents(BASE_DIR);
+  state.memory.event_count = events.length;
+  state.memory.last_event_hash = events[events.length - 1].hash;
+
+  await saveState(state);
+
+  console.log(`Energy: ${previousEnergy.toFixed(2)} → ${state.energy.current.toFixed(2)} (recharge: +${ENERGY_RECHARGE_AMOUNT})`);
 }
 
 /**
@@ -332,6 +372,10 @@ Snapshot commands:
         }
         break;
 
+      case 'recharge':
+        await rechargeEnergy();
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -342,6 +386,7 @@ Commands:
   status    Show system status
   session   Manage sessions (start/end)
   snapshot  Manage state snapshots
+  recharge  Restore energy (+${ENERGY_RECHARGE_AMOUNT})
   replay    Replay events and show state
   events    List recent events
   recover   Attempt recovery from violations
