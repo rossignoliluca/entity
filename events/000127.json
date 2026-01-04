@@ -1,0 +1,13 @@
+{
+  "seq": 127,
+  "type": "OPERATION",
+  "timestamp": "2026-01-04T14:28:22.673Z",
+  "data": {
+    "operation": "interaction.greet",
+    "params": {},
+    "result": "Hello, Luca Rossignoli!",
+    "energy_cost": 0.002
+  },
+  "prev_hash": "fce1fbf3412a0c2151b6681a8c37ad031442441425f1ff89ff4ad50e022933cf",
+  "hash": "4d1c33699428b05232a4f9f99643de859473665f8a48cd0362f45814be627dab"
+}

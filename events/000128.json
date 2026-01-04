@@ -1,0 +1,13 @@
+{
+  "seq": 128,
+  "type": "OPERATION",
+  "timestamp": "2026-01-04T14:28:22.787Z",
+  "data": {
+    "operation": "system.info",
+    "params": {},
+    "result": "System info retrieved",
+    "energy_cost": 0.002
+  },
+  "prev_hash": "4d1c33699428b05232a4f9f99643de859473665f8a48cd0362f45814be627dab",
+  "hash": "32ea76247fb4462ae96c12819089f0af76156f8481873ce20be3be21ac03e580"
+}
