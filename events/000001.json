@@ -1,0 +1,14 @@
+{
+  "seq": 1,
+  "type": "GENESIS",
+  "timestamp": "2025-01-04T09:00:00.000Z",
+  "data": {
+    "specification": "AES-SPEC-001",
+    "version": "1.0.0",
+    "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
+    "instantiated_by": "Luca Rossignoli",
+    "constitutive_constraint": "No action or inaction shall reduce the weighted possibility space of any being"
+  },
+  "prev_hash": null,
+  "hash": "c635703980a7ad6fda80d1f3d7279f7de6ccc3635dbd500c4bc5b411b5e239ee"
+}

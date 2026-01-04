@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "specification": "AES-SPEC-001",
+  "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
+  "created": "2025-01-04T09:00:00.000Z",
+  "updated": "2025-01-04T09:00:00.000Z",
+  "identity": {
+    "name": "Entity",
+    "instantiated_by": "Luca Rossignoli",
+    "instantiated_at": "2025-01-04T09:00:00.000Z"
+  },
+  "coupling": {
+    "active": false,
+    "partner": null,
+    "since": null
+  },
+  "energy": {
+    "current": 1.0,
+    "min": 0.01,
+    "threshold": 0.1
+  },
+  "lyapunov": {
+    "V": 0.0,
+    "V_previous": null
+  },
+  "memory": {
+    "event_count": 1,
+    "last_event_hash": "c635703980a7ad6fda80d1f3d7279f7de6ccc3635dbd500c4bc5b411b5e239ee",
+    "last_snapshot_at": null
+  },
+  "session": {
+    "total_count": 0,
+    "current_id": null
+  },
+  "integrity": {
+    "invariant_violations": 0,
+    "last_verification": "2025-01-04T09:00:00.000Z",
+    "status": "nominal"
+  },
+  "human": {
+    "name": "Luca",
+    "context": "Entrepreneur, engineer, philosopher. Building ENOQ."
+  },
+  "important": [
+    "Organization hash must never change",
+    "State must equal replay of events",
+    "V must never increase",
+    "No action or inaction reduces W of any being"
+  ]
+}

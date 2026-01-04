@@ -1,0 +1,32 @@
+{
+  "name": "entity",
+  "version": "1.0.0",
+  "description": "Autopoietic Entity System - ISO AES-SPEC-001 Conformant",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "bin": {
+    "entity": "dist/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "verify": "node dist/src/index.js verify",
+    "status": "node dist/src/index.js status",
+    "test": "tsc && node --test dist/test/*.js",
+    "test:watch": "tsc --watch & node --test --watch dist/test/*.js"
+  },
+  "keywords": [
+    "autopoiesis",
+    "lyapunov",
+    "event-sourcing",
+    "merkle-chain",
+    "iso-specification"
+  ],
+  "author": "Luca Rossignoli",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
