@@ -299,12 +299,12 @@ These don't touch core — they build around it.
 
 ---
 
-## Category 4: Governance
+## Category 4: Governance ✓ SATURATED
 
-- [ ] **GOVERNANCE.md**: Who can modify spec, who can release, who can change constitution (NOBODY)
-- [ ] **ROLES.md**: Human partner, environment, contract — explicit
+- [x] **GOVERNANCE.md**: Who can modify spec, who can release, who can change constitution (NOBODY)
+- [x] **ROLES.md**: Human partner, environment, contract — explicit
 
-**Saturation:** 2 documents, then CLOSED
+**Saturation:** 2/2 documents — CLOSED
 
 ---
 
