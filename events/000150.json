@@ -1,0 +1,11 @@
+{
+  "seq": 150,
+  "type": "SESSION_START",
+  "timestamp": "2026-01-04T15:03:30.975Z",
+  "data": {
+    "session_id": "c36fb7d0-bbc2-4aec-b82e-496e8878e33c",
+    "partner": "human"
+  },
+  "prev_hash": "8d4408320f138e0a1d65a0828416669e49f955b8605d8520e22ba2c07600e1e6",
+  "hash": "3c91215920b5f83c451e625e86c75f131f73d2c995dcd0899fdec373d05bf9f8"
+}
