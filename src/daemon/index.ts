@@ -177,6 +177,12 @@ export class Daemon extends EventEmitter {
       this.log(`Agent error in cycle ${cycle}: ${error}`, 'error');
       this.hooks.trigger('onAgentError', { error, cycle });
     });
+
+    // Phase 8b: Ultrastability events
+    this.agent.on('parameterAdapted', (data) => {
+      this.log(`Ultrastability: ${data.type} ${data.direction} - interval=${(data.decisionInterval/1000).toFixed(1)}s`);
+      this.hooks.trigger('onParameterAdapted', data);
+    });
   }
 
   // ===========================================================================

@@ -34,7 +34,9 @@ export type HookEvent =
   | 'onAgentWake'
   | 'onAgentSleep'
   | 'onAgentCycle'
-  | 'onAgentError';
+  | 'onAgentError'
+  // Phase 8b: Ultrastability events
+  | 'onParameterAdapted';
 
 export type HookHandler = (data: unknown) => void | Promise<void>;
 
