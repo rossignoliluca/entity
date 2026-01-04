@@ -1135,6 +1135,188 @@ Templates: read_field, set_field, compose, conditional, transform, aggregate, ec
         }
         break;
 
+      case 'daemon':
+        const daemonAction = process.argv[3];
+        const { Daemon, sendDaemonCommand, isDaemonRunning } = await import('./daemon/index.js');
+        const socketPath = join(BASE_DIR, 'daemon.sock');
+
+        if (daemonAction === 'start') {
+          // Check if already running
+          const running = await isDaemonRunning(socketPath);
+          if (running) {
+            console.log('Daemon is already running');
+            break;
+          }
+
+          // Start daemon in background
+          const daemon = new Daemon(BASE_DIR);
+          const result = await daemon.start();
+
+          if (result.success) {
+            console.log(`\n${result.message}`);
+            console.log('Daemon is now running in background');
+            console.log('Use "daemon status" to check status');
+            console.log('Use "daemon stop" to stop\n');
+
+            // Keep process running
+            daemon.on('log', ({ level, message }) => {
+              if (level === 'error') console.error(`[DAEMON] ${message}`);
+            });
+
+            // Handle shutdown signals
+            process.on('SIGINT', async () => {
+              console.log('\nStopping daemon...');
+              await daemon.stop();
+              process.exit(0);
+            });
+
+            process.on('SIGTERM', async () => {
+              await daemon.stop();
+              process.exit(0);
+            });
+
+            // Keep alive
+            setInterval(() => {}, 1000);
+          } else {
+            console.log(`\n${result.message}\n`);
+            process.exit(1);
+          }
+        } else if (daemonAction === 'stop') {
+          try {
+            const result = await sendDaemonCommand(socketPath, { type: 'stop' });
+            console.log('\nDaemon stopped\n');
+          } catch (error) {
+            console.log('\nDaemon is not running\n');
+          }
+        } else if (daemonAction === 'status') {
+          try {
+            const status = await sendDaemonCommand(socketPath, { type: 'status' }) as {
+              running: boolean;
+              pid: number;
+              uptime: number;
+              scheduledTasks: number;
+              activeHooks: number;
+              lastCheck: string;
+            };
+
+            console.log('\n=== DAEMON STATUS ===\n');
+            console.log(`Running: ${status.running ? 'Yes' : 'No'}`);
+            console.log(`PID: ${status.pid}`);
+            console.log(`Uptime: ${status.uptime}s`);
+            console.log(`Scheduled Tasks: ${status.scheduledTasks}`);
+            console.log(`Active Hooks: ${status.activeHooks}`);
+            console.log(`Last Check: ${status.lastCheck || 'Never'}`);
+            console.log('');
+          } catch {
+            console.log('\nDaemon is not running\n');
+          }
+        } else if (daemonAction === 'tasks') {
+          try {
+            const tasks = await sendDaemonCommand(socketPath, { type: 'tasks' }) as Array<{
+              id: string;
+              name: string;
+              operation: string;
+              interval: number;
+              enabled: boolean;
+              lastRun?: string;
+              runCount?: number;
+            }>;
+
+            console.log('\n=== SCHEDULED TASKS ===\n');
+            if (tasks.length === 0) {
+              console.log('No tasks scheduled');
+            } else {
+              for (const task of tasks) {
+                const status = task.enabled ? 'ON' : 'OFF';
+                const interval = Math.round(task.interval / 1000);
+                console.log(`[${status}] ${task.id}: ${task.operation} (every ${interval}s)`);
+                if (task.lastRun) {
+                  console.log(`     Last run: ${task.lastRun} (${task.runCount || 0} times)`);
+                }
+              }
+            }
+            console.log('');
+          } catch {
+            console.log('\nDaemon is not running\n');
+          }
+        } else if (daemonAction === 'logs') {
+          try {
+            const count = parseInt(process.argv[4] || '20', 10);
+            const logs = await sendDaemonCommand(socketPath, { type: 'logs', payload: count }) as string[];
+
+            console.log('\n=== DAEMON LOGS ===\n');
+            if (logs.length === 0) {
+              console.log('No logs available');
+            } else {
+              for (const line of logs) {
+                console.log(line);
+              }
+            }
+            console.log('');
+          } catch {
+            console.log('\nDaemon is not running\n');
+          }
+        } else if (daemonAction === 'maintenance') {
+          try {
+            const report = await sendDaemonCommand(socketPath, { type: 'maintenance' }) as {
+              timestamp: string;
+              checks: {
+                energy: { level: number; status: string };
+                invariants: { satisfied: number; violated: number; status: string };
+                lyapunov: { V: number; stable: boolean };
+              };
+              actions: string[];
+              errors: string[];
+            };
+
+            console.log('\n=== MAINTENANCE REPORT ===\n');
+            console.log(`Timestamp: ${report.timestamp}`);
+            console.log('');
+            console.log('Checks:');
+            console.log(`  Energy: ${(report.checks.energy.level * 100).toFixed(0)}% (${report.checks.energy.status})`);
+            console.log(`  Invariants: ${report.checks.invariants.satisfied}/${report.checks.invariants.satisfied + report.checks.invariants.violated} (${report.checks.invariants.status})`);
+            console.log(`  Lyapunov V: ${report.checks.lyapunov.V.toFixed(4)} (${report.checks.lyapunov.stable ? 'stable' : 'unstable'})`);
+
+            if (report.actions.length > 0) {
+              console.log('\nActions:');
+              for (const action of report.actions) {
+                console.log(`  - ${action}`);
+              }
+            }
+
+            if (report.errors.length > 0) {
+              console.log('\nErrors:');
+              for (const error of report.errors) {
+                console.log(`  - ${error}`);
+              }
+            }
+            console.log('');
+          } catch {
+            console.log('\nDaemon is not running\n');
+          }
+        } else {
+          const running = await isDaemonRunning(socketPath);
+          console.log(`
+Daemon Commands (Phase 7b: Autonomous Operation)
+
+Status: ${running ? 'RUNNING' : 'STOPPED'}
+
+Commands:
+  daemon start        Start daemon in foreground
+  daemon stop         Stop running daemon
+  daemon status       Show daemon status
+  daemon tasks        List scheduled tasks
+  daemon logs [n]     Show last n log lines (default: 20)
+  daemon maintenance  Run maintenance check now
+
+Default scheduled tasks:
+  - health-check: every 5 minutes
+  - energy-check: every 2 minutes
+  - autopoiesis-check: every hour
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -1153,6 +1335,7 @@ Commands:
   analytics   Metrics dashboard and insights (Phase 5)
   continuity  Multi-instance export/import (Phase 6)
   meta        Self-production meta-operations (Phase 7a)
+  daemon      Autonomous daemon mode (Phase 7b)
   replay      Replay events and show state
   events      List recent events
   recover     Attempt recovery from violations
