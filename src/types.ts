@@ -95,6 +95,28 @@ export interface State {
     lastAnalysis: Timestamp | null;
     patternsHash: Hash | null;
   };
+
+  autopoiesis?: {
+    enabled: boolean;
+    generatedOperations: Array<{
+      id: string;
+      name: string;
+      description: string;
+      category: string;
+      complexity: number;
+      energyCost: number;
+      requiresCoupling: boolean;
+      template: string;
+      templateParams: Record<string, unknown>;
+      generatedBy: string;
+      generatedAt: string;
+      parentOperations?: string[];
+      generation: number;
+    }>;
+    generationCount: number;
+    lastGeneration: Timestamp | null;
+    selfProductionHash: Hash | null;
+  };
 }
 
 // =============================================================================
@@ -112,7 +134,8 @@ export type EventType =
   | 'BLOCK'
   | 'SNAPSHOT'
   | 'VERIFICATION'
-  | 'LEARNING';
+  | 'LEARNING'
+  | 'META_OPERATION';
 
 export interface Event {
   seq: number;

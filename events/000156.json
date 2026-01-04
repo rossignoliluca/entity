@@ -1,0 +1,36 @@
+{
+  "seq": 156,
+  "type": "META_OPERATION",
+  "timestamp": "2026-01-04T15:31:13.703Z",
+  "data": {
+    "action": "define",
+    "operation_id": "self.hello",
+    "template": "echo",
+    "autopoiesis": {
+      "enabled": true,
+      "generatedOperations": [
+        {
+          "id": "self.hello",
+          "name": "Self Hello",
+          "description": "Generated operation: Self Hello",
+          "category": "generated",
+          "complexity": 5,
+          "energyCost": 0.01,
+          "requiresCoupling": true,
+          "template": "echo",
+          "templateParams": {
+            "message": "Hello, I am autopoietic\\!"
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T15:31:13.684Z",
+          "generation": 1
+        }
+      ],
+      "generationCount": 1,
+      "lastGeneration": "2026-01-04T15:31:13.684Z",
+      "selfProductionHash": "4283b9d47aa2190a70bf41d4d64e46faddd4c64d78611e73d258c8d9c976dd26"
+    }
+  },
+  "prev_hash": "81bf00c8877f449433068f001f56402df9b13420cedc1c236a5f03707a93bdb0",
+  "hash": "533476e258e33fb70399f9211ecbb5042cc648c983db5dc79de1e5d1fcc5ef55"
+}

@@ -1,0 +1,58 @@
+{
+  "seq": 157,
+  "type": "META_OPERATION",
+  "timestamp": "2026-01-04T15:31:26.708Z",
+  "data": {
+    "action": "compose",
+    "operation_id": "combined.check",
+    "source_operations": [
+      "state.summary",
+      "energy.status"
+    ],
+    "autopoiesis": {
+      "enabled": true,
+      "generatedOperations": [
+        {
+          "id": "self.hello",
+          "name": "Self Hello",
+          "description": "Generated operation: Self Hello",
+          "category": "generated",
+          "complexity": 5,
+          "energyCost": 0.01,
+          "requiresCoupling": true,
+          "template": "echo",
+          "templateParams": {
+            "message": "Hello, I am autopoietic\\!"
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T15:31:13.684Z",
+          "generation": 1
+        },
+        {
+          "id": "combined.check",
+          "name": "Combined Check",
+          "description": "Composed from: state.summary, energy.status",
+          "category": "generated",
+          "complexity": 3,
+          "energyCost": 0.002,
+          "requiresCoupling": true,
+          "template": "compose",
+          "templateParams": {
+            "operations": [
+              "state.summary",
+              "energy.status"
+            ]
+          },
+          "generatedBy": "meta.define",
+          "generatedAt": "2026-01-04T15:31:26.690Z",
+          "generation": 1
+        }
+      ],
+      "generationCount": 2,
+      "lastGeneration": "2026-01-04T15:31:26.690Z",
+      "selfProductionHash": "38dfc67321d91481aee8cacb73f9c74916111651ae6452080474aee12ce4494f"
+    }
+  },
+  "prev_hash": "533476e258e33fb70399f9211ecbb5042cc648c983db5dc79de1e5d1fcc5ef55",
+  "hash": "edd24082d1b933a0f8d1af990d41412c98483a0df0e1517c6b19161858dd76c9"
+}

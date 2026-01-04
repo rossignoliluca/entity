@@ -243,6 +243,13 @@ function applyEvent(state: State, event: Event): State {
       }
       break;
 
+    case 'META_OPERATION':
+      // Self-production event - update autopoiesis state
+      if (event.data.autopoiesis) {
+        newState.autopoiesis = event.data.autopoiesis as State['autopoiesis'];
+      }
+      break;
+
     default:
       // Unknown event type - no state change
       break;

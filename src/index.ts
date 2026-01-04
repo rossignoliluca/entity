@@ -59,6 +59,17 @@ import {
   printSyncStatus,
   generateExportFilename,
 } from './continuity.js';
+import {
+  defineOperation,
+  composeOperations,
+  specializeOperation,
+  listGeneratedOperations,
+  getAutopoiesisStats,
+  printAutopoiesisReport,
+  getCombinedCatalog,
+  META_OPERATIONS_CATALOG,
+  type HandlerTemplate,
+} from './meta-operations.js';
 
 // Get base directory
 // In dist/src/, need to go up two levels to get to project root
@@ -884,6 +895,246 @@ Continuity commands (Phase 6):
         }
         break;
 
+      case 'meta':
+        const metaAction = process.argv[3];
+        const metaState = await loadState();
+
+        if (metaAction === 'define') {
+          // Usage: meta define <id> <name> <template> [params...]
+          const opId = process.argv[4];
+          const opName = process.argv[5];
+          const template = process.argv[6] as HandlerTemplate;
+
+          if (!opId || !opName || !template) {
+            console.log('Usage: meta define <id> <name> <template> [templateParams...]');
+            console.log('Templates: read_field, set_field, compose, conditional, transform, aggregate, echo');
+            console.log('Example: meta define custom.greet "Custom Greet" echo message="Hello!"');
+            break;
+          }
+
+          // Parse template params
+          const templateParams: Record<string, unknown> = {};
+          for (let i = 7; i < process.argv.length; i++) {
+            const arg = process.argv[i];
+            const eqIndex = arg.indexOf('=');
+            if (eqIndex > 0) {
+              const key = arg.substring(0, eqIndex);
+              let value: unknown = arg.substring(eqIndex + 1);
+              try {
+                value = JSON.parse(value as string);
+              } catch {
+                // Keep as string
+              }
+              templateParams[key] = value;
+            }
+          }
+
+          const defineResult = defineOperation(metaState, {
+            id: opId,
+            name: opName,
+            description: `Generated operation: ${opName}`,
+            template,
+            templateParams,
+          });
+
+          if (defineResult.success) {
+            // Apply state changes
+            if (defineResult.stateChanges) {
+              Object.assign(metaState, defineResult.stateChanges);
+            }
+
+            // Log meta-operation event
+            await appendEvent(BASE_DIR, 'META_OPERATION', {
+              action: 'define',
+              operation_id: opId,
+              template,
+              autopoiesis: metaState.autopoiesis,
+            });
+
+            // Update event tracking
+            const metaEvents = await loadEvents(BASE_DIR);
+            metaState.memory.event_count = metaEvents.length;
+            metaState.memory.last_event_hash = metaEvents[metaEvents.length - 1].hash;
+
+            await saveState(metaState);
+
+            console.log(`\n✓ Operation generated: ${opId}`);
+            console.log(`  Template: ${template}`);
+            console.log(`  DEF-007: Self-production achieved\n`);
+          } else {
+            console.log(`\n✗ ${defineResult.message}\n`);
+          }
+        } else if (metaAction === 'compose') {
+          // Usage: meta compose <id> <name> <op1,op2,...>
+          const opId = process.argv[4];
+          const opName = process.argv[5];
+          const opsStr = process.argv[6];
+
+          if (!opId || !opName || !opsStr) {
+            console.log('Usage: meta compose <id> <name> <op1,op2,...>');
+            console.log('Example: meta compose combined.status "Combined Status" state.read,energy.status');
+            break;
+          }
+
+          const operations = opsStr.split(',');
+          const composeResult = composeOperations(metaState, {
+            id: opId,
+            name: opName,
+            description: `Composed from: ${operations.join(', ')}`,
+            operations,
+          });
+
+          if (composeResult.success) {
+            if (composeResult.stateChanges) {
+              Object.assign(metaState, composeResult.stateChanges);
+            }
+
+            await appendEvent(BASE_DIR, 'META_OPERATION', {
+              action: 'compose',
+              operation_id: opId,
+              source_operations: operations,
+              autopoiesis: metaState.autopoiesis,
+            });
+
+            const metaEvents = await loadEvents(BASE_DIR);
+            metaState.memory.event_count = metaEvents.length;
+            metaState.memory.last_event_hash = metaEvents[metaEvents.length - 1].hash;
+
+            await saveState(metaState);
+
+            console.log(`\n✓ Composed operation: ${opId}`);
+            console.log(`  From: ${operations.join(' → ')}`);
+            console.log(`  DEF-007: Self-production achieved\n`);
+          } else {
+            console.log(`\n✗ ${composeResult.message}\n`);
+          }
+        } else if (metaAction === 'specialize') {
+          // Usage: meta specialize <id> <name> <sourceOp> [presetParams...]
+          const opId = process.argv[4];
+          const opName = process.argv[5];
+          const sourceOp = process.argv[6];
+
+          if (!opId || !opName || !sourceOp) {
+            console.log('Usage: meta specialize <id> <name> <sourceOp> [presetParams...]');
+            console.log('Example: meta specialize greet.luca "Greet Luca" interaction.greet target=Luca');
+            break;
+          }
+
+          const presetParams: Record<string, unknown> = {};
+          for (let i = 7; i < process.argv.length; i++) {
+            const arg = process.argv[i];
+            const eqIndex = arg.indexOf('=');
+            if (eqIndex > 0) {
+              const key = arg.substring(0, eqIndex);
+              let value: unknown = arg.substring(eqIndex + 1);
+              try {
+                value = JSON.parse(value as string);
+              } catch {
+                // Keep as string
+              }
+              presetParams[key] = value;
+            }
+          }
+
+          const specResult = specializeOperation(metaState, {
+            id: opId,
+            name: opName,
+            description: `Specialized from: ${sourceOp}`,
+            sourceOperation: sourceOp,
+            presetParams,
+          });
+
+          if (specResult.success) {
+            if (specResult.stateChanges) {
+              Object.assign(metaState, specResult.stateChanges);
+            }
+
+            await appendEvent(BASE_DIR, 'META_OPERATION', {
+              action: 'specialize',
+              operation_id: opId,
+              source_operation: sourceOp,
+              autopoiesis: metaState.autopoiesis,
+            });
+
+            const metaEvents = await loadEvents(BASE_DIR);
+            metaState.memory.event_count = metaEvents.length;
+            metaState.memory.last_event_hash = metaEvents[metaEvents.length - 1].hash;
+
+            await saveState(metaState);
+
+            console.log(`\n✓ Specialized operation: ${opId}`);
+            console.log(`  From: ${sourceOp}`);
+            console.log(`  DEF-007: Self-production achieved\n`);
+          } else {
+            console.log(`\n✗ ${specResult.message}\n`);
+          }
+        } else if (metaAction === 'list') {
+          const genOps = listGeneratedOperations(metaState);
+          console.log('\n=== GENERATED OPERATIONS ===\n');
+          if (genOps.length === 0) {
+            console.log('No operations generated yet');
+            console.log('Use "meta define" to create first operation');
+          } else {
+            for (const op of genOps) {
+              console.log(`${op.id} [gen ${op.generation}]`);
+              console.log(`  Name: ${op.name}`);
+              console.log(`  Template: ${op.template}`);
+              console.log(`  Generated by: ${op.generatedBy}`);
+              if (op.parentOperations) {
+                console.log(`  Parents: ${op.parentOperations.join(', ')}`);
+              }
+            }
+          }
+          console.log('');
+        } else if (metaAction === 'report' || metaAction === 'status') {
+          printAutopoiesisReport(metaState);
+        } else if (metaAction === 'catalog') {
+          // Show combined catalog (base + meta + generated)
+          const combined = getCombinedCatalog(metaState);
+          const baseOps = Object.keys(OPERATIONS_CATALOG);
+          const metaOps = Object.keys(META_OPERATIONS_CATALOG);
+          const genOps = listGeneratedOperations(metaState).map((o) => o.id);
+
+          console.log('\n=== COMPLETE OPERATIONS CATALOG ===\n');
+          console.log(`[BASE] (${baseOps.length} operations)`);
+          for (const id of baseOps) {
+            console.log(`  ${id}`);
+          }
+          console.log('');
+          console.log(`[META] (${metaOps.length} operations) - P set for DEF-007`);
+          for (const id of metaOps) {
+            console.log(`  ${id}`);
+          }
+          console.log('');
+          if (genOps.length > 0) {
+            console.log(`[GENERATED] (${genOps.length} operations) - Self-produced`);
+            for (const id of genOps) {
+              console.log(`  ${id}`);
+            }
+            console.log('');
+          }
+          console.log(`Total |𝕆|: ${Object.keys(combined).length}\n`);
+        } else {
+          const stats = getAutopoiesisStats(metaState);
+          console.log(`
+Meta-Operations (Phase 7a: Self-Production)
+
+DEF-007: Autopoietic(S) ⟺ OperationallyClosed(S) ∧ ∃ P ⊆ 𝕆 : P generates 𝕆
+Status: ${stats.satisfiesDEF007 ? '✓ AUTOPOIETIC' : '○ Not yet autopoietic'}
+
+Commands:
+  meta define <id> <name> <template> [params]   Create new operation from template
+  meta compose <id> <name> <op1,op2,...>        Combine operations
+  meta specialize <id> <name> <source> [params] Specialize existing operation
+  meta list                                      List generated operations
+  meta report                                    Show autopoiesis report
+  meta catalog                                   Show complete catalog
+
+Templates: read_field, set_field, compose, conditional, transform, aggregate, echo
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -901,6 +1152,7 @@ Commands:
   learn       Pattern analysis and learning (Phase 4)
   analytics   Metrics dashboard and insights (Phase 5)
   continuity  Multi-instance export/import (Phase 6)
+  meta        Self-production meta-operations (Phase 7a)
   replay      Replay events and show state
   events      List recent events
   recover     Attempt recovery from violations

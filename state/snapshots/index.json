@@ -2,14 +2,6 @@
   "version": "1.0.0",
   "snapshots": [
     {
-      "id": "snap-2026-01-04T14-14-04",
-      "timestamp": "2026-01-04T14:14:04.061Z",
-      "event_seq": 102,
-      "event_hash": "097ff4c804b806e4539ff4c2239ab697408d7bb891a4440f1d90dc212d20490f",
-      "state_hash": "83e28ba91126d5c1da98ca50637234470ae15cb41ab743a4285728d22142dd96",
-      "description": "Auto-snapshot: Session 24 end"
-    },
-    {
       "id": "snap-2026-01-04T14-17-51",
       "timestamp": "2026-01-04T14:17:51.853Z",
       "event_seq": 106,
@@ -80,7 +72,15 @@
       "event_hash": "7623a494694db022c15187f9e1cbc5a8d1abd79debaa717d9f7b38b67e760c53",
       "state_hash": "9c7153f6328117af5e7839e60cedd3fac1fd3eff56676809e921924cead79156",
       "description": "Auto-snapshot: Session 33 end"
+    },
+    {
+      "id": "snap-2026-01-04T15-31-38",
+      "timestamp": "2026-01-04T15:31:38.269Z",
+      "event_seq": 158,
+      "event_hash": "09f2a53c00e45ae45d80e4454e70158081bdafe45d932a28eeefc26688433281",
+      "state_hash": "8a62143c45180b75947288ebcee380da31f4744601c1370b0520276bc6e13fc1",
+      "description": "Auto-snapshot: Session 34 end"
     }
   ],
-  "latest": "snap-2026-01-04T15-03-46"
+  "latest": "snap-2026-01-04T15-31-38"
 }
