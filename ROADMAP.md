@@ -84,7 +84,7 @@
 - [x] Default scheduled tasks (health, energy, autopoiesis)
 - [x] CLI commands for daemon control
 
-**Status:** Autonomous operation enabled. 224 tests
+**Status:** Autonomous operation enabled. 245 tests (incl. 21 integration)
 
 ---
 
@@ -97,7 +97,7 @@
 
 ## Technical Debt
 
-- [ ] Add integration tests
+- [x] Add integration tests (21 tests covering full workflows)
 - [ ] Improve error handling
 - [ ] Add logging levels
 - [ ] Performance optimization for large event chains
