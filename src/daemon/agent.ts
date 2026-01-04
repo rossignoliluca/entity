@@ -17,15 +17,14 @@
  */
 
 import { EventEmitter } from 'events';
-import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { State, InvariantCheck, VerificationResult, Config } from '../types.js';
 import { DEFAULT_CONFIG } from '../types.js';
 import { verifyAllInvariants, quickHealthCheck } from '../verify.js';
 import { computeV, isAtAttractor, stabilityMargin } from '../lyapunov.js';
-import { appendEvent } from '../events.js';
 import { executeOperation, getOperation, OPERATIONS_CATALOG } from '../operations.js';
 import { autoRecover } from '../recovery.js';
+import { getStateManager } from '../state-manager.js';
 
 // =============================================================================
 // Types
@@ -662,42 +661,87 @@ export class InternalAgent extends EventEmitter {
    *
    * This is not "logging" in the debugging sense.
    * This is communication with the future self through the Merkle chain.
+   * Uses StateManager for atomic event + state update.
    */
   private async remember(
     type: 'AGENT_WAKE' | 'AGENT_SLEEP' | 'AGENT_RESPONSE' | 'AGENT_REST',
     data: Record<string, unknown>
   ): Promise<void> {
-    // Append to event chain with appropriate agent event type
-    await appendEvent(this.baseDir, type, data);
+    const manager = getStateManager(this.baseDir);
+    await manager.appendEventAtomic(type, data, (state, event) => {
+      // Update agent state in state file
+      const newState = { ...state };
+      if (!newState.agent) {
+        newState.agent = {
+          enabled: true,
+          awake: type === 'AGENT_WAKE',
+          lastCycle: null,
+          cycleCount: 0,
+          responsesByPriority: { survival: 0, integrity: 0, stability: 0, growth: 0, rest: 0 },
+          totalEnergyConsumed: 0,
+        };
+      }
+
+      switch (type) {
+        case 'AGENT_WAKE':
+          newState.agent.awake = true;
+          break;
+        case 'AGENT_SLEEP':
+          newState.agent.awake = false;
+          newState.agent.cycleCount = this.stats.cycleCount;
+          newState.agent.totalEnergyConsumed = this.stats.totalEnergyConsumed;
+          break;
+        case 'AGENT_RESPONSE':
+          newState.agent.lastCycle = event.timestamp;
+          newState.agent.cycleCount = this.stats.cycleCount;
+          const priority = data.priority as keyof typeof newState.agent.responsesByPriority;
+          if (priority && newState.agent.responsesByPriority[priority] !== undefined) {
+            newState.agent.responsesByPriority[priority]++;
+          }
+          if (data.energyCost) {
+            newState.agent.totalEnergyConsumed += data.energyCost as number;
+          }
+          break;
+        case 'AGENT_REST':
+          newState.agent.lastCycle = event.timestamp;
+          newState.agent.responsesByPriority.rest++;
+          break;
+      }
+
+      return newState;
+    });
   }
 
   // ===========================================================================
-  // State Helpers
+  // State Helpers (using StateManager for thread-safety)
   // ===========================================================================
 
   private async loadState(): Promise<State> {
-    const content = await readFile(
-      join(this.baseDir, 'state', 'current.json'),
-      'utf-8'
-    );
-    return JSON.parse(content) as State;
+    const manager = getStateManager(this.baseDir);
+    const state = await manager.readState();
+    if (!state) {
+      throw new Error('No state available');
+    }
+    return state;
   }
 
   private async updateState(changes: Partial<State>): Promise<void> {
-    const state = await this.loadState();
-    const updated = { ...state, ...changes, updated: new Date().toISOString() };
-    await writeFile(
-      join(this.baseDir, 'state', 'current.json'),
-      JSON.stringify(updated, null, 2)
-    );
+    const manager = getStateManager(this.baseDir);
+    await manager.updateState((state) => ({
+      ...state,
+      ...changes,
+    }));
   }
 
   private async consumeEnergy(amount: number): Promise<void> {
-    const state = await this.loadState();
-    const newEnergy = Math.max(state.energy.min, state.energy.current - amount);
-    await this.updateState({
-      energy: { ...state.energy, current: newEnergy },
-    });
+    const manager = getStateManager(this.baseDir);
+    await manager.updateState((state) => ({
+      ...state,
+      energy: {
+        ...state.energy,
+        current: Math.max(state.energy.min, state.energy.current - amount),
+      },
+    }));
   }
 
   // ===========================================================================

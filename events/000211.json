@@ -1,0 +1,20 @@
+{
+  "seq": 211,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-04T18:11:49.648Z",
+  "data": {
+    "reason": "Recovery procedure executed",
+    "violations": [
+      "INV-004"
+    ],
+    "recoveries": [
+      {
+        "id": "INV-004",
+        "status": "recovered"
+      }
+    ],
+    "final_status": "nominal"
+  },
+  "prev_hash": "9add46ccb91cb2d32373216bee17c6257a5304b490dc84856eb3babab8ab25ae",
+  "hash": "0060042c830c10c6f355316ce171183d8dc07d704a58e39c9d9365f688b61f6b"
+}

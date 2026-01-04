@@ -6,13 +6,12 @@
  */
 
 import { EventEmitter } from 'events';
-import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import type { State, VerificationResult } from '../types.js';
 import { verifyAllInvariants } from '../verify.js';
 import { autoRecover } from '../recovery.js';
 import { createSnapshot } from '../snapshot.js';
-import { appendEvent, loadEvents } from '../events.js';
+import { getStateManager } from '../state-manager.js';
 
 // =============================================================================
 // Types
@@ -227,35 +226,36 @@ export class SelfMaintenance extends EventEmitter {
   }
 
   private async enterDormantMode(state: State): Promise<void> {
-    state.integrity.status = 'dormant';
-    state.updated = new Date().toISOString();
+    const manager = getStateManager(this.baseDir);
+    const previousStatus = state.integrity.status;
 
-    await this.saveState(state);
-
-    await appendEvent(this.baseDir, 'STATE_UPDATE', {
+    await manager.appendEventAtomic('STATE_UPDATE', {
       reason: 'Daemon auto-dormant: critical energy',
-      previous_status: 'nominal',
+      previous_status: previousStatus,
       new_status: 'dormant',
       energy: state.energy.current,
-    });
+    }, (s) => ({
+      ...s,
+      integrity: {
+        ...s.integrity,
+        status: 'dormant' as const,
+      },
+    }));
 
     this.emit('dormantEntered', state.energy.current);
   }
 
   // ===========================================================================
-  // Helpers
+  // Helpers (using StateManager for thread-safety)
   // ===========================================================================
 
   private async loadState(): Promise<State> {
-    const content = await readFile(join(this.baseDir, 'state', 'current.json'), 'utf-8');
-    return JSON.parse(content) as State;
-  }
-
-  private async saveState(state: State): Promise<void> {
-    await writeFile(
-      join(this.baseDir, 'state', 'current.json'),
-      JSON.stringify(state, null, 2)
-    );
+    const manager = getStateManager(this.baseDir);
+    const state = await manager.readState();
+    if (!state) {
+      throw new Error('No state available');
+    }
+    return state;
   }
 
   private createEmptyReport(): MaintenanceReport {
