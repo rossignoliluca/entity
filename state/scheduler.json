@@ -1,0 +1,37 @@
+{
+  "tasks": [
+    {
+      "id": "health-check",
+      "name": "Health Check",
+      "operation": "system.health",
+      "interval": 300000,
+      "enabled": true,
+      "runCount": 2,
+      "failCount": 0,
+      "nextRun": "2026-01-04T16:29:01.194Z",
+      "lastRun": "2026-01-04T16:24:01.194Z"
+    },
+    {
+      "id": "autopoiesis-check",
+      "name": "Autopoiesis Check",
+      "operation": "meta.introspect",
+      "interval": 3600000,
+      "enabled": true,
+      "runCount": 0,
+      "failCount": 0,
+      "nextRun": "2026-01-04T17:14:01.190Z"
+    },
+    {
+      "id": "energy-check",
+      "name": "Energy Check",
+      "operation": "energy.status",
+      "interval": 120000,
+      "enabled": true,
+      "runCount": 3,
+      "failCount": 0,
+      "nextRun": "2026-01-04T16:25:02.630Z",
+      "lastRun": "2026-01-04T16:23:02.630Z"
+    }
+  ],
+  "lastSave": "2026-01-04T16:24:01.194Z"
+}

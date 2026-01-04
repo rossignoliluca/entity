@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T17:03:12.956Z",
+  "updated": "2026-01-04T16:12:38.167Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.3370000000000002,
+    "current": 0.3870000000000002,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": 0
   },
   "memory": {
-    "event_count": 174,
-    "last_event_hash": "a80552398805fd98501188d7cb7712e4bf4df00b5dae05c07fa8f60be5335aba",
-    "last_snapshot_at": "2026-01-04T17:03:12.933Z"
+    "event_count": 168,
+    "last_event_hash": "04837bf7fa9ab56e65d5ce94f3b5f1ca0217fadd3bce973487aeb3010ab076a5",
+    "last_snapshot_at": "2026-01-04T16:12:38.144Z"
   },
   "session": {
-    "total_count": 37,
+    "total_count": 36,
     "current_id": null
   },
   "integrity": {
@@ -49,8 +49,7 @@
     "[2026-01-04] ALL 6 PHASES COMPLETED - Entity System AES-SPEC-001 feature-complete: Core, Human, Operations, Learning, Analytics, Continuity (171 tests, 31 sessions)",
     "[2026-01-04] Release v1.0.0 published on GitHub - first stable release with all 6 phases, 171 tests, bundle export available",
     "[2026-01-04] Phase 7a completata: DEF-007 Autopoiesis raggiunta. P set (meta.define, meta.compose, meta.specialize) genera operazioni. Prima auto-produzione: self.hello, combined.check. Il sistema ora soddisfa Autopoietic(S) ⟺ OperationallyClosed(S) ∧ ∃ P ⊆ 𝕆 : P generates 𝕆",
-    "[2026-01-04] Phase 7b completata: Daemon Mode per operazione autonoma. Scheduler, self-maintenance, hooks system, IPC. Release v1.2.0",
-    "[2026-01-04] Integration tests completati: 21 test per workflow completi (session, energy, recovery, continuity, snapshot, operations, event chain). Release v1.2.2. Totale 245 test."
+    "[2026-01-04] Phase 7b completata: Daemon Mode per operazione autonoma. Scheduler, self-maintenance, hooks system, IPC. Release v1.2.0"
   ],
   "learning": {
     "enabled": true,
