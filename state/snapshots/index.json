@@ -2,14 +2,6 @@
   "version": "1.0.0",
   "snapshots": [
     {
-      "id": "snap-2026-01-04T13-02-32",
-      "timestamp": "2026-01-04T13:02:32.684Z",
-      "event_seq": 20,
-      "event_hash": "332951d381c9cb464d922e65e34feef4d241675865f257d519970735a52a9121",
-      "state_hash": "f58442ff165d1f84987a1aeecad22f5b9e84c51ee01933111a1adc943e4ba310",
-      "description": "Post-restore test checkpoint"
-    },
-    {
       "id": "snap-2026-01-04T13-19-20",
       "timestamp": "2026-01-04T13:19:20.793Z",
       "event_seq": 26,
@@ -80,7 +72,15 @@
       "event_hash": "99be261c9054629bd1f99faff5f68ed341cb6ec1d0e3b04e2e0e126abf35420d",
       "state_hash": "9782af0b6d04d5016084cc3c3094b32465f3b0330377962c141ea48169e206cd",
       "description": "Test cleanup 7"
+    },
+    {
+      "id": "snap-2026-01-04T13-41-39",
+      "timestamp": "2026-01-04T13:41:39.101Z",
+      "event_seq": 41,
+      "event_hash": "d2615d5fb0085e11c6820cfd268e2f8cf208818c585b2f55500ee0d61f700cb5",
+      "state_hash": "83c64bbf901d22eba4cd02ea0691ae422e62415ff6e57f2427374bf79315d8f9",
+      "description": "Auto-snapshot: Session 8 end"
     }
   ],
-  "latest": "snap-2026-01-04T13-37-22"
+  "latest": "snap-2026-01-04T13-41-39"
 }
