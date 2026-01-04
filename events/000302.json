@@ -1,0 +1,19 @@
+{
+  "seq": 302,
+  "type": "AGENT_WAKE",
+  "timestamp": "2026-01-04T18:40:05.603Z",
+  "data": {
+    "config": {
+      "enabled": true,
+      "decisionInterval": 60000,
+      "feelingCost": 0.001,
+      "activeWhenCoupled": false,
+      "restThreshold": 0.001,
+      "urgencyThreshold": 0.15,
+      "criticalThreshold": 0.05
+    },
+    "reason": "Agent awakened to begin sense-making"
+  },
+  "prev_hash": "af35ec01d8545ecd2c978c6a163abf26c6768f8f909284e07db2e8e749916093",
+  "hash": "3fa217f971d04b6d435d6c40895cd1650d1d1540e9b01b2f78d6212699b2299e"
+}

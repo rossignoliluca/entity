@@ -1,0 +1,27 @@
+{
+  "seq": 305,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-04T18:41:04.549Z",
+  "data": {
+    "priority": "stability",
+    "action": "state.summary",
+    "reason": "Stability feeling: drifting (V=0.1600)",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.479,
+    "energyAfter": 0.476,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "Summary generated",
+      "effects": {
+        "status": "nominal",
+        "energy": 0.479,
+        "events": 303,
+        "sessions": 41,
+        "coupled": false
+      }
+    }
+  },
+  "prev_hash": "4b92a634d31cddafba0677131b62e0c02113e32184c31b2b0b90655f96f37ca5",
+  "hash": "28f57fac4755de6073be336410c546b73363a6aa9ae591cc794fdf193a313367"
+}

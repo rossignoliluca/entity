@@ -1,0 +1,28 @@
+{
+  "seq": 298,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-04T18:39:04.550Z",
+  "data": {
+    "priority": "growth",
+    "action": "system.health",
+    "reason": "At attractor with vital energy - exploring/learning",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.5,
+    "energyAfter": 0.494,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "Issues found: 2",
+      "effects": {
+        "healthy": false,
+        "issues": [
+          "1 invariant violations",
+          "Status: degraded"
+        ],
+        "status": "degraded"
+      }
+    }
+  },
+  "prev_hash": "094b8e6592c475928da7d5b027d6368a3815ea296c4cd2b73374eec10dc89fb6",
+  "hash": "5c4f1364bb026e1eee8fa55d3329ac34fb7531c451ce4ca9d53e2bf273592248"
+}
