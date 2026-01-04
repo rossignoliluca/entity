@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T18:32:52.645Z",
+  "updated": "2026-01-04T20:45:22.660Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,33 +15,35 @@
     "since": null
   },
   "energy": {
-    "current": 0.5,
+    "current": 0.497,
     "min": 0.01,
     "threshold": 0.1
   },
   "lyapunov": {
     "V": 0,
-    "V_previous": null
+    "V_previous": 0
   },
   "memory": {
-    "event_count": 281,
-    "last_event_hash": "5f74cd62ab433b97226aac759b8a9139c4feb54f278319a140b6a6d88530f5fa",
-    "last_snapshot_at": "2026-01-04T18:23:51.721Z"
+    "event_count": 478,
+    "last_event_hash": "9d7e94ec21a343f9768bf416243b489561ec2af5086ba3a1cf9e9fde0fb30750",
+    "last_snapshot_at": "2026-01-04T20:12:55.639Z"
   },
   "session": {
-    "total_count": 41,
+    "total_count": 44,
     "current_id": null
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T18:32:22.595Z",
+    "last_verification": "2026-01-04T20:41:56.124Z",
     "status": "nominal"
   },
   "human": {
     "name": "Unknown",
     "context": ""
   },
-  "important": [],
+  "important": [
+    "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0"
+  ],
   "learning": {
     "enabled": true,
     "lastAnalysis": "2026-01-04T14:39:02.984Z",
@@ -93,15 +95,15 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-04T18:32:52.588Z",
-    "cycleCount": 1,
+    "lastCycle": "2026-01-04T20:45:22.660Z",
+    "cycleCount": 5,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 20,
-      "growth": 31,
+      "stability": 76,
+      "growth": 98,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.003
+    "totalEnergyConsumed": 0.015
   }
 }

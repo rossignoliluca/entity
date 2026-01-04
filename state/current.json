@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T20:41:56.149Z",
+  "updated": "2026-01-04T20:49:01.146Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.5,
+    "current": 0.491,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,9 +24,9 @@
     "V_previous": 0
   },
   "memory": {
-    "event_count": 476,
-    "last_event_hash": "e87ce2948dd2571a3e91233f6245bca7a7af45970754b4d638654f3403f27b20",
-    "last_snapshot_at": "2026-01-04T20:12:55.639Z"
+    "event_count": 493,
+    "last_event_hash": "9e8ea5e1ae2ee51dd5e6bb1cebe76e78f39900d92d989b7bbdff7598b1f6580d",
+    "last_snapshot_at": "2026-01-04T20:46:22.663Z"
   },
   "session": {
     "total_count": 44,
@@ -34,7 +34,7 @@
   },
   "integrity": {
     "invariant_violations": 0,
-    "last_verification": "2026-01-04T20:41:56.124Z",
+    "last_verification": "2026-01-04T20:49:01.119Z",
     "status": "nominal"
   },
   "human": {
@@ -95,15 +95,15 @@
   "agent": {
     "enabled": true,
     "awake": false,
-    "lastCycle": "2026-01-04T20:27:30.857Z",
-    "cycleCount": 5,
+    "lastCycle": "2026-01-04T20:48:22.682Z",
+    "cycleCount": 4,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 76,
-      "growth": 97,
+      "growth": 100,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.015
+    "totalEnergyConsumed": 0.012
   }
 }

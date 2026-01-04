@@ -6,10 +6,10 @@
       "operation": "system.health",
       "interval": 300000,
       "enabled": true,
-      "runCount": 17,
+      "runCount": 18,
       "failCount": 0,
-      "nextRun": "2026-01-04T20:16:55.355Z",
-      "lastRun": "2026-01-04T20:11:55.355Z"
+      "nextRun": "2026-01-04T20:50:22.556Z",
+      "lastRun": "2026-01-04T20:45:22.556Z"
     },
     {
       "id": "autopoiesis-check",
@@ -28,11 +28,11 @@
       "operation": "energy.status",
       "interval": 120000,
       "enabled": true,
-      "runCount": 34,
+      "runCount": 36,
       "failCount": 0,
-      "nextRun": "2026-01-04T20:17:55.354Z",
-      "lastRun": "2026-01-04T20:15:55.354Z"
+      "nextRun": "2026-01-04T20:49:22.559Z",
+      "lastRun": "2026-01-04T20:47:22.558Z"
     }
   ],
-  "lastSave": "2026-01-04T20:15:55.354Z"
+  "lastSave": "2026-01-04T20:47:22.559Z"
 }
