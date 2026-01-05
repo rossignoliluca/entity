@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entity Dashboard</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-secondary: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .dashboard {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .status-dot.disconnected {
+      background: var(--danger);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    .card-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .status-item {
+      text-align: center;
+    }
+
+    .status-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .status-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .status-value.nominal { color: var(--success); }
+    .status-value.degraded { color: var(--warning); }
+    .status-value.dormant { color: var(--danger); }
+    .status-value.terminal { color: var(--danger); }
+
+    .energy-bar {
+      height: 24px;
+      background: var(--bg);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--danger) 0%, var(--warning) 30%, var(--success) 60%);
+      transition: width 0.3s ease;
+    }
+
+    .feeling-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .feeling-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem;
+      background: var(--bg);
+      border-radius: 4px;
+    }
+
+    .feeling-label {
+      color: var(--text-muted);
+    }
+
+    .feeling-value {
+      font-weight: 500;
+    }
+
+    .feeling-value.comfortable { color: var(--success); }
+    .feeling-value.low, .feeling-value.unstable { color: var(--warning); }
+    .feeling-value.critical, .feeling-value.degraded { color: var(--danger); }
+    .feeling-value.at_attractor, .feeling-value.secure { color: var(--accent); }
+
+    .invariants-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+
+    .invariant {
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      background: var(--bg);
+      border-radius: 4px;
+    }
+
+    .invariant-id {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .invariant-status {
+      font-size: 1.25rem;
+    }
+
+    .invariant-status.pass { color: var(--success); }
+    .invariant-status.fail { color: var(--danger); }
+
+    .coupling-queue {
+      min-height: 80px;
+    }
+
+    .coupling-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .coupling-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      border-left: 3px solid var(--warning);
+    }
+
+    .coupling-item.urgent { border-left-color: var(--danger); }
+    .coupling-item.low { border-left-color: var(--text-muted); }
+
+    .coupling-reason {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+
+    .coupling-priority {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      background: var(--bg-secondary);
+    }
+
+    .events-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .event-item:last-child {
+      border-bottom: none;
+    }
+
+    .event-seq {
+      color: var(--text-muted);
+      min-width: 3rem;
+    }
+
+    .event-type {
+      color: var(--accent);
+      min-width: 10rem;
+    }
+
+    .event-time {
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .memories-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .memory-item {
+      padding: 0.5rem;
+      background: var(--bg);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .error-banner {
+      background: var(--danger);
+      color: white;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-banner.visible {
+      display: block;
+    }
+
+    footer {
+      margin-top: 1rem;
+      padding: 1rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 1s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <div id="error-banner" class="error-banner"></div>
+
+    <header>
+      <h1>Entity Dashboard</h1>
+      <div class="connection-status">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="connection-text">Connected</span>
+      </div>
+    </header>
+
+    <div class="status-row">
+      <div class="card">
+        <div class="status-item">
+          <div class="status-label">STATUS</div>
+          <div id="system-status" class="status-value nominal">nominal</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="status-item">
+          <div class="status-label">ENERGY</div>
+          <div id="energy-value" class="status-value">0.35</div>
+          <div class="energy-bar">
+            <div id="energy-fill" class="energy-fill" style="width: 35%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="status-item">
+          <div class="status-label">LYAPUNOV V</div>
+          <div id="lyapunov-value" class="status-value">0.0000</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Agent Feeling</div>
+        <div class="feeling-grid">
+          <div class="feeling-item">
+            <span class="feeling-label">Energy</span>
+            <span id="feeling-energy" class="feeling-value comfortable">comfortable</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Stability</span>
+            <span id="feeling-stability" class="feeling-value at_attractor">at_attractor</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Integrity</span>
+            <span id="feeling-integrity" class="feeling-value secure">secure</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Surprise (ε)</span>
+            <span id="feeling-surprise" class="feeling-value">0.0000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Invariants</div>
+        <div class="invariants-grid">
+          <div class="invariant">
+            <div class="invariant-id">INV-001</div>
+            <div id="inv-001" class="invariant-status pass">✓</div>
+          </div>
+          <div class="invariant">
+            <div class="invariant-id">INV-002</div>
+            <div id="inv-002" class="invariant-status pass">✓</div>
+          </div>
+          <div class="invariant">
+            <div class="invariant-id">INV-003</div>
+            <div id="inv-003" class="invariant-status pass">✓</div>
+          </div>
+          <div class="invariant">
+            <div class="invariant-id">INV-004</div>
+            <div id="inv-004" class="invariant-status pass">✓</div>
+          </div>
+          <div class="invariant">
+            <div class="invariant-id">INV-005</div>
+            <div id="inv-005" class="invariant-status pass">✓</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Coupling Queue (<span id="coupling-count">0</span> pending)</div>
+        <div id="coupling-queue" class="coupling-queue">
+          <div class="coupling-empty">No pending requests</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Statistics</div>
+        <div class="feeling-grid">
+          <div class="feeling-item">
+            <span class="feeling-label">Events</span>
+            <span id="stat-events" class="feeling-value">0</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Sessions</span>
+            <span id="stat-sessions" class="feeling-value">0</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Coupled</span>
+            <span id="stat-coupled" class="feeling-value">No</span>
+          </div>
+          <div class="feeling-item">
+            <span class="feeling-label">Updated</span>
+            <span id="stat-updated" class="feeling-value">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top: 1rem;">
+      <div class="card">
+        <div class="card-title">Recent Events</div>
+        <div id="events-list" class="events-list">
+          <div class="coupling-empty">Loading...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Important Memories (<span id="memories-count">0</span>)</div>
+        <div id="memories-list" class="memories-list">
+          <div class="coupling-empty">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Entity System v1.9.2 | AES-SPEC-001 | Read-only Dashboard
+    </footer>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let connected = false;
+    let refreshInterval = null;
+
+    // DOM elements
+    const elements = {
+      errorBanner: document.getElementById('error-banner'),
+      statusDot: document.getElementById('status-dot'),
+      connectionText: document.getElementById('connection-text'),
+      systemStatus: document.getElementById('system-status'),
+      energyValue: document.getElementById('energy-value'),
+      energyFill: document.getElementById('energy-fill'),
+      lyapunovValue: document.getElementById('lyapunov-value'),
+      feelingEnergy: document.getElementById('feeling-energy'),
+      feelingStability: document.getElementById('feeling-stability'),
+      feelingIntegrity: document.getElementById('feeling-integrity'),
+      feelingSurprise: document.getElementById('feeling-surprise'),
+      couplingCount: document.getElementById('coupling-count'),
+      couplingQueue: document.getElementById('coupling-queue'),
+      statEvents: document.getElementById('stat-events'),
+      statSessions: document.getElementById('stat-sessions'),
+      statCoupled: document.getElementById('stat-coupled'),
+      statUpdated: document.getElementById('stat-updated'),
+      eventsList: document.getElementById('events-list'),
+      memoriesList: document.getElementById('memories-list'),
+      memoriesCount: document.getElementById('memories-count'),
+    };
+
+    // Invariant elements
+    const invElements = {
+      'INV-001': document.getElementById('inv-001'),
+      'INV-002': document.getElementById('inv-002'),
+      'INV-003': document.getElementById('inv-003'),
+      'INV-004': document.getElementById('inv-004'),
+      'INV-005': document.getElementById('inv-005'),
+    };
+
+    function setConnected(isConnected) {
+      connected = isConnected;
+      elements.statusDot.className = isConnected ? 'status-dot' : 'status-dot disconnected';
+      elements.connectionText.textContent = isConnected ? 'Connected' : 'Disconnected';
+      elements.errorBanner.className = isConnected ? 'error-banner' : 'error-banner visible';
+      if (!isConnected) {
+        elements.errorBanner.textContent = 'Cannot connect to Entity API. Make sure the API is running (node dist/src/index.js api start)';
+      }
+    }
+
+    function formatTime(isoString) {
+      if (!isoString) return '-';
+      const date = new Date(isoString);
+      return date.toLocaleTimeString();
+    }
+
+    async function fetchObserve() {
+      try {
+        const response = await fetch(`${API_BASE}/observe`);
+        if (!response.ok) throw new Error('API error');
+        const data = await response.json();
+        setConnected(true);
+        updateState(data.state);
+        updateFeeling(data.feeling);
+        updateCoupling(data.coupling);
+        updateEvents(data.events);
+        updateMemories(data.memories);
+      } catch (error) {
+        setConnected(false);
+      }
+    }
+
+    async function fetchVerify() {
+      try {
+        const response = await fetch(`${API_BASE}/verify`);
+        if (!response.ok) throw new Error('API error');
+        const data = await response.json();
+        updateInvariants(data.invariants);
+      } catch (error) {
+        // Verification failed, keep previous state
+      }
+    }
+
+    function updateState(state) {
+      if (!state) return;
+
+      // Status
+      elements.systemStatus.textContent = state.status;
+      elements.systemStatus.className = `status-value ${state.status}`;
+
+      // Energy
+      const energyPercent = Math.round(state.energy * 100);
+      elements.energyValue.textContent = state.energy.toFixed(2);
+      elements.energyFill.style.width = `${energyPercent}%`;
+
+      // Lyapunov
+      elements.lyapunovValue.textContent = state.lyapunovV.toFixed(4);
+
+      // Stats
+      elements.statEvents.textContent = state.events;
+      elements.statSessions.textContent = state.sessions;
+      elements.statCoupled.textContent = state.coupled ? 'Yes' : 'No';
+      elements.statUpdated.textContent = formatTime(state.updated);
+    }
+
+    function updateFeeling(feeling) {
+      if (!feeling) return;
+
+      elements.feelingEnergy.textContent = feeling.energyFeeling;
+      elements.feelingEnergy.className = `feeling-value ${feeling.energyFeeling}`;
+
+      elements.feelingStability.textContent = feeling.stabilityFeeling;
+      elements.feelingStability.className = `feeling-value ${feeling.stabilityFeeling}`;
+
+      elements.feelingIntegrity.textContent = feeling.integrityFeeling;
+      elements.feelingIntegrity.className = `feeling-value ${feeling.integrityFeeling}`;
+
+      elements.feelingSurprise.textContent = feeling.surprise.toFixed(4);
+    }
+
+    function updateInvariants(invariants) {
+      if (!invariants) return;
+
+      for (const inv of invariants) {
+        const el = invElements[inv.id];
+        if (el) {
+          el.textContent = inv.satisfied ? '✓' : '✗';
+          el.className = `invariant-status ${inv.satisfied ? 'pass' : 'fail'}`;
+        }
+      }
+    }
+
+    function updateCoupling(coupling) {
+      if (!coupling) return;
+
+      const pending = coupling.pending || [];
+      elements.couplingCount.textContent = pending.length;
+
+      if (pending.length === 0) {
+        elements.couplingQueue.innerHTML = '<div class="coupling-empty">No pending requests</div>';
+        return;
+      }
+
+      elements.couplingQueue.innerHTML = pending.map(req => `
+        <div class="coupling-item ${req.priority}">
+          <div class="coupling-reason">${req.reason}</div>
+          <div class="coupling-priority">${req.priority}</div>
+        </div>
+      `).join('');
+    }
+
+    function updateEvents(events) {
+      if (!events || events.length === 0) {
+        elements.eventsList.innerHTML = '<div class="coupling-empty">No events</div>';
+        return;
+      }
+
+      elements.eventsList.innerHTML = events.map(event => `
+        <div class="event-item">
+          <span class="event-seq">${event.seq}</span>
+          <span class="event-type">${event.type}</span>
+          <span class="event-time">${formatTime(event.timestamp)}</span>
+        </div>
+      `).join('');
+    }
+
+    function updateMemories(memories) {
+      if (!memories || memories.length === 0) {
+        elements.memoriesList.innerHTML = '<div class="coupling-empty">No memories</div>';
+        elements.memoriesCount.textContent = '0';
+        return;
+      }
+
+      elements.memoriesCount.textContent = memories.length;
+      // Show last 5 memories in reverse order (newest first)
+      const recent = memories.slice(-5).reverse();
+      elements.memoriesList.innerHTML = recent.map(mem => `
+        <div class="memory-item">${mem}</div>
+      `).join('');
+    }
+
+    async function refresh() {
+      await Promise.all([fetchObserve(), fetchVerify()]);
+    }
+
+    // Initial load
+    refresh();
+
+    // Refresh every 3 seconds
+    refreshInterval = setInterval(refresh, 3000);
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+    });
+  </script>
+</body>
+</html>

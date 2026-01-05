@@ -296,10 +296,15 @@ External interfaces that don't modify core — they provide coupling surfaces.
 - [x] **REST API**: Read-only HTTP interface (v1.9.x)
   - GET /observe, GET /verify
   - OBSERVATION_RECEIVED audit events
-- [ ] **Dashboard read-only**: State visualization, coupling queue, event timeline
+- [x] **Dashboard read-only**: State visualization, coupling queue, event timeline
+  - Single HTML file (zero dependencies)
+  - Dark theme, real-time updates (3s refresh)
+  - Shows: status, energy, V, feeling, invariants, coupling queue, events, memories
+  - Served at GET /dashboard
+  - Implementation: src/dashboard/index.html, 27 tests
 - [ ] **Operation rollback**: Reversible operations, time-bounded, core can block
 
-**Saturation:** 2/4 implementations
+**Saturation:** 3/4 implementations
 
 ---
 

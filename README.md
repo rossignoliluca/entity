@@ -98,7 +98,7 @@ node dist/src/index.js <command>
 | `agent status/feeling/cycle` | Internal agency |
 | `coupling list/grant/complete` | Coupling protocol |
 | `mcp` | Start MCP server for LLM integration |
-| `api start` | REST API for observation |
+| `api start` | REST API + dashboard (http://localhost:3000/dashboard) |
 | `log level` | Configure logging |
 
 ## Invariants
@@ -153,6 +153,8 @@ entity/
 │   │   └── server.ts      # MCP server for LLMs
 │   ├── api/
 │   │   └── server.ts      # REST API
+│   ├── dashboard/
+│   │   └── index.html     # Read-only dashboard
 │   └── daemon/
 │       ├── index.ts       # Daemon core
 │       ├── agent.ts       # Internal agency
@@ -194,6 +196,30 @@ node dist/src/index.js mcp
 
 Compatible with: Claude, OpenAI, Gemini (via MCP universal standard)
 
+## Dashboard
+
+Real-time read-only dashboard for state visualization:
+
+```bash
+# Start API server with dashboard
+node dist/src/index.js api start
+
+# Open in browser
+open http://localhost:3000/dashboard
+```
+
+Features:
+- **Status**: System status (nominal/degraded/dormant)
+- **Energy**: Energy level with visual bar
+- **Lyapunov V**: Stability indicator
+- **Feeling**: Agent's current feeling (energy, stability, integrity, surprise)
+- **Invariants**: All 5 invariants status
+- **Coupling Queue**: Pending requests from agent
+- **Events**: Recent events from Merkle chain
+- **Memories**: Important memories list
+
+Single HTML file, zero dependencies, dark theme, 3-second auto-refresh.
+
 ## Scientific Foundations
 
 - **Autopoiesis**: Maturana & Varela (1980)
@@ -217,9 +243,9 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 720+ |
-| Sessions | 56 |
-| Tests | 494 |
+| Events | 780+ |
+| Sessions | 57 |
+| Tests | 521 |
 | Version | v1.9.2 |
 
 ## License

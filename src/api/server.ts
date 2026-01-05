@@ -1,12 +1,14 @@
 /**
- * REST API Server - Peripheral Organ (v1.9.x)
+ * REST API Server - Boundary Interface (Category 3)
  *
  * Read-only HTTP interface for Entity observation.
  * Logs OBSERVATION_RECEIVED events (audit category).
  *
  * Endpoints:
- *   GET /observe - Full state + feeling
- *   GET /verify  - Invariant verification
+ *   GET /           - API info
+ *   GET /observe    - Full state + feeling + events + memories
+ *   GET /verify     - Invariant verification
+ *   GET /dashboard  - Dashboard HTML page
  *
  * Constraints (per ROADMAP.md):
  *   - category = 'audit' (excluded from production context)
@@ -19,9 +21,10 @@ import * as http from 'node:http';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { appendEvent } from '../events.js';
+import { appendEvent, loadEvents } from '../events.js';
 import { hashObject } from '../hash.js';
 import { verifyAllInvariants } from '../verify.js';
+import { createAgent } from '../daemon/agent.js';
 import type { State, Event, EventCategory } from '../types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -113,11 +116,12 @@ type RouteHandler = (req: http.IncomingMessage, url: URL) => Promise<unknown>;
 const routes: Record<string, RouteHandler> = {
   '/': async () => ({
     name: 'Entity REST API',
-    version: '1.9.0',
+    version: '1.9.2',
     specification: 'AES-SPEC-001',
     endpoints: [
-      'GET /observe - Full state + feeling',
-      'GET /verify  - Invariant verification'
+      'GET /observe   - Full state + feeling + events + memories',
+      'GET /verify    - Invariant verification',
+      'GET /dashboard - Read-only dashboard'
     ],
     constraints: [
       'Read-only (no mutations)',
@@ -138,24 +142,56 @@ const routes: Record<string, RouteHandler> = {
     // Log observation (audit-only)
     await logObservation(observer, 'rest', '/observe', stateHash);
 
-    const feeling = computeFeeling(state);
+    // Get agent feeling (more detailed than simple computation)
+    let feeling;
+    try {
+      const agent = createAgent(BASE_DIR);
+      feeling = await agent.getCurrentFeeling();
+    } catch {
+      // Fallback to simple computation
+      feeling = computeFeeling(state);
+    }
+
+    // Load recent events
+    let events: Array<{ seq: number; type: string; timestamp: string }> = [];
+    try {
+      const allEvents = await loadEvents(BASE_DIR);
+      events = allEvents.slice(-10).map(e => ({
+        seq: e.seq,
+        type: e.type,
+        timestamp: e.timestamp
+      }));
+    } catch {
+      // Events unavailable
+    }
+
+    // Get coupling queue
+    const couplingQueue = state.couplingQueue ?? { pending: [], metrics: {} };
 
     return {
       timestamp: new Date().toISOString(),
       state: {
-        specification: state.specification,
-        organization_hash: state.organization_hash,
-        mode: state.integrity.status,
-        energy: state.energy,
-        lyapunov: state.lyapunov,
-        coupling: state.coupling,
-        session: state.session,
-        memory: {
-          event_count: state.memory.event_count,
-          important_count: state.important.length
-        }
+        status: state.integrity.status,
+        energy: state.energy.current,
+        lyapunovV: state.lyapunov.V,
+        events: state.memory.event_count,
+        sessions: state.session.total_count,
+        coupled: state.coupling.active,
+        partner: state.coupling.partner,
+        updated: state.updated
       },
       feeling,
+      coupling: {
+        pending: couplingQueue.pending.map(r => ({
+          id: r.id,
+          priority: r.priority,
+          reason: r.reason,
+          status: r.status
+        })),
+        metrics: couplingQueue.metrics
+      },
+      events,
+      memories: state.important,
       observed: {
         hash: stateHash,
         observer,
@@ -181,7 +217,9 @@ const routes: Record<string, RouteHandler> = {
 
     return {
       timestamp: new Date().toISOString(),
-      verification: result,
+      invariants: result.invariants,
+      all_satisfied: result.all_satisfied,
+      lyapunov_V: result.lyapunov_V,
       observed: {
         hash: stateHash,
         observer,
@@ -191,16 +229,41 @@ const routes: Record<string, RouteHandler> = {
   }
 };
 
+// Serve dashboard HTML
+function serveDashboard(res: http.ServerResponse): void {
+  // Dashboard HTML is in src/dashboard/index.html
+  // From dist/src/api, we need to go to project root, then src/dashboard
+  const dashboardPath = path.join(BASE_DIR, 'src', 'dashboard', 'index.html');
+
+  try {
+    if (!fs.existsSync(dashboardPath)) {
+      res.setHeader('Content-Type', 'application/json');
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: 'Dashboard not found', path: dashboardPath }));
+      return;
+    }
+
+    const html = fs.readFileSync(dashboardPath, 'utf-8');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.writeHead(200);
+    res.end(html);
+  } catch (error) {
+    res.setHeader('Content-Type', 'application/json');
+    res.writeHead(500);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.end(JSON.stringify({ error: message }));
+  }
+}
+
 // Request handler
 async function handleRequest(
   req: http.IncomingMessage,
   res: http.ServerResponse
 ): Promise<void> {
-  // CORS headers
+  // CORS headers for JSON endpoints
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-Observer');
-  res.setHeader('Content-Type', 'application/json');
 
   // OPTIONS preflight
   if (req.method === 'OPTIONS') {
@@ -211,6 +274,7 @@ async function handleRequest(
 
   // Only GET allowed
   if (req.method !== 'GET') {
+    res.setHeader('Content-Type', 'application/json');
     res.writeHead(405);
     res.end(JSON.stringify({ error: 'Method not allowed. Read-only API.' }));
     return;
@@ -219,6 +283,15 @@ async function handleRequest(
   try {
     const url = new URL(req.url ?? '/', `http://${config.host}:${config.port}`);
     const pathname = url.pathname;
+
+    // Dashboard route (special: serves HTML)
+    if (pathname === '/dashboard') {
+      serveDashboard(res);
+      return;
+    }
+
+    // JSON API routes
+    res.setHeader('Content-Type', 'application/json');
 
     const handler = routes[pathname];
     if (!handler) {
@@ -231,6 +304,7 @@ async function handleRequest(
     res.writeHead(200);
     res.end(JSON.stringify(result, null, 2));
   } catch (error: unknown) {
+    res.setHeader('Content-Type', 'application/json');
     res.writeHead(500);
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.end(JSON.stringify({ error: message }));
