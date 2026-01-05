@@ -1,0 +1,14 @@
+{
+  "seq": 1088,
+  "type": "PRESENCE_SIGNAL_EMITTED",
+  "timestamp": "2026-01-05T21:58:34.462Z",
+  "data": {
+    "signal_type": "STATUS_CHANGED",
+    "signal_seq": 1,
+    "payload_hash": "7a86d1e97f11c71529063548b4c38f35a061450443fa151b40ec005e3876aae6",
+    "state_energy": 0.25,
+    "state_V": 0
+  },
+  "prev_hash": "5f9ca5f54859db6445fa016a0bd383cda97ed6f2debeb282d5ac160aac42ffaa",
+  "hash": "25dfee297bed96a825eea09095d568716a0837e7dafa97d9c3868377657991d9"
+}

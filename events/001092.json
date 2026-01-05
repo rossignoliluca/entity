@@ -1,0 +1,11 @@
+{
+  "seq": 1092,
+  "type": "COUPLING_CANCELED",
+  "timestamp": "2026-01-05T22:00:07.956Z",
+  "data": {
+    "requestId": "41f7bf3f",
+    "reason": "test cleanup"
+  },
+  "prev_hash": "67be33d3cbadf1d0ff22889e920436bce8135c7df2e564049ab2c133d6b06b05",
+  "hash": "18c229504b07c7032ef30c45d9f4963d025fe592d071a9da3e50e19e2904d058"
+}

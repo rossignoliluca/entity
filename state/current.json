@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T20:47:22.749Z",
+  "updated": "2026-01-05T22:00:08.212Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -24,8 +24,8 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 1082,
-    "last_event_hash": "0187eee89b05f911c1acfe1e08836c90cce34224f6815886212994a0cd430de6",
+    "event_count": 1093,
+    "last_event_hash": "96a053670099023a0d1cc8f0f2fab610de5d1f26d498a97a90604adb9eccd672",
     "last_snapshot_at": "2026-01-05T20:47:05.218Z"
   },
   "session": {
@@ -141,5 +141,100 @@
       "rest": 8
     },
     "totalEnergyConsumed": 0.039000000000000014
+  },
+  "couplingQueue": {
+    "pending": [],
+    "history": [
+      {
+        "id": "516ad031",
+        "priority": "urgent",
+        "reason": "COUPLING_REQUESTED test",
+        "context": {
+          "feeling": {
+            "energy": 0.25,
+            "lyapunovV": 0,
+            "invariantsSatisfied": 5,
+            "invariantsTotal": 5
+          },
+          "state_hash": "x",
+          "V": 0,
+          "energy": 0.25
+        },
+        "requestedAt": "2026-01-05T21:59:42.254Z",
+        "expiresAt": "2026-01-05T22:59:42.254Z",
+        "status": "canceled",
+        "outcome": "ignored",
+        "note": "test cleanup"
+      },
+      {
+        "id": "41f7bf3f",
+        "priority": "urgent",
+        "reason": "Third request for COUPLING_REQUESTED test",
+        "context": {
+          "feeling": {
+            "energy": 0.25,
+            "lyapunovV": 0,
+            "invariantsSatisfied": 5,
+            "invariantsTotal": 5
+          },
+          "state_hash": "test3",
+          "V": 0,
+          "energy": 0.25
+        },
+        "requestedAt": "2026-01-05T21:57:56.978Z",
+        "expiresAt": "2026-01-05T22:57:56.978Z",
+        "status": "canceled",
+        "outcome": "ignored",
+        "note": "test cleanup"
+      },
+      {
+        "id": "5a05f6cb",
+        "priority": "urgent",
+        "reason": "Second test request",
+        "context": {
+          "feeling": {
+            "energy": 0.25,
+            "lyapunovV": 0,
+            "invariantsSatisfied": 5,
+            "invariantsTotal": 5
+          },
+          "state_hash": "test2",
+          "V": 0,
+          "energy": 0.25
+        },
+        "requestedAt": "2026-01-05T21:56:08.115Z",
+        "expiresAt": "2026-01-05T22:56:08.115Z",
+        "status": "canceled",
+        "outcome": "ignored",
+        "note": "test cleanup"
+      },
+      {
+        "id": "7c7f18aa",
+        "priority": "normal",
+        "reason": "Test SSE coupling signal",
+        "context": {
+          "feeling": {
+            "energy": 0.25,
+            "lyapunovV": 0,
+            "invariantsSatisfied": 5,
+            "invariantsTotal": 5
+          },
+          "state_hash": "test",
+          "V": 0,
+          "energy": 0.25
+        },
+        "requestedAt": "2026-01-05T20:52:41.109Z",
+        "expiresAt": "2026-01-06T00:52:41.109Z",
+        "status": "canceled",
+        "outcome": "ignored",
+        "note": "test cleanup"
+      }
+    ],
+    "metrics": {
+      "totalRequests": 4,
+      "totalGranted": 0,
+      "totalExpired": 0,
+      "totalCompleted": 0
+    }
   }
 }

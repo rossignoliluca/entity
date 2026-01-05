@@ -1,0 +1,14 @@
+{
+  "seq": 1089,
+  "type": "PRESENCE_SIGNAL_EMITTED",
+  "timestamp": "2026-01-05T21:59:44.482Z",
+  "data": {
+    "signal_type": "COUPLING_REQUESTED",
+    "signal_seq": 2,
+    "payload_hash": "504710bbeaf80e18a8af6427365a521488de36acc46e61508261920dab014842",
+    "state_energy": 0.25,
+    "state_V": 0
+  },
+  "prev_hash": "25dfee297bed96a825eea09095d568716a0837e7dafa97d9c3868377657991d9",
+  "hash": "84e0b5268c48ac921579b6feb184f51658b0ca4aaa0ddedfef2a2b4442ea002d"
+}
