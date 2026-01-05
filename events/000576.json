@@ -1,0 +1,14 @@
+{
+  "seq": 576,
+  "type": "OBSERVATION_RECEIVED",
+  "timestamp": "2026-01-05T00:19:38.020Z",
+  "data": {
+    "observer": "gemini",
+    "channel": "rest",
+    "endpoint": "/verify",
+    "state_hash": "e9ebb343f9d7fbc41b71022f71f7dcfee23176669d2d2a0e74e1f018990f48d5",
+    "category": "audit"
+  },
+  "prev_hash": "6b3aec037ce3844af6e35bbe9f8369fe9b81f8736babfa06d472bbf8284291ac",
+  "hash": "2ee1c49b990c4ffacbe710d8b83e28a3e9e34124e0c2336f1305c013027bef7f"
+}

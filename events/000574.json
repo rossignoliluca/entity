@@ -1,0 +1,106 @@
+{
+  "seq": 574,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-05T00:17:57.478Z",
+  "data": {
+    "stats": {
+      "cycleCount": 32,
+      "responsesTotal": 32,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 0,
+        "growth": 32,
+        "rest": 0
+      },
+      "actionsExecuted": 32,
+      "actionsBlocked": 0,
+      "restCycles": 0,
+      "totalEnergyConsumed": 0.09600000000000004,
+      "startedAt": "2026-01-04T23:44:46.902Z",
+      "lastCycle": "2026-01-05T00:17:37.701Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 3,
+        "lastAdaptation": "2026-01-05T00:15:18.784Z",
+        "violations": [],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-04T23:44:46.899Z",
+            "cycle": 0,
+            "criticalThreshold": 0.05,
+            "urgencyThreshold": 0.15,
+            "restThreshold": 0.001,
+            "decisionInterval": 60000,
+            "reason": "Initial parameters"
+          },
+          {
+            "timestamp": "2026-01-04T23:53:47.042Z",
+            "cycle": 10,
+            "criticalThreshold": 0.04875,
+            "urgencyThreshold": 0.14625,
+            "restThreshold": 0.001,
+            "decisionInterval": 63000,
+            "reason": "Stable - slowing cycles; Very stable - relaxing thresholds"
+          },
+          {
+            "timestamp": "2026-01-05T00:04:17.167Z",
+            "cycle": 20,
+            "criticalThreshold": 0.04753125,
+            "urgencyThreshold": 0.14259375,
+            "restThreshold": 0.001,
+            "decisionInterval": 66150,
+            "reason": "Stable - slowing cycles; Very stable - relaxing thresholds"
+          },
+          {
+            "timestamp": "2026-01-05T00:15:18.784Z",
+            "cycle": 30,
+            "criticalThreshold": 0.04634296875,
+            "urgencyThreshold": 0.13902890625,
+            "restThreshold": 0.001,
+            "decisionInterval": 69457.5,
+            "reason": "Stable - slowing cycles; Very stable - relaxing thresholds"
+          }
+        ],
+        "violationRate": 0,
+        "stabilityScore": 1,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.04634296875,
+          "urgencyThreshold": 0.13902890625,
+          "restThreshold": 0.001,
+          "decisionInterval": 69457.5
+        }
+      },
+      "selfProduction": {
+        "enabled": true,
+        "operationsCreated": 0,
+        "lastProductionCycle": 0,
+        "actionUsageCount": {
+          "state.summary": 32
+        },
+        "createdOperations": []
+      },
+      "coupling": {
+        "blocksInWindow": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "deprecationsInWindow": 0,
+        "ambiguityHighCycles": 0,
+        "lastAmbiguity": 0.050000000000000044,
+        "requestsCreated": 0
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "176e0da2af5692020e1fa86a6042281e1b8ae4263e8da8e755a95315e0be188a",
+  "hash": "acdd6075da69a9cc75ac6fb318510b21a04ee7ce3f5b239c5dabf11a240cc525"
+}

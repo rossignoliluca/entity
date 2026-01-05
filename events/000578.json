@@ -1,0 +1,12 @@
+{
+  "seq": 578,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-05T00:21:45.465Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-05] v1.9.0 released: REST API for observation events. GET /observe (state+feeling), GET /verify (invariants). OBSERVATION_RECEIVED audit-only events. Exit gate: 30+ sessions, no drift from observation.",
+    "total_memories": 9
+  },
+  "prev_hash": "ed1e95f7b41f5097f5c3efa45e4884a1b9e220a393f4c1d83efe812eb80e2365",
+  "hash": "d2c73047454166bb36ecbbbbfa124f083cc81a2f02f3a216112acca3d8206b27"
+}
