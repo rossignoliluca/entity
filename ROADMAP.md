@@ -275,12 +275,23 @@ Each category saturates. After saturation, any further action is either redundan
 
 ---
 
-## Category 2: Real Usage (observation)
+## Category 2: Real Usage (observation) ✓ SATURATED
 
-- [ ] **Field usage period**: Daemon on, no development, collect natural patterns
-- [ ] **Behavioral report**: % REST, coupling frequency, deprecation rate
+- [x] **Field usage period**: 63 sessions, 1046 events, 408 agent cycles
+- [x] **Behavioral report**: BEHAVIORAL-REPORT.md
+  - 100% REST at V=0 (500-cycle test)
+  - 75.7% growth, 22.3% stability, 2% rest (daemon active)
+  - 0.24 coupling requests/session (legitimate only)
+  - No observation bias detected
+  - DEF-056 Attractor Quiescence confirmed
 
-**Saturation:** Requires TIME, not code
+**Exit Gate v1.9.x → v2.x: ALL PASS**
+- Sessions without anomalies: 62 ≥ 30 ✓
+- % REST at V=0: dominant ✓
+- Coupling from observation: none ✓
+- "Performing" behavior: none ✓
+
+**Saturation:** 2/2 — CLOSED
 
 ---
 
