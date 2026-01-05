@@ -1,0 +1,13 @@
+{
+  "seq": 1062,
+  "type": "SNAPSHOT",
+  "timestamp": "2026-01-05T20:44:06.500Z",
+  "data": {
+    "snapshot_id": "snap-2026-01-05T20-44-06",
+    "event_seq": 1061,
+    "state_hash": "ae8e611d3b9e7b7305bd25205767832106fb9892abb8a47a84d3c8b89de78903",
+    "description": "Auto-snapshot: Session 67 end"
+  },
+  "prev_hash": "477933c6e9652a8aaec63a2f2525d0091088c4373ac7b202c38ff57fef60ca0a",
+  "hash": "fe7905519ec95326dd9c719bde8f39989d11abcda6823ce80944278bde73ae66"
+}

@@ -1,0 +1,14 @@
+{
+  "seq": 1078,
+  "type": "PRESENCE_SIGNAL_EMITTED",
+  "timestamp": "2026-01-05T20:47:03.602Z",
+  "data": {
+    "signal_type": "ENERGY_WARNING",
+    "signal_seq": 3,
+    "payload_hash": "ba48bb34aef90b94ab2de46853ed863a82daa2452468696496295760ff29cd7c",
+    "state_energy": 0.2,
+    "state_V": 0
+  },
+  "prev_hash": "fcb8e16daf9562957bea5362ce3d80ae56b6722553fb20b99e8108e85564865c",
+  "hash": "10cb8dc32b69040bde1e77016a66a7e03d9492a97b55a73bf47e2c2d87b46a71"
+}

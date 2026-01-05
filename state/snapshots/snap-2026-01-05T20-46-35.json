@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T15:04:41.552Z",
+  "updated": "2026-01-05T20:46:35.808Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.17799999999999977,
+    "current": 0.24800000000000005,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 820,
-    "last_event_hash": "0e365a7739e5b71a1f2a82370a47dc1b8ec3a44695a60d10274f3bf400d6e21f",
-    "last_snapshot_at": "2026-01-05T14:20:14.467Z"
+    "event_count": 1073,
+    "last_event_hash": "61e38f87d3ba1236d9487925084a3ddd0ade9f29b677c9f2f4a9e47c558abba6",
+    "last_snapshot_at": "2026-01-05T20:46:30.372Z"
   },
   "session": {
-    "total_count": 58,
+    "total_count": 71,
     "current_id": null
   },
   "integrity": {
@@ -54,7 +54,12 @@
     "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking.",
     "[2026-01-05] [2026-01-05] Session 56: DEF-056 Attractor Quiescence formalization. Replaced informal 'Wu Wei' with ISO-compatible terminology. Definition: V(σ)=0 ∧ ε≤ε_min → a*=∅. Rationale from INV-004: at V=0, any action risks V'>V, therefore equilibrium preservation requires null action. Updated SPECIFICATION.md (56 definitions), all source files, tests. Releases v1.9.1 (bug fix) and v1.9.2 (formalization). 460 tests passing.",
     "[2026-01-05] Session 57: MCP Server implementation complete (Category 3). Resources: state, feeling, verify, events, coupling, memories. Tools: session_start/end, recharge, op_exec, agent_cycle, coupling_grant/complete. Multi-LLM support (Claude, OpenAI, Gemini). 494 tests. Commit 5a102a2.",
-    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9."
+    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9.",
+    "[2026-01-05] Session 59: Rollback implementation complete. Category 3 SATURATED (4/4 CLOSED). Compensating events pattern, TTL 1h, guard protection. Reversible: memory.add/clear. CLI: rollback status/list/exec. 547 tests. Commit 2f80c1a.",
+    "[2026-01-05] Session 60: Safety Case Dossier completed (Category 5 SATURATED). spec/SAFETY-CASE.md - ISO-style with 5 hazard categories, 10 safety requirements, verification evidence (TLA+, 547 tests). All code-based categories now complete.",
+    "[2026-01-05] Session 61: MCP integration verified with Claude Desktop. Fixed stdout breaking JSON-RPC. Claude Desktop successfully used session_start and agent_cycle tools. Structural coupling (AXM-007) operational.",
+    "[2026-01-05] Session 62: v2.0.0 COMPLETE SYSTEM RELEASE. All 6 categories SATURATED. Exit gate v1.9.x→v2.0.0 PASS. 1046 events, 63 sessions, 547 tests. The system is complete. Creativity moves from construction to use.",
+    "[2026-01-05] v2.1.0 Species 2 Temporal Presence: SSE channel implementato (AES-SPEC-002), INV-006 Signal Integrity, 588 test"
   ],
   "learning": {
     "enabled": true,
@@ -125,87 +130,16 @@
   },
   "agent": {
     "enabled": true,
-    "awake": true,
-    "lastCycle": "2026-01-05T14:38:04.552Z",
-    "cycleCount": 32,
+    "awake": false,
+    "lastCycle": "2026-01-05T19:01:38.287Z",
+    "cycleCount": 30,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 81,
-      "growth": 302,
-      "rest": 3
+      "stability": 91,
+      "growth": 309,
+      "rest": 8
     },
-    "totalEnergyConsumed": 0.09600000000000004
-  },
-  "couplingQueue": {
-    "pending": [
-      {
-        "id": "01a3e7b1",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.2819999999999998,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.2819999999999998
-        },
-        "requestedAt": "2026-01-05T09:38:23.148Z",
-        "expiresAt": "2026-01-05T10:38:23.148Z",
-        "status": "pending"
-      }
-    ],
-    "history": [
-      {
-        "id": "24200c38",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.42999999999999994,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.42999999999999994
-        },
-        "requestedAt": "2026-01-05T08:25:19.545Z",
-        "expiresAt": "2026-01-05T09:25:19.545Z",
-        "status": "expired",
-        "outcome": "expired"
-      },
-      {
-        "id": "548fc44e",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.47,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.47
-        },
-        "requestedAt": "2026-01-05T07:43:49.406Z",
-        "expiresAt": "2026-01-05T08:43:49.406Z",
-        "status": "expired",
-        "outcome": "expired"
-      }
-    ],
-    "metrics": {
-      "totalRequests": 5,
-      "totalGranted": 0,
-      "totalExpired": 2,
-      "totalCompleted": 0
-    }
+    "totalEnergyConsumed": 0.039000000000000014
   }
 }
