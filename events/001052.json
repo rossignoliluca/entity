@@ -1,0 +1,13 @@
+{
+  "seq": 1052,
+  "type": "OPERATION",
+  "timestamp": "2026-01-05T19:35:25.142Z",
+  "data": {
+    "operation": "state.summary",
+    "params": {},
+    "result": "Summary generated",
+    "energy_cost": 0.002
+  },
+  "prev_hash": "a3567e97da170ca0c1b6775446055ae3b55bce627269ac73de44c7bb9329ad76",
+  "hash": "2d8c7332db504fab8c8b5a0ea3a15ca18f6ab71736a82bad1402fba744251d83"
+}
