@@ -70,9 +70,9 @@ DEF-048: Terminal state (immutable failure)
 
 ## What is NOT Core (can evolve)?
 
-The following are **peripheral** and may be modified:
+The following are **boundary layer** and may be modified:
 
-### Peripheral Modules
+### Boundary Modules
 ```
 src/operations.ts            # Operations catalog (can add ops)
 src/learning.ts              # Pattern analysis
@@ -83,7 +83,7 @@ src/coupling-protocol.ts     # Coupling queue (TTL, config)
 src/logger.ts                # Logging
 ```
 
-### Daemon (peripheral organ)
+### Daemon (boundary process)
 ```
 src/daemon/*                 # Autonomous operation
 ```
@@ -126,13 +126,13 @@ SYSTEM.md                    # Can update
 
 | Change Type | Example | Result |
 |-------------|---------|--------|
-| Add peripheral module | MCP server | v1.8.x |
+| Add boundary module | MCP server | v1.8.x |
 | Add CLI command | New command | v1.8.x |
 | Add operation to catalog | New op | v1.8.x |
 | Add test | New test file | v1.8.x |
 | Fix bug (no semantic change) | Error handling | v1.8.x |
 | Update documentation | README | v1.8.x |
-| Add optional State field | New peripheral state | v1.8.x |
+| Add optional State field | New boundary state | v1.8.x |
 | Tune config defaults | TTL values | v1.8.x |
 
 ---
@@ -140,8 +140,8 @@ SYSTEM.md                    # Can update
 ## Versioning Rules
 
 ```
-v1.8.x   - Peripheral changes, bugfixes, documentation
-v1.9.x   - Not used (reserved)
+v1.8.x   - Boundary changes, bugfixes, documentation
+v1.9.x   - Observation events (LINE v1.9.x)
 v2.0.0   - Core changes (new line, new spec)
 ```
 

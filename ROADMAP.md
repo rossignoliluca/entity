@@ -284,16 +284,16 @@ Each category saturates. After saturation, any further action is either redundan
 
 ---
 
-## Category 3: Peripheral Organs (body)
+## Category 3: Boundary Interfaces (I/O Layer)
 
-These don't touch core — they build around it.
+External interfaces that don't modify core — they provide coupling surfaces.
 
-- [ ] **MCP Server**: Peripheral nerves, real coupling with Claude
+- [ ] **MCP Server**: Protocol interface for structural coupling (AXM-007)
   - Read-only: status, feeling, memory list
   - Coupling: list, grant, complete (human-initiated only)
-- [ ] **Dashboard read-only**: Visualization, coupling queue, timeline
-- [ ] **Event ingestion**: Passive perception, no interpretation
-- [ ] **Operation rollback**: Reversible action, time-bounded, core can block
+- [ ] **Dashboard read-only**: State visualization, coupling queue, event timeline
+- [ ] **Event ingestion**: Passive observation, no state modification
+- [ ] **Operation rollback**: Reversible operations, time-bounded, core can block
 
 **Saturation:** 4 implementations, then CLOSED
 

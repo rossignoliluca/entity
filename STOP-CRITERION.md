@@ -89,15 +89,15 @@ The system works.
 
 This is not construction. This is living.
 
-### S.4.2 Peripheral Organs (Category 3)
+### S.4.2 Boundary Interfaces (Category 3)
 
 If implemented:
-- MCP Server (peripheral nerves)
-- Dashboard (visualization)
-- Event ingestion (perception)
-- Rollback (reversible action)
+- MCP Server (protocol interface)
+- Dashboard (state visualization)
+- Event ingestion (observation)
+- Rollback (reversible operations)
 
-These do not touch core. They are body, not organization.
+These do not touch core. They are boundary layer, not organization.
 
 ### S.4.3 Rigor (Category 5)
 

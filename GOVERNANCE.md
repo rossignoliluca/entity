@@ -106,7 +106,7 @@ If a core change is truly necessary:
 | New module | Implementation | Design doc + PR + review |
 | Config change | Implementation | PR + impact analysis |
 
-All peripheral changes must:
+All boundary layer changes must:
 - Not modify core files
 - Pass all existing tests
 - Include new tests if adding functionality
