@@ -1,0 +1,12 @@
+{
+  "seq": 562,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-05T00:09:00.508Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-05] FUTURE LINES roadmap documented: v1.9.x (observation events, audit-only, low risk) → v2.x (WebSocket bidirectional, new species, medium risk) → v3.x (co-modeling, AES-SPEC-002, frontier). Each line requires exit gate + evidence. Rule: relationality = risk.",
+    "total_memories": 8
+  },
+  "prev_hash": "fc5657cc0f2cddc9fcf824c5fa9c7ce2509b50f2fc7cb451492e1a9fb66b0db3",
+  "hash": "75f0857ce5403d81018f047a54256b84b3d93911158d4f2867ca16bf375be605"
+}
