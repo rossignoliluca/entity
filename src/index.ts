@@ -1828,6 +1828,49 @@ Example:
         }
         break;
 
+      case 'presence':
+        // Species 2: Presence Server (AES-SPEC-002)
+        const presenceAction = process.argv[3];
+        const { startPresenceServer } = await import('./presence/server.js');
+
+        if (presenceAction === 'start') {
+          const presencePort = parseInt(process.argv[4] ?? '3001', 10);
+          console.log('\n┌─────────────────────────────────────────┐');
+          console.log('│  Species 2 Presence Server (AES-SPEC-002) │');
+          console.log('└─────────────────────────────────────────┘\n');
+          await startPresenceServer(presencePort);
+        } else {
+          console.log(`
+Species 2 Presence Server (AES-SPEC-002)
+
+SSE channel for temporal presence.
+Implements DEF-057 (Temporal Presence) and INV-006 (Signal Integrity).
+
+Usage:
+  presence start [port]  Start presence server (default: 3001)
+
+Endpoints:
+  GET /presence/stream   SSE channel (text/event-stream)
+  POST /presence/grant   Coupling grant endpoint
+  GET /presence/status   Channel status
+
+Signal Types:
+  STATUS_CHANGED        State transition notification
+  ENERGY_WARNING        Energy below threshold
+  COUPLING_REQUESTED    Agent requested coupling
+  HEARTBEAT             Connection alive (max 1/5 min)
+
+Hard Rules:
+  - PRESENCE_SILENCE default (no signal if nothing changed)
+  - Rate limit: max 1 signal/min
+  - REST dominance: no heartbeat at V=0, ε=0
+
+Example client:
+  curl -N http://localhost:3001/presence/stream
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -1852,6 +1895,7 @@ Commands:
   mcp         MCP server for LLM integration (Category 3)
   rollback    Reversible operation rollback (Category 3)
   api         REST API for observation (v1.9.x)
+  presence    SSE presence channel (Species 2 / AES-SPEC-002)
   log         Configure logging levels
   replay      Replay events and show state
   events      List recent events

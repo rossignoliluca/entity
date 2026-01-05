@@ -279,7 +279,9 @@ export type EventType =
   | 'ROLLBACK_CREATED'     // Rollback entry created for operation
   | 'ROLLBACK_EXECUTED'    // Rollback successfully executed
   | 'ROLLBACK_BLOCKED'     // Rollback blocked by guard
-  | 'ROLLBACK_EXPIRED';    // Rollback entry expired (TTL)
+  | 'ROLLBACK_EXPIRED'     // Rollback entry expired (TTL)
+  // Species 2: Presence Events (AES-SPEC-002)
+  | 'PRESENCE_SIGNAL_EMITTED'; // SSE signal emitted (INV-006 audit)
 
 // Event categories for filtering (Annex G)
 export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance' | 'coupling';
