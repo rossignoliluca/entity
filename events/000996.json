@@ -1,0 +1,14 @@
+{
+  "seq": 996,
+  "type": "OBSERVATION_RECEIVED",
+  "timestamp": "2026-01-05T19:01:22.507Z",
+  "data": {
+    "observer": "unknown",
+    "channel": "rest",
+    "endpoint": "/verify",
+    "state_hash": "0aeffca3cd07ba4c4f95e4961c226917563e7c103923f2c95fda4c63ae2e0fbb",
+    "category": "audit"
+  },
+  "prev_hash": "be25ea83bc65be8c44afa7d480c82a908536e9310e04cd5de4b26d916e2bf9b2",
+  "hash": "05a6ab6f0bbdc4ad0ccaadc901d61f71f2d2933734db6185f0cc574e0b6922f2"
+}

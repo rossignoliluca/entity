@@ -1,0 +1,25 @@
+{
+  "seq": 960,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-05T19:00:32.030Z",
+  "data": {
+    "priority": "stability",
+    "action": "system.health",
+    "reason": "Stability (V=0.1600) - AI selected: EFE=0.2464",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.645,
+    "energyAfter": 0.639,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "System healthy",
+      "effects": {
+        "healthy": true,
+        "issues": [],
+        "status": "nominal"
+      }
+    }
+  },
+  "prev_hash": "bfcde4bda4e669620630a2cab8426a0f803cf79adf5a31cc92f5d7321abb3dd0",
+  "hash": "78bbc0157de61a04ec067bc4a640357cb42f58c6c194a61755c913d4fb0f80dd"
+}

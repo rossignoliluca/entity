@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T18:55:01.225Z",
+  "updated": "2026-01-05T19:02:30.414Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.645,
+    "current": 0.5,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,9 +24,9 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 953,
-    "last_event_hash": "b7e410538e3f6178e37ff5c91ec06b40a623f19914987cb5e92212767583187e",
-    "last_snapshot_at": "2026-01-05T18:43:41.482Z"
+    "event_count": 1045,
+    "last_event_hash": "936f0f4a6189b2ff00e9d25e1f0c6e44f958aadc28e5b2aaa96ef0f3201570ec",
+    "last_snapshot_at": "2026-01-05T18:43:41.580Z"
   },
   "session": {
     "total_count": 62,
@@ -128,54 +128,16 @@
   },
   "agent": {
     "enabled": true,
-    "awake": true,
-    "lastCycle": "2026-01-05T18:52:48.979Z",
-    "cycleCount": 428,
+    "awake": false,
+    "lastCycle": "2026-01-05T19:01:38.287Z",
+    "cycleCount": 30,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 89,
+      "stability": 91,
       "growth": 309,
       "rest": 8
     },
-    "totalEnergyConsumed": 0.7850000000000006
-  },
-  "couplingQueue": {
-    "pending": [],
-    "history": [
-      {
-        "id": "65e9087f",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.5,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.5
-        },
-        "requestedAt": "2026-01-05T18:30:20.737Z",
-        "expiresAt": "2026-01-05T19:30:20.737Z",
-        "status": "completed",
-        "grantedAt": "2026-01-05T18:50:40.471Z",
-        "completedAt": "2026-01-05T18:50:40.652Z",
-        "outcome": "resolved",
-        "note": "INV-002 recovered via event replay, concurrency issue identified"
-      }
-    ],
-    "metrics": {
-      "totalRequests": 5,
-      "totalGranted": 1,
-      "totalExpired": 0,
-      "totalCompleted": 1,
-      "avgTimeToGrant": 1219735,
-      "avgTimeToComplete": 182
-    },
-    "lastGrantedAt": "2026-01-05T18:50:40.471Z",
-    "cooldownUntil": "2026-01-05T18:55:40.472Z"
+    "totalEnergyConsumed": 0.039000000000000014
   }
 }

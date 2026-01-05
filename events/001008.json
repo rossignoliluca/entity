@@ -1,0 +1,25 @@
+{
+  "seq": 1008,
+  "type": "COUPLING_REQUESTED",
+  "timestamp": "2026-01-05T19:01:38.237Z",
+  "data": {
+    "requestId": "620c5e6f",
+    "priority": "urgent",
+    "reason": "Invariant violation detected (1 failing)",
+    "context": {
+      "feeling": {
+        "energy": 0.5,
+        "lyapunovV": 0.16,
+        "invariantsSatisfied": 4,
+        "invariantsTotal": 5
+      },
+      "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
+      "V": 0.16,
+      "energy": 0.5
+    },
+    "expiresAt": "2026-01-05T20:01:38.188Z",
+    "updated": false
+  },
+  "prev_hash": "11ef9f2462a622ab2eeb397191120c0d669dee14b76c462ebffb6d5af6a4f608",
+  "hash": "b22ec50abc8dede91bee7a161719ab492820ab741767088fd3b063eb4056026d"
+}
