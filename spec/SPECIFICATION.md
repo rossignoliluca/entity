@@ -829,7 +829,7 @@ An implementation **conforms** to this specification if and only if:
 ### 6.2 Conformance Levels
 
 **Level 1: Structural Conformance**
-- DEF-001 through DEF-056 implemented
+- DEF-001 through DEF-061 implemented
 - Types match specification
 
 **Level 2: Axiomatic Conformance**
@@ -996,13 +996,13 @@ This annex establishes requirements for separating observation from action.
 
 ### G.1 Definitions
 
-**DEF-056: Pure Observation**
+**DEF-057: Pure Observation**
 An operation O is a *pure observation* if and only if:
 - O does not append events to the Merkle chain
 - O does not modify state/current.json
 - O is idempotent: calling O multiple times yields identical results
 
-**DEF-057: Action Operation**
+**DEF-058: Action Operation**
 An operation A is an *action* if and only if:
 - A may append events to the Merkle chain, OR
 - A may modify state
@@ -1073,7 +1073,7 @@ When an autopoietic system generates new operations via the P set (meta.define, 
 
 ### H.3 Sigillo 1: Quarantine Gate (Normative)
 
-**DEF-058: Operation Lifecycle Status**
+**DEF-059: Operation Lifecycle Status**
 Every generated operation SHALL have a status from:
 - `QUARANTINED`: Newly created, cooling period
 - `TRIAL`: Being tested, metrics collected
@@ -1094,7 +1094,7 @@ Every generated operation SHALL have a status from:
 - Any constitutional block occurs during trial
 - Lyapunov V consistently increases (avgVDelta > 2 × maxVDeltaPerUse)
 
-**DEF-059: Trial Metrics**
+**DEF-060: Trial Metrics**
 ```
 TrialMetrics := {
   trialStartedAt: Timestamp,
@@ -1110,7 +1110,7 @@ TrialMetrics := {
 
 ### H.4 Sigillo 2: Context Filter (Normative)
 
-**DEF-060: Cycle Context**
+**DEF-061: Cycle Context**
 Agent cycles SHALL be classified as:
 - `production`: Normal operation, patterns tracked for self-production
 - `test`: Test execution, patterns NOT tracked
