@@ -1,0 +1,12 @@
+{
+  "seq": 1095,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-05T22:58:35.639Z",
+  "data": {
+    "reason": "Important memory added",
+    "memory": "[2026-01-05] Species 2 SSE test completato: STATUS_CHANGED, ENERGY_WARNING, COUPLING_REQUESTED verificati, REST dominance confermato",
+    "total_memories": 19
+  },
+  "prev_hash": "c62d52761a13746bce551d260249930794efdb0064a567198277595e9daecb32",
+  "hash": "f4e8f8908154492aba9ec3adcfef2b99bb0909c443e241db85003b5e0c62bfe3"
+}
