@@ -323,15 +323,20 @@ External interfaces that don't modify core — they provide coupling surfaces.
 
 ---
 
-## Category 5: Rigor & Defense
+## Category 5: Rigor & Defense ✓ SATURATED
 
 - [x] **TLA+ specification**: Formal verification of 5 invariants, quarantine FSM, coupling FSM
   - `formal/Entity.tla`: INV-001..005, state transitions, Lyapunov monotone
   - `formal/Quarantine.tla`: Sigillo 1 FSM, zero tolerance
   - `formal/Coupling.tla`: AXM-007, request lifecycle
-- [ ] **Safety case dossier**: Hazard analysis, mitigation evidence, ISO-style
+- [x] **Safety case dossier**: Hazard analysis, mitigation evidence, ISO-style
+  - `spec/SAFETY-CASE.md`: Full dossier (13 sections)
+  - Hazard identification: 5 categories (HAZ-A to HAZ-E)
+  - Safety requirements: 10 core (SR-001 to SR-010)
+  - Verification evidence: TLA+, 547 tests, static analysis
+  - Responsibility boundaries: System vs Human
 
-**Saturation:** 1/2 artifacts
+**Saturation:** 2/2 artifacts — CLOSED
 
 ---
 

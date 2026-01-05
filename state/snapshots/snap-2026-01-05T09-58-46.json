@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T18:18:49.715Z",
+  "updated": "2026-01-05T09:58:46.843Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.32799999999999985,
+    "current": 0.17799999999999977,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 848,
-    "last_event_hash": "a52e8bab27e28fbb522a55f9f36227110f07fed6d6721d2380fa09e9c67f9ab1",
-    "last_snapshot_at": "2026-01-05T17:25:22.945Z"
+    "event_count": 807,
+    "last_event_hash": "535db26da62e8dae584dadb90fe4027003047d64a626732606be506b76a9470b",
+    "last_snapshot_at": "2026-01-05T08:57:57.830Z"
   },
   "session": {
-    "total_count": 59,
+    "total_count": 58,
     "current_id": null
   },
   "integrity": {
@@ -54,8 +54,7 @@
     "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking.",
     "[2026-01-05] [2026-01-05] Session 56: DEF-056 Attractor Quiescence formalization. Replaced informal 'Wu Wei' with ISO-compatible terminology. Definition: V(σ)=0 ∧ ε≤ε_min → a*=∅. Rationale from INV-004: at V=0, any action risks V'>V, therefore equilibrium preservation requires null action. Updated SPECIFICATION.md (56 definitions), all source files, tests. Releases v1.9.1 (bug fix) and v1.9.2 (formalization). 460 tests passing.",
     "[2026-01-05] Session 57: MCP Server implementation complete (Category 3). Resources: state, feeling, verify, events, coupling, memories. Tools: session_start/end, recharge, op_exec, agent_cycle, coupling_grant/complete. Multi-LLM support (Claude, OpenAI, Gemini). 494 tests. Commit 5a102a2.",
-    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9.",
-    "[2026-01-05] Session 59: Rollback implementation complete. Category 3 SATURATED (4/4 CLOSED). Compensating events pattern, TTL 1h, guard protection. Reversible: memory.add/clear. CLI: rollback status/list/exec. 547 tests. Commit 2f80c1a."
+    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9."
   ],
   "learning": {
     "enabled": true,
@@ -127,14 +126,14 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T18:17:08.487Z",
+    "lastCycle": "2026-01-05T09:58:33.426Z",
     "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 81,
-      "growth": 305,
-      "rest": 4
+      "growth": 302,
+      "rest": 0
     },
     "totalEnergyConsumed": 0.09600000000000004
   },

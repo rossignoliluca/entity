@@ -1,0 +1,16 @@
+{
+  "seq": 812,
+  "type": "AGENT_REST",
+  "timestamp": "2026-01-05T11:06:10.382Z",
+  "data": {
+    "cycleCount": 183,
+    "restCycles": 10,
+    "feeling": {
+      "surprise": 0,
+      "energyFeeling": "adequate",
+      "stabilityFeeling": "attractor"
+    }
+  },
+  "prev_hash": "61f7b57c7de34aa18acf1a6a9280fa5d5f637f9caf491b564c991c793ce90542",
+  "hash": "9a63cfb45bf7b8e266157f64e39160d80f2522cbae3390c41b17053bb32b45eb"
+}

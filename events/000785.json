@@ -1,0 +1,10 @@
+{
+  "seq": 785,
+  "type": "COUPLING_EXPIRED",
+  "timestamp": "2026-01-05T09:38:23.262Z",
+  "data": {
+    "requestId": "24200c38"
+  },
+  "prev_hash": "2739aac131e3d4ed7224ea38799c7ea1dd09e429061d185224fe0b4ae73df681",
+  "hash": "381aae2aebe643c7a7095229f623122dd4fc746bbe790868fd10ee857ac46231"
+}
