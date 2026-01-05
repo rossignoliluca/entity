@@ -203,8 +203,10 @@ Signaling is the exception, not the rule.
 ### 7.1 Transport
 
 Supported transports:
-- WebSocket (preferred)
-- Server-Sent Events (SSE)
+- Server-Sent Events (SSE) — implemented v2.1.0
+- WebSocket (optional, for bidirectional needs)
+
+SSE is preferred for unidirectional signaling (entity → client).
 
 ### 7.2 Connection Lifecycle
 
@@ -219,16 +221,28 @@ DISCONNECTED → CONNECTING → CONNECTED → DISCONNECTED
 ### 7.3 Message Format
 
 ```typescript
-interface Signal {
+interface SignalPayload {
   type: 'STATUS_CHANGED' | 'COUPLING_REQUESTED' | 'ENERGY_WARNING' | 'HEARTBEAT';
-  timestamp: string;       // ISO 8601
-  data: {
-    state_hash: string;    // Current state hash
-    V: number;             // Lyapunov value
+  ts: string;              // ISO 8601
+  seq: number;             // Sequence number (monotonic)
+  org_hash: string;        // Organization hash (identity proof)
+  state: {
     energy: number;        // Energy level
-    reason?: string;       // Human-readable (no persuasion)
+    V: number;             // Lyapunov value
+    integrity: string;     // e.g., "5/5" or "4/5"
+  };
+  coupling: {
+    pending: number;       // Pending coupling requests
+    urgent: number;        // Urgent coupling requests
   };
 }
+```
+
+SSE Format:
+```
+event: status_changed
+data: {"type":"STATUS_CHANGED","ts":"...","seq":1,"org_hash":"...","state":{...},"coupling":{...}}
+
 ```
 
 ### 7.4 Client Requirements
@@ -356,9 +370,10 @@ A system is AES-SPEC-002 compliant if:
 ### 12.2 Audit Requirements
 
 All signals MUST be logged to the Merkle chain with:
-- Event type: `SIGNAL_SENT`
+- Event type: `PRESENCE_SIGNAL_EMITTED`
 - Signal type
 - Timestamp
+- Payload hash (for integrity verification)
 - State hash at signal time
 
 ---
