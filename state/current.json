@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T08:23:43.840Z",
+  "updated": "2026-01-05T08:35:29.436Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.43299999999999994,
+    "current": 0.3849999999999999,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,8 +24,8 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 696,
-    "last_event_hash": "cc56e8bf788a6816766cc2e2d8beaa5b7984920159a106c568be979f0355f0af",
+    "event_count": 716,
+    "last_event_hash": "54ab45778534cdbd47de4bd47904c33f6343bac08e87e84694a445a9a2bb5858",
     "last_snapshot_at": "2026-01-05T07:56:43.651Z"
   },
   "session": {
@@ -124,13 +124,13 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T08:23:43.839Z",
+    "lastCycle": "2026-01-05T08:35:29.434Z",
     "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 79,
-      "growth": 217,
+      "stability": 80,
+      "growth": 233,
       "rest": 0
     },
     "totalEnergyConsumed": 0.09600000000000004
@@ -155,11 +155,30 @@
         "requestedAt": "2026-01-05T07:43:49.406Z",
         "expiresAt": "2026-01-05T08:43:49.406Z",
         "status": "pending"
+      },
+      {
+        "id": "24200c38",
+        "priority": "urgent",
+        "reason": "Invariant violation detected (1 failing)",
+        "context": {
+          "feeling": {
+            "energy": 0.42999999999999994,
+            "lyapunovV": 0.16,
+            "invariantsSatisfied": 4,
+            "invariantsTotal": 5
+          },
+          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
+          "V": 0.16,
+          "energy": 0.42999999999999994
+        },
+        "requestedAt": "2026-01-05T08:25:19.545Z",
+        "expiresAt": "2026-01-05T09:25:19.545Z",
+        "status": "pending"
       }
     ],
     "history": [],
     "metrics": {
-      "totalRequests": 3,
+      "totalRequests": 4,
       "totalGranted": 0,
       "totalExpired": 0,
       "totalCompleted": 0

@@ -1,6 +1,6 @@
 /**
  * Entity System Entry Point
- * AES-SPEC-001 v1.0.0
+ * AES-SPEC-001
  */
 
 import { readFile, writeFile, mkdir } from 'fs/promises';

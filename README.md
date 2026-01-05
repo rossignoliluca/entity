@@ -192,7 +192,7 @@ npm run test
 
 ## License
 
-MIT
+See [LICENSE](./LICENSE) - All rights reserved, terms TBD.
 
 ## Author
 
