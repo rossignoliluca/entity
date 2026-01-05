@@ -237,7 +237,7 @@ export type EventType =
   | 'AGENT_WAKE'           // Agent sense-making loop started
   | 'AGENT_SLEEP'          // Agent sense-making loop paused
   | 'AGENT_RESPONSE'       // Agent responded to feeling
-  | 'AGENT_REST'           // Agent resting (Wu Wei)
+  | 'AGENT_REST'           // Agent resting (DEF-056 Attractor Quiescence)
   // Phase 8b: Ultrastability events
   | 'AGENT_ULTRASTABILITY' // Ultrastability parameter adjustment
   // Phase 8f: Structural Coupling Protocol events

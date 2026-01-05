@@ -104,7 +104,7 @@ Features:
   2. Integrity (INV-001 to INV-004)
   3. Stability (Lyapunov V → 0)
   4. Growth (learning, autopoiesis)
-  5. Rest (Wu Wei - do nothing at attractor)
+  5. Rest (DEF-056 Attractor Quiescence)
 - [x] Constitutional check before actions (Jonas principle)
 - [x] Agent event types (AGENT_WAKE, AGENT_SLEEP, AGENT_RESPONSE, AGENT_REST)
 - [x] Integration with daemon (auto-wake on daemon start)

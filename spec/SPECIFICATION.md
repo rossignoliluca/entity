@@ -589,6 +589,19 @@ Semantic versioning triple.
 ```
 Version component changes have defined meanings.
 
+**DEF-056 Attractor Quiescence**
+```
+V(σ) = 0 ∧ ε ≤ ε_min → a* = ∅
+```
+At the Lyapunov attractor (V=0) with minimal surprise (ε ≤ ε_min), the optimal action is null.
+
+Rationale: From INV-004 (V never increases), when V=0 (minimum), any non-null action risks V' > V. Therefore, equilibrium preservation requires a* = ∅.
+
+Parameters:
+- ε_min: Surprise threshold (default 0.001)
+- a*: Optimal action
+- ∅: Null action (no state change)
+
 ---
 
 ## 4. Axioms
@@ -816,7 +829,7 @@ An implementation **conforms** to this specification if and only if:
 ### 6.2 Conformance Levels
 
 **Level 1: Structural Conformance**
-- DEF-001 through DEF-055 implemented
+- DEF-001 through DEF-056 implemented
 - Types match specification
 
 **Level 2: Axiomatic Conformance**
@@ -965,7 +978,7 @@ Actions are selected according to this strict hierarchy:
 | 2 | Integrity | INV-001 to INV-004 | 10% epistemic |
 | 3 | Stability | Lyapunov V → 0 | 20% epistemic |
 | 4 | Growth | Learning, autopoiesis | 50% epistemic |
-| 5 | Rest | Wu Wei (at attractor) | 60% epistemic |
+| 5 | Rest | DEF-056 Attractor Quiescence | 60% epistemic |
 
 ### F.3 Constitutive Constraint (Jonas Principle)
 

@@ -430,7 +430,7 @@ describe('InternalAgent', () => {
     });
   });
 
-  describe('Wu Wei (Rest)', () => {
+  describe('Attractor Quiescence (Rest)', () => {
     it('should have rest as a valid priority', async () => {
       const state = createTestState({
         energy: { current: 0.3, min: 0.01, threshold: 0.1 },
@@ -1388,9 +1388,9 @@ describe('Sigillo Safety Tests', () => {
   });
 
   // =========================================================================
-  // REST DOMINANCE (Wu Wei fix v1.9.1)
+  // DEF-056 ATTRACTOR QUIESCENCE (v1.9.1)
   // =========================================================================
-  describe('Rest Dominance (Wu Wei)', () => {
+  describe('Attractor Quiescence (DEF-056)', () => {
     it('should have surpriseEpsilon config parameter', async () => {
       const state = createTestState();
       await setupTestEnv(state);

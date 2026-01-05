@@ -87,7 +87,7 @@ export interface AgentConfig {
   restThreshold: number;         // V below which to rest
   urgencyThreshold: number;      // energy level for urgent action
   criticalThreshold: number;     // energy level for dormant
-  surpriseEpsilon: number;       // surprise below which to rest (Wu Wei)
+  surpriseEpsilon: number;       // ε below which to rest (DEF-056 Attractor Quiescence)
 
   // Phase 8b: Ultrastability (Ashby)
   ultrastabilityEnabled: boolean;
@@ -228,7 +228,7 @@ export type Priority =
   | 'integrity'   // INV-001 to INV-004: Core invariants
   | 'stability'   // Lyapunov: Return to attractor
   | 'growth'      // Learning and autopoiesis
-  | 'rest';       // Wu Wei: Do nothing at attractor
+  | 'rest';       // DEF-056: Attractor Quiescence (a* = ∅ when V=0, ε≤ε_min)
 
 /**
  * The feeling state - how the system feels relative to expected state
@@ -699,7 +699,7 @@ export class InternalAgent extends EventEmitter {
     const threatsExistence = energy < this.config.criticalThreshold;
     const threatsStability = lyapunovV > 0.1 || invariantsSatisfied < invariantsTotal;
     // needsGrowth only when there's something to explore (surprise > epsilon)
-    // Wu Wei: at perfect attractor with no surprise, REST instead of grow
+    // DEF-056 Attractor Quiescence: at V=0 with ε≤ε_min, optimal action is ∅
     const needsGrowth =
       energyFeeling === 'vital' &&
       stabilityFeeling === 'attractor' &&
@@ -937,8 +937,9 @@ export class InternalAgent extends EventEmitter {
       };
     }
 
-    // REST GATE: Wu Wei - at attractor with no surprise, do nothing
-    // This takes priority over growth to ensure rest dominance
+    // DEF-056 ATTRACTOR QUIESCENCE GATE
+    // At attractor (V=0) with minimal surprise (ε≤ε_min), optimal action is null
+    // This takes priority over growth to preserve equilibrium
     if (
       feeling.stabilityFeeling === 'attractor' &&
       feeling.integrityFeeling === 'whole' &&
@@ -947,7 +948,7 @@ export class InternalAgent extends EventEmitter {
       return {
         priority: 'rest',
         action: null,
-        reason: `Attractor reached, surprise=${feeling.surprise.toFixed(6)} <= epsilon - Wu Wei`,
+        reason: `DEF-056: V=0, ε=${feeling.surprise.toFixed(6)} ≤ ε_min → a*=∅`,
       };
     }
 
@@ -973,7 +974,7 @@ export class InternalAgent extends EventEmitter {
       };
     }
 
-    // Priority 5: REST (Wu Wei - do nothing at attractor)
+    // Priority 5: REST (DEF-056 Attractor Quiescence)
     // Phase 8c: Even at rest, active inference can suggest exploration
     if (this.config.activeInferenceEnabled && feeling.stabilityFeeling === 'attractor') {
       const evaluation = this.selectActionViaActiveInference(feeling, 'rest');
@@ -991,7 +992,7 @@ export class InternalAgent extends EventEmitter {
       priority: 'rest',
       action: null,
       reason: feeling.stabilityFeeling === 'attractor'
-        ? 'At attractor - resting (Wu Wei)'
+        ? 'DEF-056: Attractor quiescence (a*=∅)'
         : `Adequate state (ε=${feeling.surprise.toFixed(4)}) - resting`,
     };
   }

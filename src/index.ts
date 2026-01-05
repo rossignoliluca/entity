@@ -1456,7 +1456,7 @@ Priority Hierarchy (constitutional):
   2. Integrity  - Core invariants (INV-001 to INV-004)
   3. Stability  - Lyapunov convergence (V → 0)
   4. Growth     - Learning and autopoiesis
-  5. Rest       - Wu Wei (do nothing at attractor)
+  5. Rest       - Attractor Quiescence (DEF-056: a*=∅ when V=0)
           `);
         }
         break;

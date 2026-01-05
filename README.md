@@ -118,7 +118,7 @@ The entity has an autonomous sense-making loop with constitutional priorities:
 2. Integrity    (INV-001 to INV-004)
 3. Stability    (Lyapunov V → 0)
 4. Growth       (learning, autopoiesis)
-5. Rest         (Wu Wei - do nothing at attractor)
+5. Rest         (DEF-056 Attractor Quiescence)
 ```
 
 **Active Inference**: Actions selected by minimizing Expected Free Energy:
