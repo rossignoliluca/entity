@@ -87,6 +87,7 @@ export interface AgentConfig {
   restThreshold: number;         // V below which to rest
   urgencyThreshold: number;      // energy level for urgent action
   criticalThreshold: number;     // energy level for dormant
+  surpriseEpsilon: number;       // surprise below which to rest (Wu Wei)
 
   // Phase 8b: Ultrastability (Ashby)
   ultrastabilityEnabled: boolean;
@@ -136,6 +137,7 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   restThreshold: 0.001,          // V < 0.001 = at attractor
   urgencyThreshold: 0.15,        // E < 15% = urgent
   criticalThreshold: 0.05,       // E < 5% = critical, prepare dormant
+  surpriseEpsilon: 0.001,        // surprise < 0.001 = nothing to explore, rest
 
   // Phase 8b: Ultrastability defaults
   ultrastabilityEnabled: true,
@@ -508,6 +510,10 @@ export class InternalAgent extends EventEmitter {
     return { ...this.stats };
   }
 
+  getConfig(): AgentConfig {
+    return { ...this.config };
+  }
+
   // ===========================================================================
   // The Sense-Making Cycle
   // ===========================================================================
@@ -692,10 +698,13 @@ export class InternalAgent extends EventEmitter {
     // Assess threats
     const threatsExistence = energy < this.config.criticalThreshold;
     const threatsStability = lyapunovV > 0.1 || invariantsSatisfied < invariantsTotal;
+    // needsGrowth only when there's something to explore (surprise > epsilon)
+    // Wu Wei: at perfect attractor with no surprise, REST instead of grow
     const needsGrowth =
       energyFeeling === 'vital' &&
       stabilityFeeling === 'attractor' &&
-      integrityFeeling === 'whole';
+      integrityFeeling === 'whole' &&
+      surprise > this.config.surpriseEpsilon;
 
     return {
       timestamp,
@@ -928,7 +937,21 @@ export class InternalAgent extends EventEmitter {
       };
     }
 
-    // Priority 4: GROWTH (only if stable and vital)
+    // REST GATE: Wu Wei - at attractor with no surprise, do nothing
+    // This takes priority over growth to ensure rest dominance
+    if (
+      feeling.stabilityFeeling === 'attractor' &&
+      feeling.integrityFeeling === 'whole' &&
+      feeling.surprise <= this.config.surpriseEpsilon
+    ) {
+      return {
+        priority: 'rest',
+        action: null,
+        reason: `Attractor reached, surprise=${feeling.surprise.toFixed(6)} <= epsilon - Wu Wei`,
+      };
+    }
+
+    // Priority 4: GROWTH (only if stable, vital, AND something to explore)
     if (feeling.needsGrowth && feeling.energyFeeling === 'vital') {
       // Phase 8c: Use Active Inference for exploration
       if (this.config.activeInferenceEnabled) {

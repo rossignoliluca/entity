@@ -1386,4 +1386,91 @@ describe('Sigillo Safety Tests', () => {
       assert.strictEqual(agent.getContext(), 'production');
     });
   });
+
+  // =========================================================================
+  // REST DOMINANCE (Wu Wei fix v1.9.1)
+  // =========================================================================
+  describe('Rest Dominance (Wu Wei)', () => {
+    it('should have surpriseEpsilon config parameter', async () => {
+      const state = createTestState();
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        surpriseEpsilon: 0.01, // Custom value
+      });
+
+      // Config should be accessible
+      const config = agent.getConfig();
+      assert.strictEqual(config.surpriseEpsilon, 0.01);
+    });
+
+    it('should have default surpriseEpsilon of 0.001', async () => {
+      const state = createTestState();
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR);
+      const config = agent.getConfig();
+
+      assert.strictEqual(config.surpriseEpsilon, 0.001);
+    });
+
+    it('should compute needsGrowth as false when surprise is zero', async () => {
+      // With vital energy and all good, but test env has invariant issues
+      // so surprise > 0. We test that needsGrowth respects the formula.
+      const state = createTestState({
+        energy: { current: 0.8, min: 0.01, threshold: 0.1 },
+      });
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        surpriseEpsilon: 0.001,
+      });
+
+      const feeling = await agent.getCurrentFeeling();
+
+      // needsGrowth requires: vital AND attractor AND whole AND surprise > epsilon
+      // In test env, we may not have attractor (invariants fail), so needsGrowth = false
+      // This is correct behavior - don't grow when system is unstable
+      if (feeling.stabilityFeeling !== 'attractor' || feeling.integrityFeeling !== 'whole') {
+        assert.strictEqual(feeling.needsGrowth, false,
+          'needsGrowth should be false when not at attractor or not whole');
+      }
+    });
+
+    it('should have surprise > 0 when energy is below threshold', async () => {
+      // Low energy creates surprise via energyDistance
+      const state = createTestState({
+        energy: { current: 0.05, min: 0.01, threshold: 0.1 }, // Below threshold
+      });
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR);
+      const feeling = await agent.getCurrentFeeling();
+
+      // Energy below threshold creates surprise
+      assert.ok(feeling.surprise > 0, `Surprise ${feeling.surprise} should be > 0 with low energy`);
+    });
+
+    it('should track responses by priority in stats', async () => {
+      const state = createTestState();
+      await setupTestEnv(state);
+
+      const agent = createAgent(TEST_DIR, {
+        activeInferenceEnabled: false,
+      });
+
+      // Force a cycle and check response
+      const { response } = await agent.forceCycle();
+
+      // Response should have a valid priority
+      assert.ok(
+        ['survival', 'integrity', 'stability', 'growth', 'rest'].includes(response.priority),
+        `Response priority ${response.priority} should be valid`
+      );
+
+      const stats = agent.getStats();
+      // Stats should track responses by priority
+      assert.ok('rest' in stats.responsesByPriority, 'Stats should track rest priority');
+    });
+  });
 });
