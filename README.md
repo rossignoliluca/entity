@@ -98,6 +98,7 @@ node dist/src/index.js <command>
 | `agent status/feeling/cycle` | Internal agency |
 | `coupling list/grant/complete` | Coupling protocol |
 | `mcp` | Start MCP server for LLM integration |
+| `rollback status/list/exec` | Operation rollback |
 | `api start` | REST API + dashboard (http://localhost:3000/dashboard) |
 | `log level` | Configure logging |
 
@@ -243,9 +244,9 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 780+ |
-| Sessions | 57 |
-| Tests | 521 |
+| Events | 810+ |
+| Sessions | 58 |
+| Tests | 547 |
 | Version | v1.9.2 |
 
 ## License

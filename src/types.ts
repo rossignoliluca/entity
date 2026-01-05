@@ -214,6 +214,33 @@ export interface State {
       avgTimeToComplete?: number;
     };
   };
+
+  // Category 3: Rollback state
+  rollback?: {
+    enabled: boolean;
+    ttlMs: number;
+    maxEntries: number;
+    entries: Array<{
+      id: string;
+      operationId: string;
+      operationName: string;
+      timestamp: string;
+      expiresAt: string;
+      eventSeq: number;
+      beforeState: Record<string, unknown>;
+      afterState: Record<string, unknown>;
+      params: Record<string, unknown>;
+      status: 'pending' | 'executed' | 'expired' | 'blocked';
+      executedAt?: string;
+      blockedReason?: string;
+    }>;
+    metrics: {
+      totalCreated: number;
+      totalExecuted: number;
+      totalExpired: number;
+      totalBlocked: number;
+    };
+  };
 }
 
 // =============================================================================
@@ -247,7 +274,12 @@ export type EventType =
   | 'COUPLING_COMPLETED'   // Human completed request
   | 'COUPLING_CANCELED'    // Human canceled request
   // Phase v1.9.x: Observation Events (audit-only)
-  | 'OBSERVATION_RECEIVED'; // External observation of state (REST API)
+  | 'OBSERVATION_RECEIVED' // External observation of state (REST API)
+  // Category 3: Rollback Events
+  | 'ROLLBACK_CREATED'     // Rollback entry created for operation
+  | 'ROLLBACK_EXECUTED'    // Rollback successfully executed
+  | 'ROLLBACK_BLOCKED'     // Rollback blocked by guard
+  | 'ROLLBACK_EXPIRED';    // Rollback entry expired (TTL)
 
 // Event categories for filtering (Annex G)
 export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance' | 'coupling';

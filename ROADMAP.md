@@ -302,9 +302,15 @@ External interfaces that don't modify core — they provide coupling surfaces.
   - Shows: status, energy, V, feeling, invariants, coupling queue, events, memories
   - Served at GET /dashboard
   - Implementation: src/dashboard/index.html, 27 tests
-- [ ] **Operation rollback**: Reversible operations, time-bounded, core can block
+- [x] **Operation rollback**: Reversible operations, time-bounded, core can block
+  - Compensating events pattern (not state mutation)
+  - TTL: 1 hour default, configurable
+  - Reversible ops: memory.add, memory.clear
+  - Guard protection: blocks if state changed
+  - CLI: rollback status/list/exec
+  - Implementation: src/rollback.ts, 26 tests
 
-**Saturation:** 3/4 implementations
+**Saturation:** 4/4 implementations — CLOSED
 
 ---
 

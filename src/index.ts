@@ -1670,6 +1670,100 @@ Levels: debug, info, warn, error, silent
         await startMCPServer();
         break;
 
+      case 'rollback':
+        // Category 3: Operation rollback
+        const rollbackAction = process.argv[3];
+        const {
+          createRollbackStore,
+          getPendingEntries,
+          executeRollback,
+          getRollbackSummary,
+          printRollbackStatus,
+          printPendingEntries,
+          DEFAULT_ROLLBACK_CONFIG,
+        } = await import('./rollback.js');
+
+        // Load or create rollback store from state
+        const rollbackState = await loadState();
+        const rollbackStore = rollbackState.rollback
+          ? {
+              entries: rollbackState.rollback.entries,
+              config: {
+                enabled: rollbackState.rollback.enabled,
+                ttlMs: rollbackState.rollback.ttlMs,
+                maxEntries: rollbackState.rollback.maxEntries,
+                allowedOperations: DEFAULT_ROLLBACK_CONFIG.allowedOperations,
+              },
+              metrics: rollbackState.rollback.metrics,
+            }
+          : createRollbackStore();
+
+        if (rollbackAction === 'status') {
+          printRollbackStatus(rollbackStore);
+        } else if (rollbackAction === 'list') {
+          printPendingEntries(rollbackStore);
+        } else if (rollbackAction === 'exec' || rollbackAction === 'execute') {
+          const entryId = process.argv[4];
+          if (!entryId) {
+            console.log('Usage: rollback exec <entry-id>');
+            console.log('\nUse "rollback list" to see pending entries.');
+            break;
+          }
+
+          const result = executeRollback(rollbackStore, entryId, rollbackState);
+          if (result.success && result.compensation) {
+            // Apply compensation to state
+            const compensatedState = { ...rollbackState };
+            for (const [key, value] of Object.entries(result.compensation)) {
+              (compensatedState as Record<string, unknown>)[key] = value;
+            }
+
+            // Save state
+            compensatedState.rollback = {
+              enabled: rollbackStore.config.enabled,
+              ttlMs: rollbackStore.config.ttlMs,
+              maxEntries: rollbackStore.config.maxEntries,
+              entries: rollbackStore.entries,
+              metrics: rollbackStore.metrics,
+            };
+
+            await saveState(compensatedState);
+
+            // Log event
+            await appendEvent(BASE_DIR, 'ROLLBACK_EXECUTED', {
+              entryId,
+              operationId: result.entry?.operationId,
+              compensation: result.compensation,
+            });
+
+            console.log(`✓ ${result.message}`);
+            console.log(`  Compensation applied: ${JSON.stringify(result.compensation)}`);
+          } else {
+            console.log(`✗ ${result.message}`);
+            if (result.entry?.blockedReason) {
+              console.log(`  Reason: ${result.entry.blockedReason}`);
+
+              // Log blocked event
+              await appendEvent(BASE_DIR, 'ROLLBACK_BLOCKED', {
+                entryId,
+                operationId: result.entry?.operationId,
+                reason: result.entry?.blockedReason,
+              });
+            }
+          }
+        } else {
+          console.log(`
+Rollback Commands:
+  rollback status   - Show rollback status and metrics
+  rollback list     - List pending rollback entries
+  rollback exec <id> - Execute rollback for entry
+
+Rollback allows undoing state-modifying operations within a time window.
+Only certain operations are reversible (e.g., memory.add, memory.clear).
+          `);
+        }
+        break;
+
       case 'api':
         // v1.9.x: REST API for observation
         const apiAction = process.argv[3];
@@ -1755,6 +1849,7 @@ Commands:
   agent       Internal agent (Phase 8)
   coupling    Coupling protocol (Phase 8f)
   mcp         MCP server for LLM integration (Category 3)
+  rollback    Reversible operation rollback (Category 3)
   api         REST API for observation (v1.9.x)
   log         Configure logging levels
   replay      Replay events and show state
