@@ -1665,8 +1665,9 @@ Levels: debug, info, warn, error, silent
 
       case 'mcp':
         // Category 3: MCP Server for structural coupling
+        // NOTE: No stdout before MCP starts - breaks JSON-RPC protocol
         const { startMCPServer } = await import('./mcp/server.js');
-        console.log('Starting Entity MCP Server...');
+        console.error('Starting Entity MCP Server...');
         await startMCPServer();
         break;
 
