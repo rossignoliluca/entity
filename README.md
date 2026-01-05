@@ -1,8 +1,8 @@
 # Entity System
 
-**Implementation v2.0.0** | Core Spec AES-SPEC-001 v2.0.0
+**Implementation v2.1.0** | Core Spec AES-SPEC-001 v2.0.0 | Species 2: AES-SPEC-002 v1.0.0
 
-An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, and internal agency.
+An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, internal agency, and temporal presence.
 
 ## Overview
 
@@ -14,6 +14,7 @@ Entity is a self-maintaining system that preserves its organizational identity t
 - **Energy Lifecycle**: Decay/recharge with dormant state protection
 - **Internal Agency**: Autonomous sense-making with constitutional priorities
 - **Active Inference**: Minimizes Expected Free Energy for action selection
+- **Temporal Presence**: Species 2 SSE channel for continuous presence (AES-SPEC-002)
 
 ## Requirements
 
@@ -74,6 +75,15 @@ npm run build
 - **Prohibited**: Persuasion, deception, autonomy expansion, coercive coupling
 - **Boundary**: Any system requiring these = new species (AES-SPEC-002)
 
+### Species 2: Temporal Presence (AES-SPEC-002)
+- **SSE Channel**: Server-Sent Events for unidirectional signaling
+- **Signal Types**: STATUS_CHANGED, ENERGY_WARNING, COUPLING_REQUESTED, HEARTBEAT
+- **PRESENCE_SILENCE**: Default state (no signal if nothing changed)
+- **Rate Limits**: Max 1 signal/min, heartbeat max 1/5 min
+- **REST Dominance**: No heartbeat at attractor quiescence (V=0, ε≤ε_min)
+- **INV-006**: Signal integrity with audit trail
+- **Annex K**: Presence-specific non-goals (no dialogue, no attention seeking)
+
 ## CLI Commands
 
 ```bash
@@ -100,6 +110,7 @@ node dist/src/index.js <command>
 | `mcp` | Start MCP server for LLM integration |
 | `rollback status/list/exec` | Operation rollback |
 | `api start` | REST API + dashboard (http://localhost:3000/dashboard) |
+| `presence start` | SSE presence channel (Species 2) |
 | `log level` | Configure logging |
 
 ## Invariants
@@ -111,6 +122,7 @@ node dist/src/index.js <command>
 | INV-003 | Chain Integrity | Truncate corrupted |
 | INV-004 | Lyapunov Monotone | Reset V |
 | INV-005 | Energy Viable | Dormant state |
+| INV-006 | Signal Integrity (v2.x) | Channel silence 10 min |
 
 ## Internal Agency (Phase 8)
 
@@ -156,6 +168,10 @@ entity/
 │   │   └── server.ts      # REST API
 │   ├── dashboard/
 │   │   └── index.html     # Read-only dashboard
+│   ├── presence/
+│   │   ├── types.ts       # Signal types (AES-SPEC-002)
+│   │   ├── guard.ts       # Rate limits, REST dominance
+│   │   └── server.ts      # SSE server
 │   └── daemon/
 │       ├── index.ts       # Daemon core
 │       ├── agent.ts       # Internal agency
@@ -221,6 +237,58 @@ Features:
 
 Single HTML file, zero dependencies, dark theme, 3-second auto-refresh.
 
+## Presence Server (Species 2)
+
+SSE channel for temporal presence (AES-SPEC-002):
+
+```bash
+# Start presence server
+node dist/src/index.js presence start [port]
+
+# Default port: 3001
+```
+
+**Endpoints:**
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/presence/stream` | SSE channel (text/event-stream) |
+| POST | `/presence/grant` | Coupling grant endpoint |
+| GET | `/presence/status` | Channel status |
+
+**Signal Types:**
+- `STATUS_CHANGED` - State transition notification
+- `ENERGY_WARNING` - Energy below threshold
+- `COUPLING_REQUESTED` - Agent requested coupling
+- `HEARTBEAT` - Connection alive (max 1/5 min)
+
+**Payload Format:**
+```json
+{
+  "type": "STATUS_CHANGED",
+  "ts": "2026-01-05T20:28:56.468Z",
+  "seq": 1,
+  "org_hash": "bd5b24db...",
+  "state": {"energy": 0.45, "V": 0, "integrity": "5/5"},
+  "coupling": {"pending": 0, "urgent": 0}
+}
+```
+
+**Hard Rules:**
+- PRESENCE_SILENCE default (no signal if nothing changed)
+- Rate limit: max 1 signal/min (CONSTRAINT-001)
+- REST dominance: no heartbeat at V=0, ε=0 (CONSTRAINT-003)
+- Audit: PRESENCE_SIGNAL_EMITTED logged to Merkle chain (INV-006)
+
+**Test Client:**
+```bash
+# Using curl
+curl -N http://localhost:3001/presence/stream
+
+# Or the built-in test client
+npx ts-node src/presence/test-client.ts
+```
+
 ## Scientific Foundations
 
 - **Autopoiesis**: Maturana & Varela (1980)
@@ -237,17 +305,17 @@ Single HTML file, zero dependencies, dark theme, 3-second auto-refresh.
 
 ```bash
 npm run test
-# 434 tests passing
+# 588 tests passing
 ```
 
 ## Statistics
 
 | Metric | Value |
 |--------|-------|
-| Events | 1051 |
+| Events | 1053 |
 | Sessions | 65 |
-| Tests | 547 |
-| Version | v2.0.0 |
+| Tests | 588 |
+| Version | v2.1.0 |
 
 ## License
 
@@ -259,4 +327,4 @@ Luca Rossignoli
 
 ---
 
-*Built with TypeScript, conforming to ISO AES-SPEC-001*
+*Built with TypeScript, conforming to ISO AES-SPEC-001 (Species 1) and AES-SPEC-002 (Species 2)*
