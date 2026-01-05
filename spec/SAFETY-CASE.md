@@ -3,7 +3,7 @@
 ## Autopoietic Entity System (AES-SPEC-001)
 
 **Version:** 1.0.0
-**Specification:** AES-SPEC-001 v1.9.2
+**Specification:** AES-SPEC-001 v2.0.0
 **Date:** 2026-01-05
 **Classification:** Normative
 
