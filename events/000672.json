@@ -1,0 +1,13 @@
+{
+  "seq": 672,
+  "type": "SNAPSHOT",
+  "timestamp": "2026-01-05T07:56:43.718Z",
+  "data": {
+    "snapshot_id": "snap-2026-01-05T07-56-43",
+    "event_seq": 671,
+    "state_hash": "4a8162bca299aa45cc68378d89f0f50df589818a47a9905692467ec96691ce3f",
+    "description": "Daemon auto-snapshot #65"
+  },
+  "prev_hash": "97b2f2155751d52cbaef8895e634b16c4cccb6b420a79aae9e1c1734975e45af",
+  "hash": "fa0f40bb82580ebe661d8b278500d6e1da56c11827be3884884a9e94e223830d"
+}

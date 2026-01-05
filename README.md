@@ -1,6 +1,6 @@
 # Entity System
 
-**AES-SPEC-001 v1.8.0** - Autopoietic Entity System
+**Implementation v1.9.2** | Core Spec AES-SPEC-001 v1.8.0-LTS
 
 An ISO-compliant implementation of an autopoietic entity with event sourcing, Merkle chain integrity, Lyapunov stability, and internal agency.
 
@@ -185,10 +185,10 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 520+ |
-| Sessions | 49 |
-| Tests | 434 |
-| Version | v1.8.0 |
+| Events | 690+ |
+| Sessions | 56 |
+| Tests | 460 |
+| Version | v1.9.2 |
 
 ## License
 
