@@ -310,10 +310,13 @@ These don't touch core — they build around it.
 
 ## Category 5: Rigor & Defense
 
-- [ ] **TLA+ specification**: Formal verification of 5 invariants, quarantine FSM, coupling FSM
+- [x] **TLA+ specification**: Formal verification of 5 invariants, quarantine FSM, coupling FSM
+  - `formal/Entity.tla`: INV-001..005, state transitions, Lyapunov monotone
+  - `formal/Quarantine.tla`: Sigillo 1 FSM, zero tolerance
+  - `formal/Coupling.tla`: AXM-007, request lifecycle
 - [ ] **Safety case dossier**: Hazard analysis, mitigation evidence, ISO-style
 
-**Saturation:** 2 artifacts, then CLOSED
+**Saturation:** 1/2 artifacts
 
 ---
 
