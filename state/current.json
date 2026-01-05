@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T08:35:29.436Z",
+  "updated": "2026-01-05T08:36:08.195Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.3849999999999999,
+    "current": 0.3819999999999999,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,8 +24,8 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 716,
-    "last_event_hash": "54ab45778534cdbd47de4bd47904c33f6343bac08e87e84694a445a9a2bb5858",
+    "event_count": 717,
+    "last_event_hash": "410b2cda64d90009bfe9f449e8fae53c38aff98c3800e190c2368dc0d62c1ab7",
     "last_snapshot_at": "2026-01-05T07:56:43.651Z"
   },
   "session": {
@@ -124,13 +124,13 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T08:35:29.434Z",
+    "lastCycle": "2026-01-05T08:36:08.194Z",
     "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 80,
-      "growth": 233,
+      "growth": 234,
       "rest": 0
     },
     "totalEnergyConsumed": 0.09600000000000004
