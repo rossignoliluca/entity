@@ -1,0 +1,54 @@
+{
+  "seq": 939,
+  "type": "AGENT_WAKE",
+  "timestamp": "2026-01-05T18:31:06.237Z",
+  "data": {
+    "config": {
+      "enabled": true,
+      "decisionInterval": 60000,
+      "feelingCost": 0.001,
+      "activeWhenCoupled": false,
+      "restThreshold": 0.001,
+      "urgencyThreshold": 0.15,
+      "criticalThreshold": 0.05,
+      "surpriseEpsilon": 0.001,
+      "ultrastabilityEnabled": true,
+      "adaptationInterval": 10,
+      "violationWindowSize": 50,
+      "adaptationRate": 0.1,
+      "minDecisionInterval": 10000,
+      "maxDecisionInterval": 300000,
+      "minRestThreshold": 0.0001,
+      "maxAdaptationsPerWindow": 5,
+      "activeInferenceEnabled": true,
+      "activeInferenceConfig": {},
+      "cycleMemoryEnabled": true,
+      "cycleMemoryConfig": {},
+      "selfProductionEnabled": true,
+      "selfProductionThreshold": 10,
+      "selfProductionCooldown": 50,
+      "quarantineConfig": {
+        "quarantineCycles": 10,
+        "minTrialUses": 5,
+        "maxTrialBlocks": 0,
+        "maxVDeltaPerUse": 0,
+        "maxSurpriseDeltaPerUse": 0.01
+      },
+      "couplingEnabled": true,
+      "couplingConfig": {
+        "maxPending": 5,
+        "dedupeWindowMs": 1800000,
+        "cooldownMs": 300000,
+        "historySize": 20,
+        "ttl": {
+          "urgent": 3600000,
+          "normal": 14400000,
+          "low": 86400000
+        }
+      }
+    },
+    "reason": "Agent awakened to begin sense-making"
+  },
+  "prev_hash": "8c8ef303306c4eb5260b1205f968ccfa37eefe6db4666ba7bdf6f3678d57da22",
+  "hash": "1d5c0a79fa720711439eac7494c4fe81dbc6571e4029a20223c17c421fa36609"
+}

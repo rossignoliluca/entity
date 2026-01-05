@@ -1,0 +1,32 @@
+{
+  "seq": 867,
+  "type": "AGENT_ULTRASTABILITY",
+  "timestamp": "2026-01-05T18:29:00.604Z",
+  "data": {
+    "cycle": 420,
+    "before": {
+      "interval": 10000,
+      "criticalThreshold": 0.04518439453125,
+      "urgencyThreshold": 0.13555318359375,
+      "restThreshold": 0.0001
+    },
+    "after": {
+      "interval": 10000,
+      "criticalThreshold": 0.04518439453125,
+      "urgencyThreshold": 0.13555318359375,
+      "restThreshold": 0.0001
+    },
+    "reason": "Stability issues (10/10); Integrity issues (5) - requires attention",
+    "violationCounts": {
+      "energy": 0,
+      "stability": 10,
+      "integrity": 5,
+      "total": 10
+    },
+    "energyBefore": 0.3749999999999999,
+    "energyAfter": 0.3749999999999999,
+    "adaptationCount": 42
+  },
+  "prev_hash": "54bc0c80afff9765ee0ab50297e82893bbf03fc4e71cb5874dda34605648a877",
+  "hash": "640b35c7c57f319166fa518ddb2922ed9173209be00c02bf32b82a6d091f9a2a"
+}

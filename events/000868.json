@@ -1,0 +1,27 @@
+{
+  "seq": 868,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-05T18:29:10.711Z",
+  "data": {
+    "priority": "growth",
+    "action": "state.summary",
+    "reason": "Growth mode - AI selected: epistemic=0.025, pragmatic=0.414",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.3749999999999999,
+    "energyAfter": 0.3719999999999999,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "Summary generated",
+      "effects": {
+        "status": "nominal",
+        "energy": 0.3749999999999999,
+        "events": 867,
+        "sessions": 60,
+        "coupled": false
+      }
+    }
+  },
+  "prev_hash": "640b35c7c57f319166fa518ddb2922ed9173209be00c02bf32b82a6d091f9a2a",
+  "hash": "902adec6a63bb2f01f7c025c52c965c7c0412003589db2cc830859d1ab4f8e57"
+}

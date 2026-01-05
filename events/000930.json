@@ -1,0 +1,27 @@
+{
+  "seq": 930,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-05T18:30:20.736Z",
+  "data": {
+    "priority": "stability",
+    "action": "state.summary",
+    "reason": "Stability (V=0.1600) - AI selected: EFE=0.1879",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.5,
+    "energyAfter": 0.497,
+    "executed": true,
+    "result": {
+      "success": true,
+      "message": "Summary generated",
+      "effects": {
+        "status": "nominal",
+        "energy": 0.5,
+        "events": 925,
+        "sessions": 60,
+        "coupled": false
+      }
+    }
+  },
+  "prev_hash": "d2af3ffd586f653e575574843f766e65c9a198e0e14c68592ede73732768ae80",
+  "hash": "6a712a8ac57b1ac3218eeba50924998a0d9ddfd63507197df6b54856d4db91aa"
+}

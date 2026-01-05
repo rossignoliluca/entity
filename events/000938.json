@@ -1,0 +1,546 @@
+{
+  "seq": 938,
+  "type": "AGENT_SLEEP",
+  "timestamp": "2026-01-05T18:30:29.996Z",
+  "data": {
+    "stats": {
+      "cycleCount": 428,
+      "responsesTotal": 425,
+      "responsesByPriority": {
+        "survival": 0,
+        "integrity": 0,
+        "stability": 13,
+        "growth": 370,
+        "rest": 42
+      },
+      "actionsExecuted": 180,
+      "actionsBlocked": 0,
+      "restCycles": 245,
+      "totalEnergyConsumed": 0.7850000000000006,
+      "startedAt": "2026-01-05T00:33:29.561Z",
+      "lastCycle": "2026-01-05T18:30:20.570Z",
+      "ultrastability": {
+        "enabled": true,
+        "adaptationCount": 42,
+        "lastAdaptation": "2026-01-05T18:29:00.561Z",
+        "violations": [
+          {
+            "timestamp": "2026-01-05T06:10:11.301Z",
+            "cycle": 42,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.333,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T06:10:11.301Z",
+            "cycle": 42,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.333,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T07:12:14.783Z",
+            "cycle": 46,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T07:12:14.783Z",
+            "cycle": 46,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T07:43:49.437Z",
+            "cycle": 57,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.47,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T07:43:49.437Z",
+            "cycle": 57,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.47,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T08:25:19.580Z",
+            "cycle": 88,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.42999999999999994,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T08:25:19.580Z",
+            "cycle": 88,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.42999999999999994,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T09:38:23.262Z",
+            "cycle": 155,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.2819999999999998,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T09:38:23.263Z",
+            "cycle": 155,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.2819999999999998,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:00.561Z",
+            "cycle": 420,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.3779999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:00.561Z",
+            "cycle": 420,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.3779999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:20.773Z",
+            "cycle": 422,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.3719999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:20.773Z",
+            "cycle": 422,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.3719999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:30.777Z",
+            "cycle": 423,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.3689999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:30.778Z",
+            "cycle": 423,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.3689999999999999,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:40.744Z",
+            "cycle": 424,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.5,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:40.744Z",
+            "cycle": 424,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.5,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:50.785Z",
+            "cycle": 425,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.497,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:29:50.785Z",
+            "cycle": 425,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.497,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:00.779Z",
+            "cycle": 426,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:00.779Z",
+            "cycle": 426,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.494,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:10.754Z",
+            "cycle": 427,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:10.754Z",
+            "cycle": 427,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.491,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:20.783Z",
+            "cycle": 428,
+            "invariant": "INV-*",
+            "feeling": {
+              "energy": 0.5,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          },
+          {
+            "timestamp": "2026-01-05T18:30:20.783Z",
+            "cycle": 428,
+            "invariant": "stability",
+            "feeling": {
+              "energy": 0.5,
+              "lyapunovV": 0.16,
+              "surprise": 0.10400000000000001
+            },
+            "recovered": true
+          }
+        ],
+        "parameterHistory": [
+          {
+            "timestamp": "2026-01-05T16:40:36.459Z",
+            "cycle": 230,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001350851717672993,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T16:42:16.567Z",
+            "cycle": 240,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.00012157665459056936,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T16:43:56.670Z",
+            "cycle": 250,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.00010941898913151243,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T16:50:25.073Z",
+            "cycle": 260,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:08:43.833Z",
+            "cycle": 270,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:10:23.936Z",
+            "cycle": 280,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:13:40.672Z",
+            "cycle": 290,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:15:20.792Z",
+            "cycle": 300,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:20:05.110Z",
+            "cycle": 310,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:25:32.896Z",
+            "cycle": 320,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T17:34:52.843Z",
+            "cycle": 330,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:09:08.707Z",
+            "cycle": 340,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:17:08.445Z",
+            "cycle": 350,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:18:59.710Z",
+            "cycle": 360,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:20:39.833Z",
+            "cycle": 370,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:22:19.954Z",
+            "cycle": 380,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:24:00.076Z",
+            "cycle": 390,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:25:40.211Z",
+            "cycle": 400,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:27:20.325Z",
+            "cycle": 410,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          },
+          {
+            "timestamp": "2026-01-05T18:29:00.561Z",
+            "cycle": 420,
+            "criticalThreshold": 0.04518439453125,
+            "urgencyThreshold": 0.13555318359375,
+            "restThreshold": 0.0001,
+            "decisionInterval": 10000,
+            "reason": "Stability issues (10/10); Integrity issues (5) - requires attention"
+          }
+        ],
+        "violationRate": 0.32,
+        "stabilityScore": 0.6799999999999999,
+        "adaptiveParameters": {
+          "criticalThreshold": 0.04518439453125,
+          "urgencyThreshold": 0.13555318359375,
+          "restThreshold": 0.0001,
+          "decisionInterval": 10000
+        }
+      },
+      "selfProduction": {
+        "enabled": true,
+        "operationsCreated": 8,
+        "lastProductionCycle": 415,
+        "actionUsageCount": {
+          "state.summary": 180
+        },
+        "createdOperations": [
+          "self.state_summary_v1",
+          "self.state_summary_v2",
+          "self.state_summary_v3",
+          "self.state_summary_v4",
+          "self.state_summary_v5",
+          "self.state_summary_v6",
+          "self.state_summary_v7",
+          "self.state_summary_v8"
+        ]
+      },
+      "coupling": {
+        "blocksInWindow": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "deprecationsInWindow": 0,
+        "ambiguityHighCycles": 0,
+        "lastAmbiguity": 0.050000000000000044,
+        "requestsCreated": 13
+      }
+    },
+    "reason": "Agent entering sleep state"
+  },
+  "prev_hash": "e4e52c29a8bab849c184875c95a719d25be43acc0011501cc4a5f32fabb6fc18",
+  "hash": "8c8ef303306c4eb5260b1205f968ccfa37eefe6db4666ba7bdf6f3678d57da22"
+}

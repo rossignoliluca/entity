@@ -1,0 +1,20 @@
+{
+  "seq": 850,
+  "type": "AGENT_RESPONSE",
+  "timestamp": "2026-01-05T18:19:49.866Z",
+  "data": {
+    "priority": "growth",
+    "action": "meta.define",
+    "reason": "Self-production: created self.state_summary_v7 (state.summary used 171x)",
+    "constitutionalCheck": "passed",
+    "energyBefore": 0.32799999999999985,
+    "energyAfter": 0.32299999999999984,
+    "executed": true,
+    "result": {
+      "success": true,
+      "operationId": "self.state_summary_v7"
+    }
+  },
+  "prev_hash": "87a020ee517829beb38b3e3d48be36e5d2a9f5c66cac49190cf74059c269b600",
+  "hash": "ffcc86afc3189574ea85821f62fbc5cbda02d2d70d6c97793a7df72a0eac74c9"
+}

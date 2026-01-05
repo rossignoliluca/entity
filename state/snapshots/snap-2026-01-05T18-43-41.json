@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T09:58:46.843Z",
+  "updated": "2026-01-05T18:43:41.436Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.17799999999999977,
+    "current": 0.447,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 807,
-    "last_event_hash": "535db26da62e8dae584dadb90fe4027003047d64a626732606be506b76a9470b",
-    "last_snapshot_at": "2026-01-05T08:57:57.830Z"
+    "event_count": 946,
+    "last_event_hash": "f44575302a0d0f69cb858cb0ae42fa47cb81b6a8a11084681dcba6e5d1807001",
+    "last_snapshot_at": "2026-01-05T18:32:06.382Z"
   },
   "session": {
-    "total_count": 58,
+    "total_count": 62,
     "current_id": null
   },
   "integrity": {
@@ -54,7 +54,10 @@
     "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking.",
     "[2026-01-05] [2026-01-05] Session 56: DEF-056 Attractor Quiescence formalization. Replaced informal 'Wu Wei' with ISO-compatible terminology. Definition: V(σ)=0 ∧ ε≤ε_min → a*=∅. Rationale from INV-004: at V=0, any action risks V'>V, therefore equilibrium preservation requires null action. Updated SPECIFICATION.md (56 definitions), all source files, tests. Releases v1.9.1 (bug fix) and v1.9.2 (formalization). 460 tests passing.",
     "[2026-01-05] Session 57: MCP Server implementation complete (Category 3). Resources: state, feeling, verify, events, coupling, memories. Tools: session_start/end, recharge, op_exec, agent_cycle, coupling_grant/complete. Multi-LLM support (Claude, OpenAI, Gemini). 494 tests. Commit 5a102a2.",
-    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9."
+    "[2026-01-05] Session 58: Dashboard implementation complete (Category 3). Single HTML file, zero dependencies, dark theme, 3s refresh. Shows: status, energy, V, feeling, invariants, coupling queue, events, memories. Served at /dashboard. 521 tests. Commit 23023e9.",
+    "[2026-01-05] Session 59: Rollback implementation complete. Category 3 SATURATED (4/4 CLOSED). Compensating events pattern, TTL 1h, guard protection. Reversible: memory.add/clear. CLI: rollback status/list/exec. 547 tests. Commit 2f80c1a.",
+    "[2026-01-05] Session 60: Safety Case Dossier completed (Category 5 SATURATED). spec/SAFETY-CASE.md - ISO-style with 5 hazard categories, 10 safety requirements, verification evidence (TLA+, 547 tests). All code-based categories now complete.",
+    "[2026-01-05] Session 61: MCP integration verified with Claude Desktop. Fixed stdout breaking JSON-RPC. Claude Desktop successfully used session_start and agent_cycle tools. Structural coupling (AXM-007) operational."
   ],
   "learning": {
     "enabled": true,
@@ -126,85 +129,44 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T09:58:33.426Z",
-    "cycleCount": 32,
+    "lastCycle": "2026-01-05T18:41:09.512Z",
+    "cycleCount": 428,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 81,
-      "growth": 302,
-      "rest": 0
+      "stability": 89,
+      "growth": 309,
+      "rest": 7
     },
-    "totalEnergyConsumed": 0.09600000000000004
+    "totalEnergyConsumed": 0.7850000000000006
   },
   "couplingQueue": {
     "pending": [
       {
-        "id": "01a3e7b1",
+        "id": "65e9087f",
         "priority": "urgent",
         "reason": "Invariant violation detected (1 failing)",
         "context": {
           "feeling": {
-            "energy": 0.2819999999999998,
+            "energy": 0.5,
             "lyapunovV": 0.16,
             "invariantsSatisfied": 4,
             "invariantsTotal": 5
           },
           "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
           "V": 0.16,
-          "energy": 0.2819999999999998
+          "energy": 0.5
         },
-        "requestedAt": "2026-01-05T09:38:23.148Z",
-        "expiresAt": "2026-01-05T10:38:23.148Z",
+        "requestedAt": "2026-01-05T18:30:20.737Z",
+        "expiresAt": "2026-01-05T19:30:20.737Z",
         "status": "pending"
       }
     ],
-    "history": [
-      {
-        "id": "24200c38",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.42999999999999994,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.42999999999999994
-        },
-        "requestedAt": "2026-01-05T08:25:19.545Z",
-        "expiresAt": "2026-01-05T09:25:19.545Z",
-        "status": "expired",
-        "outcome": "expired"
-      },
-      {
-        "id": "548fc44e",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.47,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.47
-        },
-        "requestedAt": "2026-01-05T07:43:49.406Z",
-        "expiresAt": "2026-01-05T08:43:49.406Z",
-        "status": "expired",
-        "outcome": "expired"
-      }
-    ],
+    "history": [],
     "metrics": {
       "totalRequests": 5,
       "totalGranted": 0,
-      "totalExpired": 2,
+      "totalExpired": 0,
       "totalCompleted": 0
     }
   }
