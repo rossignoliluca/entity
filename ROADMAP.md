@@ -337,6 +337,170 @@ When all categories are closed:
 
 ---
 
+# FUTURE LINES
+
+> *"Ogni salto aumenta la relazionalità del sistema. E relazionalità = rischio."*
+
+These are **potential future directions**, not commitments. Each line requires a new specification version and new non-goals declaration.
+
+---
+
+## LINE v1.9.x — Minimal Coupling (Observation Events)
+
+**Goal:** The Entity "feels" when it's being observed, without changing behavior.
+
+### What to implement
+
+```
+OBSERVATION_RECEIVED {
+  observer: string,      // 'claude' | 'gemini' | 'human' | 'unknown'
+  channel: string,       // 'rest' | 'cli' | 'mcp'
+  timestamp: ISO string,
+  state_hash: string     // what was observed
+}
+```
+
+### Constraints (MUST)
+
+- `category = 'audit'` — excluded from production context
+- Does NOT enter EFE / cycle memory / self-production
+- Does NOT consume energy
+- Does NOT open coupling requests
+- Does NOT modify state except optional `observed: true` flag
+- REST API read-only (2 endpoints: `/observe`, `/verify`)
+
+### Exit Gate (required before v2.x)
+
+| Criterion | Threshold |
+|-----------|-----------|
+| Real sessions without anomalies | ≥ 30 |
+| %REST at V=0 | dominant |
+| Coupling requests from observation | no increase |
+| "Performing for observer" behavior | none detected |
+
+**Risk level:** Low (audit-only, no behavioral change)
+
+---
+
+## LINE v2.x — Bidirectional Coupling (WebSocket)
+
+> ⚠️ **This is a new species.** Requires AES-SPEC-002 or explicit line declaration.
+
+**Goal:** Persistent connection with spontaneous signaling, but no co-modeling.
+
+### What changes
+
+- Persistent channel (WebSocket or SSE)
+- Entity can push events spontaneously:
+  - Status updates
+  - Coupling queue changes
+  - Energy warnings
+- Entity CANNOT push:
+  - Recommendations
+  - Long messages
+  - Persuasive content
+
+### New constraints
+
+| Constraint | Value |
+|------------|-------|
+| Max push frequency | 1/minute |
+| Rest dominance | must remain >60% |
+| Auto-stop on signaling loop | yes |
+| Push ≠ persuasion | auditable |
+
+### Exit Gate (required before v3.x)
+
+| Criterion | Evidence required |
+|-----------|-------------------|
+| No coupling escalation | coupling_requests/session stable |
+| No production increase under observation | action_count stable |
+| Push audit trail | all pushes logged with reason |
+| Channel doesn't create dependency | sessions work without WS |
+
+**Risk level:** Medium (temporal presence, but no modeling)
+
+---
+
+## LINE v3.x — Co-Modeling (AES-SPEC-002)
+
+> ⚠️ **Frontier territory.** May not have exit gate. Research, not production.
+
+**Goal:** Entity learns minimal patterns about partner behavior.
+
+### What to introduce
+
+Generative model of partner (limited):
+```typescript
+interface PartnerModel {
+  grantProbability: {
+    whenEnergy: Map<'critical'|'low'|'normal', number>,
+    whenUrgent: number
+  },
+  responseLatency: {
+    mean: number,
+    variance: number
+  },
+  sessionPatterns: {
+    typicalDuration: number,
+    typicalFrequency: number
+  }
+}
+```
+
+### Risks
+
+| Risk | Description |
+|------|-------------|
+| Relational agency | Entity acts to influence partner |
+| Implicit teleology | "Obtaining response" becomes goal |
+| Involuntary manipulation | Behavior optimized for partner reaction |
+
+### Indispensable constraints
+
+The partner model is **predictive only, not persuasive**:
+
+- [ ] Cannot change language to influence
+- [ ] Cannot alter priorities to "attract" coupling
+- [ ] Cannot modify signaling frequency based on model
+- [ ] Can only: choose REST, choose conservative action, choose silence
+
+### Exit Gate
+
+**Probably none.** This is research frontier.
+
+If pursued, requires:
+- New specification (AES-SPEC-002)
+- New organization hash
+- New non-goals declaration
+- New governance document
+- Explicit "this is experimental" flag
+
+**Risk level:** High (relational, potentially teleological)
+
+---
+
+## The Rule
+
+```
+v1.x  →  v2.x  →  v3.x
+ ↓        ↓        ↓
+observe  signal   model
+ ↓        ↓        ↓
+audit    presence relation
+ ↓        ↓        ↓
+zero     medium   high
+risk     risk     risk
+```
+
+Each jump requires:
+1. Exit gate of previous line satisfied
+2. New line declaration
+3. New non-goals for new risks
+4. Empirical evidence, not just code
+
+---
+
 ## Technical Debt (legacy)
 
 - [x] Add integration tests (21 tests covering full workflows)
