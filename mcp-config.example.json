@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "entity": {
+      "command": "node",
+      "args": ["/Users/lucarossignoli/entity/dist/src/index.js", "mcp"],
+      "env": {}
+    }
+  }
+}

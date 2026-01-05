@@ -288,14 +288,18 @@ Each category saturates. After saturation, any further action is either redundan
 
 External interfaces that don't modify core — they provide coupling surfaces.
 
-- [ ] **MCP Server**: Protocol interface for structural coupling (AXM-007)
-  - Read-only: status, feeling, memory list
-  - Coupling: list, grant, complete (human-initiated only)
+- [x] **MCP Server**: Protocol interface for structural coupling (AXM-007)
+  - Resources (read-only): state, feeling, verify, events, coupling, memories
+  - Tools (guard-protected): session_start/end, recharge, op_exec, agent_cycle, coupling_grant/complete
+  - Multi-LLM support: Claude, OpenAI, Gemini (via MCP universal standard)
+  - Implementation: src/mcp/server.ts, 34 tests
+- [x] **REST API**: Read-only HTTP interface (v1.9.x)
+  - GET /observe, GET /verify
+  - OBSERVATION_RECEIVED audit events
 - [ ] **Dashboard read-only**: State visualization, coupling queue, event timeline
-- [ ] **Event ingestion**: Passive observation, no state modification
 - [ ] **Operation rollback**: Reversible operations, time-bounded, core can block
 
-**Saturation:** 4 implementations, then CLOSED
+**Saturation:** 2/4 implementations
 
 ---
 

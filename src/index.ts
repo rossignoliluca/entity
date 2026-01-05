@@ -1663,6 +1663,13 @@ Levels: debug, info, warn, error, silent
         }
         break;
 
+      case 'mcp':
+        // Category 3: MCP Server for structural coupling
+        const { startMCPServer } = await import('./mcp/server.js');
+        console.log('Starting Entity MCP Server...');
+        await startMCPServer();
+        break;
+
       case 'api':
         // v1.9.x: REST API for observation
         const apiAction = process.argv[3];
@@ -1747,6 +1754,7 @@ Commands:
   daemon      Autonomous daemon mode (Phase 7b)
   agent       Internal agent (Phase 8)
   coupling    Coupling protocol (Phase 8f)
+  mcp         MCP server for LLM integration (Category 3)
   api         REST API for observation (v1.9.x)
   log         Configure logging levels
   replay      Replay events and show state

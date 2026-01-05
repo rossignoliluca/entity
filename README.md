@@ -97,6 +97,8 @@ node dist/src/index.js <command>
 | `daemon start/stop/status` | Autonomous mode |
 | `agent status/feeling/cycle` | Internal agency |
 | `coupling list/grant/complete` | Coupling protocol |
+| `mcp` | Start MCP server for LLM integration |
+| `api start` | REST API for observation |
 | `log level` | Configure logging |
 
 ## Invariants
@@ -147,6 +149,10 @@ entity/
 │   ├── coupling-protocol.ts # Agent-human signaling
 │   ├── logger.ts          # Logging system
 │   ├── state-manager.ts   # Concurrency handling
+│   ├── mcp/
+│   │   └── server.ts      # MCP server for LLMs
+│   ├── api/
+│   │   └── server.ts      # REST API
 │   └── daemon/
 │       ├── index.ts       # Daemon core
 │       ├── agent.ts       # Internal agency
@@ -161,6 +167,32 @@ entity/
 └── spec/
     └── SPECIFICATION.md   # ISO AES-SPEC-001
 ```
+
+## MCP Server (LLM Integration)
+
+Entity provides an MCP (Model Context Protocol) server for integration with LLMs:
+
+```bash
+# Start MCP server (stdio transport)
+node dist/src/index.js mcp
+```
+
+**Resources** (read-only):
+- `entity://state` - Current state summary
+- `entity://feeling` - Agent feeling
+- `entity://verify` - Invariant verification
+- `entity://events/recent` - Last 10 events
+- `entity://coupling` - Pending coupling requests
+- `entity://memories` - Important memories
+
+**Tools** (guard-protected):
+- `session_start/end` - Manage coupling sessions
+- `recharge` - Add energy (+0.10)
+- `op_exec` - Execute operations
+- `agent_cycle` - Force sense-making cycle
+- `coupling_grant/complete` - Manage coupling requests
+
+Compatible with: Claude, OpenAI, Gemini (via MCP universal standard)
 
 ## Scientific Foundations
 
@@ -185,9 +217,9 @@ npm run test
 
 | Metric | Value |
 |--------|-------|
-| Events | 690+ |
+| Events | 720+ |
 | Sessions | 56 |
-| Tests | 460 |
+| Tests | 494 |
 | Version | v1.9.2 |
 
 ## License
