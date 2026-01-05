@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T18:44:18.493Z",
+  "updated": "2026-01-05T18:55:01.225Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.445,
+    "current": 0.645,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,8 +24,8 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 948,
-    "last_event_hash": "436c95a076e0ab89e42f30fdeb0a92daf0da3b3ffe099179f445d72dd1c4eefe",
+    "event_count": 953,
+    "last_event_hash": "b7e410538e3f6178e37ff5c91ec06b40a623f19914987cb5e92212767583187e",
     "last_snapshot_at": "2026-01-05T18:43:41.482Z"
   },
   "session": {
@@ -129,19 +129,20 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T18:41:09.512Z",
+    "lastCycle": "2026-01-05T18:52:48.979Z",
     "cycleCount": 428,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 89,
       "growth": 309,
-      "rest": 7
+      "rest": 8
     },
     "totalEnergyConsumed": 0.7850000000000006
   },
   "couplingQueue": {
-    "pending": [
+    "pending": [],
+    "history": [
       {
         "id": "65e9087f",
         "priority": "urgent",
@@ -159,15 +160,22 @@
         },
         "requestedAt": "2026-01-05T18:30:20.737Z",
         "expiresAt": "2026-01-05T19:30:20.737Z",
-        "status": "pending"
+        "status": "completed",
+        "grantedAt": "2026-01-05T18:50:40.471Z",
+        "completedAt": "2026-01-05T18:50:40.652Z",
+        "outcome": "resolved",
+        "note": "INV-002 recovered via event replay, concurrency issue identified"
       }
     ],
-    "history": [],
     "metrics": {
       "totalRequests": 5,
-      "totalGranted": 0,
+      "totalGranted": 1,
       "totalExpired": 0,
-      "totalCompleted": 0
-    }
+      "totalCompleted": 1,
+      "avgTimeToGrant": 1219735,
+      "avgTimeToComplete": 182
+    },
+    "lastGrantedAt": "2026-01-05T18:50:40.471Z",
+    "cooldownUntil": "2026-01-05T18:55:40.472Z"
   }
 }

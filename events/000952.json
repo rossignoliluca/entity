@@ -1,0 +1,13 @@
+{
+  "seq": 952,
+  "type": "COUPLING_COMPLETED",
+  "timestamp": "2026-01-05T18:50:40.759Z",
+  "data": {
+    "requestId": "65e9087f",
+    "outcome": "resolved",
+    "note": "INV-002 recovered via event replay, concurrency issue identified",
+    "completedAt": "2026-01-05T18:50:40.652Z"
+  },
+  "prev_hash": "faab100146dcb419f055e35ac22d2d343279205cc7e563a36411c88c3bb4ac3e",
+  "hash": "219518434a9cbe28361504015959c878b5adfa01a6b68523e1114585ee2be73d"
+}

@@ -1,0 +1,13 @@
+{
+  "seq": 951,
+  "type": "COUPLING_GRANTED",
+  "timestamp": "2026-01-05T18:50:40.575Z",
+  "data": {
+    "requestId": "65e9087f",
+    "priority": "urgent",
+    "reason": "Invariant violation detected (1 failing)",
+    "grantedAt": "2026-01-05T18:50:40.471Z"
+  },
+  "prev_hash": "7bbdae93b13664e55b01f093166f9c6ea493b8c6e1651d3b7b45f170f4fa6d90",
+  "hash": "faab100146dcb419f055e35ac22d2d343279205cc7e563a36411c88c3bb4ac3e"
+}
