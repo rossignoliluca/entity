@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T23:29:16.588Z",
+  "updated": "2026-01-05T02:34:12.489Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.39300000000000007,
+    "current": 0.36000000000000004,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 532,
-    "last_event_hash": "4290801611ba9d8c51ea0f2be718bd165b4d38e6cc05e56c3260b6a4ab597376",
-    "last_snapshot_at": "2026-01-04T23:22:54.045Z"
+    "event_count": 618,
+    "last_event_hash": "c6b93ea33d9cdb55cebac5b17b322f839012904d330deac3abae68b3c1c41507",
+    "last_snapshot_at": "2026-01-05T01:49:06.693Z"
   },
   "session": {
-    "total_count": 52,
+    "total_count": 55,
     "current_id": null
   },
   "integrity": {
@@ -48,7 +48,10 @@
     "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0",
     "[2026-01-04] Session 50 milestone: v1.8.0 complete. All 8 phases + Annex H done. 434 tests, 520+ events. Coupling protocol production-ready (TTL+cleanup, cooldown verified). Technical debt only: undo/rollback, daemon errors, performance, atomic cycles.",
     "[2026-01-04] Session 51: v1.8.0-LTS tagged. Core FROZEN. Category 1 SATURATED (CORE-FROZEN.md, ANNEX-I Non-Goals, ANNEX-J Failure Modes). Any core change = new species. Peripheral can evolve (MCP, dashboard, CLI).",
-    "[2026-01-04] Session 52: STOP-CRITERION defined. Construction complete. Categories 1, 4, 6 SATURATED. Core frozen. The answer is: NOW. Creativity moves from construction to use."
+    "[2026-01-04] Session 52: STOP-CRITERION defined. Construction complete. Categories 1, 4, 6 SATURATED. Core frozen. The answer is: NOW. Creativity moves from construction to use.",
+    "[2026-01-05] FUTURE LINES roadmap documented: v1.9.x (observation events, audit-only, low risk) → v2.x (WebSocket bidirectional, new species, medium risk) → v3.x (co-modeling, AES-SPEC-002, frontier). Each line requires exit gate + evidence. Rule: relationality = risk.",
+    "[2026-01-05] v1.9.0 released: REST API for observation events. GET /observe (state+feeling), GET /verify (invariants). OBSERVATION_RECEIVED audit-only events. Exit gate: 30+ sessions, no drift from observation.",
+    "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking."
   ],
   "learning": {
     "enabled": true,
@@ -119,16 +122,16 @@
   },
   "agent": {
     "enabled": true,
-    "awake": false,
-    "lastCycle": "2026-01-04T22:14:29.750Z",
-    "cycleCount": 1,
+    "awake": true,
+    "lastCycle": "2026-01-05T02:34:12.488Z",
+    "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 76,
-      "growth": 102,
+      "growth": 159,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.003
+    "totalEnergyConsumed": 0.09600000000000004
   }
 }

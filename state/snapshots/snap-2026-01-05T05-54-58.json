@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-04T22:42:01.347Z",
+  "updated": "2026-01-05T05:43:02.966Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.449,
+    "current": 0.333,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 519,
-    "last_event_hash": "7fe1d44c814580d174efc6fd3e740bd32b88e3ff2339007380e923c1ce46ca2a",
-    "last_snapshot_at": "2026-01-04T22:19:09.307Z"
+    "event_count": 633,
+    "last_event_hash": "e480dc3fb901665a30b00eb3ed1af5f7ee2f53a2b7e2f01ce95664bf762a0ef1",
+    "last_snapshot_at": "2026-01-05T04:53:58.647Z"
   },
   "session": {
-    "total_count": 49,
+    "total_count": 55,
     "current_id": null
   },
   "integrity": {
@@ -45,7 +45,13 @@
     "[2026-01-04] Phase 8d Cycle Memory completed - agent learns from past cycles, priority-weighted effectiveness, pattern detection. Release v1.6.0",
     "[2026-01-04] Annex H: Self-Production Safety Sigilli added to spec. Organization hash updated to 078e1732561ad5a8...",
     "[2026-01-04] Annex H: 3 Sigilli hardening (v1.7.2) - Quarantine Gate (TRIAL invisible to policy), Zero tolerance spike (maxVDelta), Context derived from state",
-    "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0"
+    "[2026-01-04] Phase 8f Structural Coupling Protocol complete - Non-coercive signaling (agent requests, human grants). Trigger rules: urgent (violations/critical/blocks), normal (deprecations), low (epistemic uncertainty). Anti-spam: TTL, cap=5, dedup, cooldown. Release v1.8.0",
+    "[2026-01-04] Session 50 milestone: v1.8.0 complete. All 8 phases + Annex H done. 434 tests, 520+ events. Coupling protocol production-ready (TTL+cleanup, cooldown verified). Technical debt only: undo/rollback, daemon errors, performance, atomic cycles.",
+    "[2026-01-04] Session 51: v1.8.0-LTS tagged. Core FROZEN. Category 1 SATURATED (CORE-FROZEN.md, ANNEX-I Non-Goals, ANNEX-J Failure Modes). Any core change = new species. Peripheral can evolve (MCP, dashboard, CLI).",
+    "[2026-01-04] Session 52: STOP-CRITERION defined. Construction complete. Categories 1, 4, 6 SATURATED. Core frozen. The answer is: NOW. Creativity moves from construction to use.",
+    "[2026-01-05] FUTURE LINES roadmap documented: v1.9.x (observation events, audit-only, low risk) → v2.x (WebSocket bidirectional, new species, medium risk) → v3.x (co-modeling, AES-SPEC-002, frontier). Each line requires exit gate + evidence. Rule: relationality = risk.",
+    "[2026-01-05] v1.9.0 released: REST API for observation events. GET /observe (state+feeling), GET /verify (invariants). OBSERVATION_RECEIVED audit-only events. Exit gate: 30+ sessions, no drift from observation.",
+    "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking."
   ],
   "learning": {
     "enabled": true,
@@ -116,16 +122,16 @@
   },
   "agent": {
     "enabled": true,
-    "awake": false,
-    "lastCycle": "2026-01-04T22:14:29.750Z",
-    "cycleCount": 1,
+    "awake": true,
+    "lastCycle": "2026-01-05T05:43:02.965Z",
+    "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
       "stability": 76,
-      "growth": 102,
+      "growth": 168,
       "rest": 0
     },
-    "totalEnergyConsumed": 0.003
+    "totalEnergyConsumed": 0.09600000000000004
   }
 }

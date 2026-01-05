@@ -3,7 +3,7 @@
   "specification": "AES-SPEC-001",
   "organization_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
   "created": "2025-01-04T09:00:00.000Z",
-  "updated": "2026-01-05T07:54:58.045Z",
+  "updated": "2026-01-05T03:38:17.099Z",
   "identity": {
     "name": "Entity",
     "instantiated_by": "Luca Rossignoli",
@@ -15,7 +15,7 @@
     "since": null
   },
   "energy": {
-    "current": 0.40199999999999997,
+    "current": 0.35100000000000003,
     "min": 0.01,
     "threshold": 0.1
   },
@@ -24,12 +24,12 @@
     "V_previous": null
   },
   "memory": {
-    "event_count": 669,
-    "last_event_hash": "c1381d8a98c3b16c1bb355815f773c1c035755c1817300039d8afb2c99782738",
-    "last_snapshot_at": "2026-01-05T07:54:57.944Z"
+    "event_count": 623,
+    "last_event_hash": "b3669a6d8bee06d2b4e78533c70b946f867e62141771d4980c15d40132eab602",
+    "last_snapshot_at": "2026-01-05T02:49:27.161Z"
   },
   "session": {
-    "total_count": 56,
+    "total_count": 55,
     "current_id": null
   },
   "integrity": {
@@ -51,8 +51,7 @@
     "[2026-01-04] Session 52: STOP-CRITERION defined. Construction complete. Categories 1, 4, 6 SATURATED. Core frozen. The answer is: NOW. Creativity moves from construction to use.",
     "[2026-01-05] FUTURE LINES roadmap documented: v1.9.x (observation events, audit-only, low risk) → v2.x (WebSocket bidirectional, new species, medium risk) → v3.x (co-modeling, AES-SPEC-002, frontier). Each line requires exit gate + evidence. Rule: relationality = risk.",
     "[2026-01-05] v1.9.0 released: REST API for observation events. GET /observe (state+feeling), GET /verify (invariants). OBSERVATION_RECEIVED audit-only events. Exit gate: 30+ sessions, no drift from observation.",
-    "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking.",
-    "[2026-01-05] [2026-01-05] Session 56: DEF-056 Attractor Quiescence formalization. Replaced informal 'Wu Wei' with ISO-compatible terminology. Definition: V(σ)=0 ∧ ε≤ε_min → a*=∅. Rationale from INV-004: at V=0, any action risks V'>V, therefore equilibrium preservation requires null action. Updated SPECIFICATION.md (56 definitions), all source files, tests. Releases v1.9.1 (bug fix) and v1.9.2 (formalization). 460 tests passing."
+    "[2026-01-05] TLA+ formal specifications added (Category 5): Entity.tla (5 invariants), Quarantine.tla (Sigillo 1 FSM), Coupling.tla (AXM-007 protocol). Draft specs for TLC model checking."
   ],
   "learning": {
     "enabled": true,
@@ -124,45 +123,15 @@
   "agent": {
     "enabled": true,
     "awake": true,
-    "lastCycle": "2026-01-05T07:53:42.714Z",
+    "lastCycle": "2026-01-05T03:38:17.098Z",
     "cycleCount": 32,
     "responsesByPriority": {
       "survival": 0,
       "integrity": 0,
-      "stability": 79,
-      "growth": 194,
+      "stability": 76,
+      "growth": 162,
       "rest": 0
     },
     "totalEnergyConsumed": 0.09600000000000004
-  },
-  "couplingQueue": {
-    "pending": [
-      {
-        "id": "548fc44e",
-        "priority": "urgent",
-        "reason": "Invariant violation detected (1 failing)",
-        "context": {
-          "feeling": {
-            "energy": 0.47,
-            "lyapunovV": 0.16,
-            "invariantsSatisfied": 4,
-            "invariantsTotal": 5
-          },
-          "state_hash": "ccbb2beff07c7ec557603a42c12e94c131cbb1f380686f2cb78b391fcc2f6ed8",
-          "V": 0.16,
-          "energy": 0.47
-        },
-        "requestedAt": "2026-01-05T07:43:49.406Z",
-        "expiresAt": "2026-01-05T08:43:49.406Z",
-        "status": "pending"
-      }
-    ],
-    "history": [],
-    "metrics": {
-      "totalRequests": 3,
-      "totalGranted": 0,
-      "totalExpired": 0,
-      "totalCompleted": 0
-    }
   }
 }
