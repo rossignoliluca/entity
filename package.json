@@ -1,6 +1,6 @@
 {
   "name": "entity",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Autopoietic Entity System - ISO AES-SPEC-001 Conformant",
   "type": "module",
   "main": "dist/src/index.js",

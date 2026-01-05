@@ -1663,6 +1663,69 @@ Levels: debug, info, warn, error, silent
         }
         break;
 
+      case 'api':
+        // v1.9.x: REST API for observation
+        const apiAction = process.argv[3];
+        const { startServer, stopServer, getServerStatus } = await import('./api/server.js');
+
+        if (apiAction === 'start') {
+          const port = parseInt(process.argv[4] ?? '3000', 10);
+          try {
+            const url = await startServer({ port });
+            console.log(`\n✓ Entity API started at ${url}`);
+            console.log('\nEndpoints:');
+            console.log('  GET /observe  - Full state + feeling');
+            console.log('  GET /verify   - Invariant verification');
+            console.log('\nUse X-Observer header to identify observer.');
+            console.log('Press Ctrl+C to stop.\n');
+
+            // Keep process running
+            process.on('SIGINT', async () => {
+              await stopServer();
+              console.log('\nAPI stopped');
+              process.exit(0);
+            });
+
+            // Block exit
+            await new Promise(() => {});
+          } catch (err) {
+            console.error(`Error: ${(err as Error).message}`);
+          }
+
+        } else if (apiAction === 'status') {
+          const status = getServerStatus();
+          if (status.running) {
+            console.log(`API running at ${status.url}`);
+          } else {
+            console.log('API not running');
+          }
+
+        } else {
+          console.log(`
+REST API (v1.9.x: Observation Events)
+
+Read-only HTTP interface for Entity observation.
+Logs OBSERVATION_RECEIVED events (audit category).
+
+Usage:
+  api start [port]  Start API server (default: 3000)
+  api status        Check if API is running
+
+Endpoints:
+  GET /observe      Full state + feeling
+  GET /verify       Invariant verification
+
+Constraints:
+  - Read-only (no mutations)
+  - Audit category (no EFE/cycle memory impact)
+  - Does not consume energy
+
+Example:
+  curl http://localhost:3000/observe -H "X-Observer: claude"
+          `);
+        }
+        break;
+
       case 'help':
       default:
         console.log(`
@@ -1684,6 +1747,7 @@ Commands:
   daemon      Autonomous daemon mode (Phase 7b)
   agent       Internal agent (Phase 8)
   coupling    Coupling protocol (Phase 8f)
+  api         REST API for observation (v1.9.x)
   log         Configure logging levels
   replay      Replay events and show state
   events      List recent events

@@ -245,7 +245,9 @@ export type EventType =
   | 'COUPLING_EXPIRED'     // Request expired (TTL)
   | 'COUPLING_GRANTED'     // Human granted request
   | 'COUPLING_COMPLETED'   // Human completed request
-  | 'COUPLING_CANCELED';   // Human canceled request
+  | 'COUPLING_CANCELED'    // Human canceled request
+  // Phase v1.9.x: Observation Events (audit-only)
+  | 'OBSERVATION_RECEIVED'; // External observation of state (REST API)
 
 // Event categories for filtering (Annex G)
 export type EventCategory = 'operational' | 'test' | 'audit' | 'maintenance' | 'coupling';

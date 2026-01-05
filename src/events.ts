@@ -381,6 +381,13 @@ function applyEvent(state: State, event: Event): State {
       // No direct state derivation needed (queue is persisted directly)
       break;
 
+    // Phase v1.9.x: Observation Events (audit-only)
+    case 'OBSERVATION_RECEIVED':
+      // Audit-only event - logged but no state change
+      // Does NOT enter EFE / cycle memory / self-production
+      // Does NOT consume energy or open coupling requests
+      break;
+
     default:
       // Unknown event type - no state change
       break;
