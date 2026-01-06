@@ -1,0 +1,13 @@
+{
+  "seq": 1107,
+  "type": "STATE_UPDATE",
+  "timestamp": "2026-01-06T08:26:27.558Z",
+  "data": {
+    "reason": "Energy recharge",
+    "energy_before": 0.19800000000000006,
+    "energy_after": 0.29800000000000004,
+    "recharge_amount": 0.1
+  },
+  "prev_hash": "36230e6d92149344bcec9778a5e9f1c09cfd7770710637b16bcfec946f45525d",
+  "hash": "e1fcacbb00072000c5149b6aecbdff369ad38503f6c18a3b5968554159ebddd9"
+}
