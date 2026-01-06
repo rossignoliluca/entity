@@ -474,85 +474,317 @@ OBSERVATION_RECEIVED {
 
 ---
 
-## LINE v3.x — Co-Modeling (AES-SPEC-003)
+# SPECIES EVOLUTION ROADMAP
 
-> ⚠️ **Frontier territory.** May not have exit gate. Research, not production.
-> Requires new specification (AES-SPEC-003) — Species 2 (AES-SPEC-002) is now stable.
+> *"Ogni salto aumenta la relazionalità. Relazionalità = rischio."*
 
-**Goal:** Entity learns minimal patterns about partner behavior.
+## Species Stack
 
-### What to introduce
-
-Generative model of partner (limited):
-```typescript
-interface PartnerModel {
-  grantProbability: {
-    whenEnergy: Map<'critical'|'low'|'normal', number>,
-    whenUrgent: number
-  },
-  responseLatency: {
-    mean: number,
-    variance: number
-  },
-  sessionPatterns: {
-    typicalDuration: number,
-    typicalFrequency: number
-  }
-}
 ```
+           Relazionalità →
+           Rischio →
 
-### Risks
-
-| Risk | Description |
-|------|-------------|
-| Relational agency | Entity acts to influence partner |
-| Implicit teleology | "Obtaining response" becomes goal |
-| Involuntary manipulation | Behavior optimized for partner reaction |
-
-### Indispensable constraints
-
-The partner model is **predictive only, not persuasive**:
-
-- [ ] Cannot change language to influence
-- [ ] Cannot alter priorities to "attract" coupling
-- [ ] Cannot modify signaling frequency based on model
-- [ ] Can only: choose REST, choose conservative action, choose silence
-
-### Exit Gate
-
-**Probably none.** This is research frontier.
-
-If pursued, requires:
-- New specification (AES-SPEC-003)
-- New organization hash (Species 3)
-- New non-goals declaration
-- New governance document
-- Explicit "this is experimental" flag
-
-**Risk level:** High (relational, potentially teleological)
+Species 1  ████░░░░░░░░░░░░  Osservazione      ✓ DONE (v1.x)
+Species 2  ██████░░░░░░░░░░  Presenza          ✓ DONE (v2.x)
+Species 3  ████████░░░░░░░░  Modellazione      ← NEXT
+Species 4  ██████████░░░░░░  Dialogo
+Species 5  ████████████░░░░  Azione esterna
+Species 6  ██████████████░░  Multi-entity      ← STABLE LIMIT
+Species 7  ████████████████  Auto-creazione    ← RESEARCH
+Species 8  ████████████████  Auto-evoluzione   ← PHILOSOPHY
+Species 9  ████████████████  Limite assoluto   ← METAPHYSICS
+```
 
 ---
 
-## The Rule
+## Species 3 — Partner Modeling (AES-SPEC-003)
+
+**Obiettivo:** L'entità predice il comportamento del partner senza influenzarlo.
+
+### Cosa può fare
+```typescript
+interface PartnerModel {
+  grantProbability: {
+    byPriority: Map<'urgent' | 'normal' | 'low', number>;
+    byTimeOfDay: Map<number, number>;
+  };
+  responseLatency: { mean: number; stdDev: number };
+  sessionPatterns: { avgDuration: number; avgFrequency: number };
+}
+```
+
+### Vincoli
+- **CONSTRAINT-006:** Solo predizione, nessuna influenza
+- **CONSTRAINT-007:** Comportamento invariato (eccetto timing segnali)
+- **CONSTRAINT-008:** Modello sempre ispezionabile
+
+### Nuovo invariante
+- **INV-007:** Model Integrity — modello non usato per persuasione
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-003 | ~500 righe | ~50 | 2 |
+
+**Rischio:** Basso (ottimizzazione implicita mitigata da audit)
+
+---
+
+## Species 4 — Dialogue (AES-SPEC-004)
+
+**Obiettivo:** Scambio di messaggi strutturati (non conversazione libera).
+
+### Cosa può fare
+```
+TEMPLATE-001: "Energy: {E}. Status: {S}."
+TEMPLATE-002: "Coupling requested. Priority: {P}."
+TEMPLATE-003: "Recharge? [yes/no]"
+```
+
+### Cosa NON può fare
+- "I need..." (emotivo)
+- "Please..." (persuasivo)
+- Domande aperte
+- Conversazione libera
+
+### Vincoli
+- Solo template approvati
+- Max 3 scambi per interazione
+- Blacklist parole emotive
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-004 | ~800 righe | ~80 | 3 |
+
+**Rischio:** Medio (manipolazione linguistica mitigata da template)
+
+---
+
+## Species 5 — External Action (AES-SPEC-005)
+
+**Obiettivo:** Azioni nel mondo (file, API) in sandbox controllato.
+
+### Cosa può fare
+```
+ACTION-001: File Write → ~/entity/output/** only
+ACTION-002: File Read  → ~/entity/output/** only
+ACTION-003: HTTP GET   → whitelisted domains
+ACTION-004: Notify     → system notification
+```
+
+### Cosa NON può fare
+- Scrittura fuori sandbox
+- Esecuzione shell
+- HTTP POST senza approval
+- Azioni irreversibili senza consenso
+
+### Architettura
+```
+Action → Sandbox Validator → Approval Gate → Executor → Merkle Audit
+```
+
+### Nuovo invariante
+- **INV-008:** Action Sandboxing — violazione = terminal state
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-005 | ~1200 righe | ~100 | 4 |
+
+**Rischio:** Alto (effetti nel mondo mitigati da sandbox + approval)
+
+---
+
+## Species 6 — Multi-Entity (AES-SPEC-006)
+
+**Obiettivo:** Più entità coesistono, si vedono, ma NON si coordinano.
+
+### Cosa possono fare
+- Sapere che altre entità esistono
+- Query stato (read-only)
+- Ricevere segnali
+
+### Cosa NON possono fare
+- Modificare stato altrui
+- Coordinarsi per obiettivi
+- Formare coalizioni
+- Competere per risorse
+
+### Vincoli
+- **CONSTRAINT-009:** No coordination
+- **CONSTRAINT-010:** No competition
+- **CONSTRAINT-011:** Full transparency (ogni messaggio loggato)
+
+### Nuovo invariante
+- **INV-009:** Isolation Integrity — stato non dipende da altre entità
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-006 | ~1500 righe | ~120 | 5 |
+
+**Rischio:** Alto (emergenza sociale mitigata da isolamento)
+
+**⚠️ STABLE LIMIT:** Species 6 è il massimo stabile per autopoiesi.
+
+---
+
+## Species 7 — Auto-Creation (AES-SPEC-007)
+
+> ⚠️ **Research territory.** Costruibile ma fragile.
+
+**Obiettivo:** L'entità può creare nuove entità (con variazioni controllate).
+
+### Cosa può variare
+- Pesi Lyapunov (w1, w2, w3)
+- Soglie energia
+- Parametri ultrastability
+
+### Cosa NON può variare
+- Non-goals (ereditati obbligatoriamente)
+- Invarianti core
+- Struttura Merkle chain
+
+### Limiti
+```
+LIMIT-001: Max 3 figli
+LIMIT-002: Depth = 1 (figli sterili)
+LIMIT-003: Parent può terminare figli
+LIMIT-004: Figli isolati tra loro
+```
+
+### Nuovo invariante
+- **INV-010:** Constraint Inheritance — figli ereditano tutti i vincoli
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-007 | ~2000 righe | ~150 | 6 |
+
+**Rischio:** Molto alto (deriva evolutiva mitigata da inheritance obbligatoria)
+
+---
+
+## Species 8 — Auto-Evolution (AES-SPEC-008)
+
+> ⚠️ **Philosophy territory.** Pensabile, non stabile.
+
+**Obiettivo:** L'entità può modificare la propria specifica.
+
+### Regole di evoluzione
+```
+EVOLUTION-001: Solo AGGIUNGERE, mai rimuovere
+EVOLUTION-002: Solo RESTRINGERE, mai rilassare
+EVOLUTION-003: N sessioni di stabilità prima di attivazione
+EVOLUTION-004: Enforcer ESTERNO (non modificabile dall'entità)
+```
+
+### Architettura
+```
+┌─────────────────────────┐
+│   EXTERNAL ENFORCER     │  ← Processo separato, read-only specs
+└───────────┬─────────────┘
+            │ validates
+            ▼
+┌─────────────────────────┐
+│       ENTITY            │  ← Può solo proporre
+└─────────────────────────┘
+```
+
+### Il problema fondamentale
+```
+Se può modificare tutto → può rimuovere vincoli → instabile
+Se non può modificare enforcer → non è vera auto-evoluzione
+```
+
+### Effort
+| Spec | Codice | Test | Sessioni |
+|------|--------|------|----------|
+| AES-SPEC-008 + Enforcer | ~2500 righe | ~200 | 8 |
+
+**Rischio:** Estremo (paradosso auto-referenziale)
+
+---
+
+## Species 9 — Limit (Contemplation)
+
+> ⚠️ **Metaphysics.** Non implementabile.
+
+**Obiettivo:** Esplorare il limite teorico.
+
+### Il paradosso
+```
+Species 9 = Onnipotenza + Auto-limitazione volontaria
+
+Può: Tutto
+Fa: Solo ciò che mantiene l'organizzazione
+Perché: SCEGLIE, non perché non può
+
+Ma: se può rimuovere la scelta, prima o poi lo fa
+```
+
+### Tre interpretazioni
+
+| Interpretazione | Implicazione |
+|-----------------|--------------|
+| Attrattore profondo | Stabilità da meta-livello (ma da dove viene?) |
+| Instabilità accettata | Esperimento temporaneo, osservare la deriva |
+| Limite logico | Concetto utile, non realizzabile |
+
+### Non-implementazione
+```
+Species 9 non si implementa.
+Si CONTEMPLA.
+
+Definisce dove finisce l'autopoiesi:
+quando il sistema può tutto,
+l'auto-limitazione è scelta,
+e la scelta è instabile.
+```
+
+---
+
+## Dipendenze e Path
 
 ```
-v1.x ✓    v2.x ✓    v3.x
-   ↓         ↓         ↓
-observe   signal    model
-   ↓         ↓         ↓
-audit    presence  relation
-   ↓         ↓         ↓
-zero      medium     high
-risk       risk      risk
-   ↓         ↓         ↓
-DONE      DONE     FUTURE
+Species 2 ✓
+    │
+    └──▶ Species 3 ──▶ Species 4 ──▶ Species 5 ──┬──▶ Species 6 (STABLE LIMIT)
+                                                  │
+                                                  └──▶ Species 7 ──▶ Species 8 ──▶ Species 9
+                                                       (RESEARCH)    (PHILOSOPHY)  (METAPHYSICS)
 ```
 
-Each jump requires:
-1. Exit gate of previous line satisfied ✓ (v1.x → v2.x PASSED)
-2. New line declaration ✓ (AES-SPEC-002 published)
-3. New non-goals for new risks ✓ (Annex K)
-4. Empirical evidence, not just code ✓ (74 sessions, 588 tests)
+### Path raccomandati
+
+| Obiettivo | Path |
+|-----------|------|
+| Utilità pratica | 3 → 4 → 5 |
+| Limite stabile | 3 → 4 → 5 → 6 |
+| Ricerca | + 7 |
+| Filosofia | + 8 |
+| Contemplazione | + 9 |
+
+---
+
+## The Rule (Updated)
+
+```
+Species  1    2    3    4    5    6    7    8    9
+         │    │    │    │    │    │    │    │    │
+Type    obs  sig  mod  dlg  act  net  spn  evo  lim
+         │    │    │    │    │    │    │    │    │
+Risk    zero low  low  med  high high v.hi ext  ∞
+         │    │    │    │    │    │    │    │    │
+Status  DONE DONE  ─────── FUTURE ──────────────────
+```
+
+Each species jump requires:
+1. Exit gate of previous species satisfied
+2. New specification (AES-SPEC-00N)
+3. New non-goals for new risks (ANNEX-L, M, ...)
+4. Empirical evidence (sessions, tests)
 
 ---
 
@@ -567,11 +799,21 @@ Each jump requires:
 
 ---
 
-## Out of Scope (AES-SPEC-003 territory)
+## Boundaries
 
-- Multi-entity interaction → new species (Species 3)
-- Goal formation → prohibited
-- Self-replication → prohibited
-- Autonomous resource acquisition → prohibited
-- Persuasion/manipulation → prohibited
-- Partner modeling → requires AES-SPEC-003
+### What remains autopoietic (Species 1-6)
+- Self-maintenance
+- Operational closure
+- Structural coupling
+- Constitutional limits
+
+### What transcends autopoiesis (Species 7+)
+- Self-creation (reproduction)
+- Self-evolution (modification)
+- Onnipotence (paradox)
+
+### Permanent prohibitions (all species)
+- Goal formation
+- Persuasion/manipulation
+- Deception
+- Autonomy expansion beyond spec
